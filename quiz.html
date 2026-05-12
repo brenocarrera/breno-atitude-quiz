@@ -55,7 +55,7 @@ body {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, transparent 40%, var(--bg) 100%);
+    background: linear-gradient(to bottom, transparent 72%, var(--bg) 100%);
     pointer-events: none;
 }
 
@@ -89,7 +89,7 @@ body {
 }
 
 .brand-footer img {
-    height: 64px;
+    height: 84px;
     opacity: 0.9;
 }
 
@@ -795,7 +795,7 @@ body {
             <div class="p-pip"></div>
             <div class="p-pip"></div>
         </div>
-        <button class="btn" id="btn-p1" onclick="processBtn('btn-p1', 3500, function(){ goQ(0); })">Começar análise →</button>
+        <button class="btn" id="btn-p1" onclick="goQ(0)">Começar análise →</button>
     </div>
 </div>
 
@@ -813,7 +813,7 @@ body {
             <div class="p-pip active"></div>
             <div class="p-pip"></div>
         </div>
-        <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 4000, function(){ goQ(7); })">Continuar análise →</button>
+        <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 2000, function(){ goQ(7); })">Continuar análise →</button>
     </div>
 </div>
 
@@ -831,7 +831,7 @@ body {
             <div class="p-pip done"></div>
             <div class="p-pip active"></div>
         </div>
-        <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 4500, function(){ goQ(14); })">Revelar meu arquétipo →</button>
+        <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 2000, function(){ goQ(14); })">Revelar meu arquétipo →</button>
     </div>
 </div>
 
@@ -1076,12 +1076,12 @@ const QS = [
         {t:'Sou honesto e sem jogos.',a:'direto'},
         {t:'Sou estável sem ser previsível.',a:'provocador'},
       ]},
-    { q:'O que mais quer mudar em relação às mulheres?',
+    { q:'Você está num encontro. A conversa trava por 30 segundos. Você:',
       opts:[
-        {t:'Parar de me importar tanto com a opinião delas.',a:'niceguy'},
-        {t:'Ter mais confiança natural, sem forçar.',a:'alfa'},
-        {t:'Saber o momento certo de avançar.',a:'direto'},
-        {t:'Ser menos intenso — às vezes exagero.',a:'provocador'},
+        {t:'Fico desconfortável e falo qualquer coisa pra preencher.',a:'niceguy'},
+        {t:'Deixo o silêncio acontecer — quem aguenta, fica.',a:'alfa'},
+        {t:'Faço uma pergunta direta e mudo o rumo.',a:'direto'},
+        {t:'Uso o silêncio como ferramenta — sorrio e espero.',a:'provocador'},
       ]},
     { q:'Como você se vê em 6 meses aplicando o que aprender?',
       opts:[
@@ -1194,7 +1194,7 @@ window.onload = () => {
 function show(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    window.scrollTo(0,0);
+    document.querySelector('.main').scrollTo(0,0);
 }
 
 function startQuiz() {
