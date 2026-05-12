@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Análise de Arquétipo — Breno Carrera</title>
+<style>
+:root {
+    --bg:      #06101e;
+    --card:    #0b1829;
+    --border:  #152a42;
+    --primary: #00c8a0;
+    --blue:    #0066cc;
+    --text:    #deeaf8;
+    --muted:   #3d6a8a;
+    --muted2:  #2e5470;
+    --danger:  #ff6b6b;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html { height:100%; }
+
+body {
+    height: 100dvh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ══════════════════════════════════════
+   EXPERT HEADER
+══════════════════════════════════════ */
+.expert-header {
+    width: 100%;
+    height: 130px;
+    flex-shrink: 0;
+    position: relative;
+    background: linear-gradient(135deg, #0c1e35, #071828);
+    overflow: hidden;
+}
+
+.expert-header img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+}
+
+.expert-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, var(--bg) 100%);
+    pointer-events: none;
+}
+
+/* ══════════════════════════════════════
+   MAIN
+══════════════════════════════════════ */
+.main {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px 20px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.wrap { max-width: 520px; width: 100%; flex: 1; display: flex; flex-direction: column; }
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+.brand-footer {
+    height: 46px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+}
+
+.brand-footer img {
+    height: 22px;
+    opacity: 0.6;
+    /* fallback se logo.png não existir */
+}
+
+.logo-fallback {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════
+   BACK BUTTON
+══════════════════════════════════════ */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+    margin-bottom: 10px;
+    transition: color 0.2s;
+}
+
+.back-btn:hover { color: var(--primary); }
+.back-btn svg { width:14px; height:14px; fill:currentColor; }
+
+/* ══════════════════════════════════════
+   SCREENS
+══════════════════════════════════════ */
+.screen { display: none; flex-direction: column; flex: 1; }
+.screen.active { display: flex; }
+
+/* ══════════════════════════════════════
+   FORMS
+══════════════════════════════════════ */
+.badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), var(--blue));
+    color: #fff;
+    padding: 4px 13px;
+    border-radius: 20px;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.screen-title {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.25;
+    margin-bottom: 8px;
+}
+
+.screen-sub {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 18px;
+}
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-group { margin-bottom: 11px; }
+
+.form-label {
+    display: block;
+    color: var(--muted2);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.form-input {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 13px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+}
+
+.form-input:focus { border-color: var(--primary); }
+.form-input::placeholder { color: var(--muted2); }
+
+/* ══════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════ */
+.btn {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--blue) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 24px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    font-family: inherit;
+    letter-spacing: 0.3px;
+    transition: opacity 0.2s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+
+/* Scanning/processing state */
+.btn.scanning {
+    background: linear-gradient(90deg, var(--card) 0%, #1a3a5c 30%, var(--primary) 50%, #1a3a5c 70%, var(--card) 100%);
+    background-size: 300% 100%;
+    animation: scanGlow 1.8s linear infinite;
+    color: var(--muted);
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+@keyframes scanGlow {
+    0%   { background-position: 200% center; }
+    100% { background-position: -200% center; }
+}
+
+/* Ready state (after scanning) */
+.btn.ready {
+    background: linear-gradient(135deg, var(--primary), var(--blue));
+    box-shadow: 0 0 20px rgba(0,200,160,0.35);
+    animation: pulse-btn 0.6s ease;
+}
+
+@keyframes pulse-btn {
+    0%   { transform: scale(0.97); }
+    60%  { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+/* ══════════════════════════════════════
+   PHASE INTRO
+══════════════════════════════════════ */
+.phase-intro {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: center;
+    text-align: center;
+    padding: 8px 0;
+}
+
+.phase-number {
+    font-size: 11px;
+    color: var(--primary);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.phase-title {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 10px;
+}
+
+.phase-sub {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.65;
+    margin-bottom: 22px;
+}
+
+.phase-track {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 22px;
+}
+
+.p-pip {
+    width: 34px; height: 5px;
+    border-radius: 4px;
+    background: var(--border);
+    transition: background 0.4s;
+}
+
+.p-pip.done   { background: var(--primary); opacity: 0.5; }
+.p-pip.active { background: linear-gradient(90deg, var(--primary), var(--blue)); }
+
+.analyzing-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.a-dot {
+    width: 8px; height: 8px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: adot 1.2s ease-in-out infinite;
+}
+
+.a-dot:nth-child(2) { animation-delay: 0.2s; }
+.a-dot:nth-child(3) { animation-delay: 0.4s; background: var(--blue); }
+
+@keyframes adot {
+    0%,100% { transform: scale(1); opacity: 0.4; }
+    50%     { transform: scale(1.6); opacity: 1; }
+}
+
+/* ══════════════════════════════════════
+   QUIZ
+══════════════════════════════════════ */
+.phase-label {
+    font-size: 10px;
+    color: var(--primary);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.phase-name-sm {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+
+.progress-wrap { margin-bottom: 16px; }
+
+.progress-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.p-counter {
+    font-size: 10px;
+    color: var(--muted2);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.p-pct {
+    font-size: 11px;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.progress-bar {
+    height: 5px;
+    background: #0d2035;
+    border-radius: 4px;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--blue));
+    border-radius: 4px;
+    transition: width 0.55s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    right: -4px; top: 50%;
+    transform: translateY(-50%);
+    width: 11px; height: 11px;
+    background: var(--primary);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--primary);
+}
+
+.question-text {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 14px;
+}
+
+.options { display: flex; flex-direction: column; gap: 8px; }
+
+.option {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 13px 15px;
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1.45;
+    text-align: left;
+    color: #7aacc8;
+    transition: all 0.18s;
+    width: 100%;
+    font-family: inherit;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: up 0.28s ease forwards;
+}
+
+.option:nth-child(1) { animation-delay: 0.04s; }
+.option:nth-child(2) { animation-delay: 0.10s; }
+.option:nth-child(3) { animation-delay: 0.16s; }
+.option:nth-child(4) { animation-delay: 0.22s; }
+
+@keyframes up { to { opacity:1; transform:translateY(0); } }
+
+.option:hover  { border-color: var(--primary); background: #071e30; color: var(--text); }
+.option.picked { border-color: var(--primary); background: #071e30; color: var(--text); pointer-events: none; }
+.option.picked::before { content: '✓  '; color: var(--primary); font-weight:800; }
+
+/* ══════════════════════════════════════
+   COMMENT MODAL (interrupt)
+══════════════════════════════════════ */
+.comment-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 10, 22, 0.88);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+    z-index: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s;
+}
+
+.comment-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.comment-card {
+    background: #071828;
+    border: 1px solid var(--primary);
+    border-radius: 16px;
+    padding: 24px 22px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 0 40px rgba(0,200,160,0.25), 0 20px 60px rgba(0,0,0,0.6);
+    transform: scale(0.92) translateY(20px);
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.comment-overlay.open .comment-card {
+    transform: scale(1) translateY(0);
+}
+
+.comment-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, var(--primary), var(--blue));
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.comment-chip::before {
+    content: '◆';
+    font-size: 8px;
+}
+
+.comment-headline {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.35;
+    margin-bottom: 10px;
+    color: var(--text);
+}
+
+.comment-headline span {
+    color: var(--primary);
+}
+
+.comment-body-text {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--muted);
+    margin-bottom: 20px;
+}
+
+.btn-comment {
+    background: linear-gradient(135deg, var(--primary), var(--blue));
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    padding: 13px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    font-family: inherit;
+    transition: opacity 0.2s;
+}
+
+.btn-comment:hover { opacity: 0.88; }
+
+/* ══════════════════════════════════════
+   GATE
+══════════════════════════════════════ */
+.gate-wrap {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: center;
+}
+
+.gate-lock { font-size: 36px; margin-bottom: 10px; }
+.gate-title { font-size: 22px; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
+.gate-sub   { color: var(--muted); font-size: 13px; line-height: 1.65; margin-bottom: 16px; }
+
+.delivery-choice {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.choice-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 10px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: center;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.choice-btn .choice-icon { font-size: 20px; }
+.choice-btn.selected { border-color: var(--primary); color: var(--primary); background: #071e30; }
+
+/* ══════════════════════════════════════
+   LOADING
+══════════════════════════════════════ */
+.loading-wrap {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 16px 0;
+}
+
+.spinner {
+    width: 50px; height: 50px;
+    border: 4px solid #152a42;
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.85s linear infinite;
+    margin-bottom: 18px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.loading-sub   { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+
+.lsteps { text-align: left; width: 100%; }
+
+.lstep {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 13px;
+    color: var(--muted2);
+    border-bottom: 1px solid var(--border);
+    transition: color 0.35s;
+}
+
+.lstep.done { color: var(--primary); }
+
+.lstep-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: all 0.35s;
+}
+
+.lstep.done .lstep-dot { background: var(--primary); box-shadow: 0 0 7px var(--primary); }
+
+/* ══════════════════════════════════════
+   RESULT
+══════════════════════════════════════ */
+.result-top {
+    background: linear-gradient(135deg, rgba(0,200,160,0.08), rgba(0,102,204,0.08));
+    border: 1px solid rgba(0,200,160,0.2);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 18px;
+}
+
+.r-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), var(--blue));
+    color: #fff;
+    padding: 4px 13px;
+    border-radius: 20px;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.r-name { font-size: 28px; font-weight: 800; margin-bottom: 10px; line-height: 1.1; }
+
+.r-desc {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.7;
+    border-left: 2px solid var(--border);
+    padding-left: 14px;
+}
+
+.bios-section-title {
+    font-size: 10px;
+    color: var(--primary);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 12px;
+    margin-top: 4px;
+}
+
+.bio-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.bio-type-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+.bio-type-info {}
+
+.bio-version {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+
+.bio-style {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.bio-effect {
+    font-size: 11px;
+    color: var(--primary);
+    text-align: right;
+    flex-shrink: 0;
+    max-width: 140px;
+    line-height: 1.4;
+}
+
+.bio-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 10px;
+}
+
+.bio-text { font-size: 15px; line-height: 1.75; color: #b8d4ec; }
+
+.copy-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 11px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.copy-btn:hover { border-color: var(--primary); color: var(--primary); }
+.copy-btn.copied { border-color: #00e5b0; color: #00e5b0; }
+
+.result-bottom-note {
+    text-align: center;
+    color: var(--muted2);
+    font-size: 12px;
+    line-height: 1.6;
+    padding: 16px 0 8px;
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-height: 680px) {
+    .expert-header { height: 100px; }
+    .phase-title   { font-size: 24px; }
+    .screen-title  { font-size: 21px; }
+    .question-text { font-size: 18px; }
+    .phase-sub, .screen-sub { font-size: 13px; }
+    .phase-intro { padding: 4px 0; }
+}
+
+@media (max-width: 380px) {
+    .question-text { font-size: 17px; }
+    .option { font-size: 14px; padding: 11px 13px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ EXPERT HEADER ═══ -->
+<header class="expert-header">
+    <img src="/expert.jpg" alt="Breno Carrera"
+         onerror="this.style.display='none'">
+</header>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main">
+<div class="wrap">
+
+<!-- ── WELCOME ── -->
+<div id="s-welcome" class="screen active">
+    <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
+        <div class="badge">Análise de Arquétipo</div>
+        <h1 class="screen-title" id="welcome-title">Vamos descobrir quem você realmente é.</h1>
+        <p class="screen-sub">Em 8 minutos você entende como as mulheres te percebem — e o que muda para ter os resultados que merece.</p>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Idade</label>
+                <input type="number" id="f-idade" class="form-input" placeholder="Ex: 32" min="18" max="70" inputmode="numeric">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Altura (cm)</label>
+                <input type="number" id="f-altura" class="form-input" placeholder="Ex: 178" inputmode="numeric">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Peso (kg)</label>
+                <input type="number" id="f-peso" class="form-input" placeholder="Ex: 80" inputmode="numeric">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Profissão</label>
+                <input type="text" id="f-profissao" class="form-input" placeholder="Ex: Médico">
+            </div>
+        </div>
+        <button class="btn" id="btn-start" onclick="startQuiz()">Iniciar minha análise →</button>
+    </div>
+</div>
+
+<!-- ── PHASE 1 INTRO ── -->
+<div id="s-p1" class="screen">
+    <button class="back-btn" onclick="show('s-welcome')">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Voltar
+    </button>
+    <div class="phase-intro">
+        <div class="phase-number">Fase 1 de 3</div>
+        <h2 class="phase-title">Como ela te vê hoje</h2>
+        <p class="phase-sub">A primeira fase mapeia como você aparece para as mulheres — sua presença, postura e os sinais que transmite sem perceber.</p>
+        <div class="phase-track">
+            <div class="p-pip active"></div>
+            <div class="p-pip"></div>
+            <div class="p-pip"></div>
+        </div>
+        <button class="btn" id="btn-p1" onclick="processBtn('btn-p1', 3500, function(){ goQ(0); })">Começar análise →</button>
+    </div>
+</div>
+
+<!-- ── PHASE 2 INTRO ── -->
+<div id="s-p2" class="screen">
+    <div class="phase-intro">
+        <div class="analyzing-row">
+            <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
+        </div>
+        <div class="phase-number">Fase 2 de 3</div>
+        <h2 class="phase-title">O que está te travando</h2>
+        <p class="phase-sub">Fase 1 concluída. Já identificamos padrões muito específicos no seu perfil. Agora vamos ao que está entre você e os resultados que merece.</p>
+        <div class="phase-track">
+            <div class="p-pip done"></div>
+            <div class="p-pip active"></div>
+            <div class="p-pip"></div>
+        </div>
+        <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 4000, function(){ goQ(7); })">Continuar análise →</button>
+    </div>
+</div>
+
+<!-- ── PHASE 3 INTRO ── -->
+<div id="s-p3" class="screen">
+    <div class="phase-intro">
+        <div class="analyzing-row">
+            <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
+        </div>
+        <div class="phase-number">Fase 3 de 3 — Final</div>
+        <h2 class="phase-title">Seu arquétipo real</h2>
+        <p class="phase-sub">Ponto crítico identificado. Seu perfil tem uma característica específica que a maioria dos homens nunca descobre. A fase final confirma tudo.</p>
+        <div class="phase-track">
+            <div class="p-pip done"></div>
+            <div class="p-pip done"></div>
+            <div class="p-pip active"></div>
+        </div>
+        <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 4500, function(){ goQ(14); })">Revelar meu arquétipo →</button>
+    </div>
+</div>
+
+<!-- ── QUIZ ── -->
+<div id="s-quiz" class="screen">
+    <button class="back-btn" id="back-quiz" onclick="goBack()">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Voltar
+    </button>
+    <div class="phase-label" id="q-phase-label">FASE 1 DE 3</div>
+    <div class="phase-name-sm" id="q-phase-name">Como ela te vê hoje</div>
+    <div class="progress-wrap">
+        <div class="progress-meta">
+            <span class="p-counter" id="q-counter">PERGUNTA 1 DE 7</span>
+            <span class="p-pct" id="q-pct">0%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="q-bar" style="width:0%"></div>
+        </div>
+    </div>
+    <div class="question-text" id="q-text"></div>
+    <div class="options" id="q-opts"></div>
+</div>
+
+<!-- ── GATE ── -->
+<div id="s-gate" class="screen">
+    <button class="back-btn" onclick="goQ(19)">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Voltar
+    </button>
+    <div class="gate-wrap">
+        <div class="gate-lock">🔐</div>
+        <h2 class="gate-title">Seu diagnóstico está pronto.<br>E vai te incomodar.</h2>
+        <p class="gate-sub">O relatório tem <strong style="color:var(--text)">análise completa do seu arquétipo</strong>, os padrões que te travam, pontos cegos que você nunca viu — e as 3 bios calibradas pra você. É extenso. Vale cada linha.<br><br>Por onde quer receber?</p>
+        <div class="delivery-choice">
+            <button class="choice-btn selected" id="ch-whats" onclick="selectDelivery('whats')">
+                <span class="choice-icon">📱</span>
+                WhatsApp
+            </button>
+            <button class="choice-btn" id="ch-email" onclick="selectDelivery('email')">
+                <span class="choice-icon">📧</span>
+                Email
+            </button>
+        </div>
+        <div class="form-group">
+            <label class="form-label">WhatsApp (com DDD)</label>
+            <input type="tel" id="f-whatsapp" class="form-input" placeholder="(11) 99999-9999" inputmode="tel">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Seu melhor email</label>
+            <input type="email" id="f-email" class="form-input" placeholder="email@exemplo.com" inputmode="email">
+        </div>
+        <button class="btn" onclick="doGenerate()">Quero meu diagnóstico completo →</button>
+    </div>
+</div>
+
+<!-- ── LOADING ── -->
+<div id="s-loading" class="screen">
+    <div class="loading-wrap">
+        <div class="spinner"></div>
+        <div class="loading-title">Montando seu diagnóstico...</div>
+        <div class="loading-sub">Processando 20 respostas. Aguarde.</div>
+        <div class="lsteps">
+            <div class="lstep" id="ls1"><div class="lstep-dot"></div>Cruzando padrões comportamentais</div>
+            <div class="lstep" id="ls2"><div class="lstep-dot"></div>Identificando arquétipo dominante</div>
+            <div class="lstep" id="ls3"><div class="lstep-dot"></div>Mapeando pontos cegos</div>
+            <div class="lstep" id="ls4"><div class="lstep-dot"></div>Gerando bios personalizadas</div>
+        </div>
+    </div>
+</div>
+
+<!-- ── RESULT ── -->
+<div id="s-result" class="screen">
+    <div style="overflow-y:auto;flex:1;padding-bottom:8px;">
+        <div class="result-top">
+            <div class="r-badge" id="r-badge">Arquétipo</div>
+            <div class="r-name" id="r-name"></div>
+            <div class="r-desc" id="r-desc"></div>
+        </div>
+        <div class="bios-section-title">SUAS 3 BIOS — CALIBRADAS PARA VOCÊ</div>
+        <div id="r-bios"></div>
+        <div class="result-bottom-note">
+            Salve as bios e teste cada uma. O relatório completo<br>
+            chegará no canal que você escolheu.
+        </div>
+    </div>
+</div>
+
+</div><!-- /wrap -->
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="brand-footer">
+    <img src="/logo.png" alt="Breno Carrera"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <span class="logo-fallback" style="display:none">BRENO CARRERA</span>
+</footer>
+
+<!-- ═══ COMMENT MODAL ═══ -->
+<div class="comment-overlay" id="c-overlay">
+    <div class="comment-card">
+        <div class="comment-chip">Sistema identificou</div>
+        <div class="comment-headline" id="c-headline"></div>
+        <div class="comment-body-text" id="c-body"></div>
+        <button class="btn-comment" onclick="closeComment()">Entendido — continuar →</button>
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+
+const PHASES = [
+    { label:'FASE 1 DE 3', name:'Como ela te vê hoje',    start:0,  end:6  },
+    { label:'FASE 2 DE 3', name:'O que está te travando', start:7,  end:13 },
+    { label:'FASE 3 DE 3', name:'Seu arquétipo real',     start:14, end:19 },
+];
+
+const QS = [
+    // ── FASE 1 ──
+    { q:'Ela cancela o encontro na última hora sem dar explicação. Você:',
+      opts:[
+        {t:'Mando "Ok." Sem mais palavras.',a:'alfa'},
+        {t:'Tranquilo, já tinha plano B mesmo.',a:'direto'},
+        {t:'"Espero que esteja tudo bem. Avise quando puder."',a:'niceguy'},
+        {t:'Mando: "Me deve um café então." e sumo.',a:'provocador'},
+      ]},
+    { q:'Uma mulher que você acabou de conhecer faz elogios exagerados a você. Você:',
+      opts:[
+        {t:'Fico sem jeito e desvio o assunto.',a:'niceguy'},
+        {t:'Aceito naturalmente, como se fosse óbvio.',a:'alfa'},
+        {t:'"Você diz isso pra todo mundo?" com um sorriso.',a:'provocador'},
+        {t:'Agradeço brevemente e sigo a conversa.',a:'direto'},
+      ]},
+    { q:'Ela diz: "você deve pegar muita garota no Tinder né". Você:',
+      opts:[
+        {t:'"Não, fico mais no trabalho mesmo."',a:'niceguy'},
+        {t:'"Às vezes." Com um sorrisinho.',a:'alfa'},
+        {t:'"Só as interessantes. Que são raras."',a:'provocador'},
+        {t:'"Por que? Ciúme?"',a:'direto'},
+      ]},
+    { q:'Como você normalmente inicia uma conversa no app?',
+      opts:[
+        {t:'"Oi, tudo bem?" ou algo genérico.',a:'niceguy'},
+        {t:'Comento algo específico e incomum da bio dela.',a:'alfa'},
+        {t:'Uma provocação leve baseada numa foto.',a:'provocador'},
+        {t:'Uma pergunta direta e incomum.',a:'direto'},
+      ]},
+    { q:'Ela demora 3 horas pra responder. Você:',
+      opts:[
+        {t:'Fico checando o app de vez em quando.',a:'niceguy'},
+        {t:'Respondo imediatamente quando ela responde.',a:'niceguy'},
+        {t:'Demoro mais que ela — calibro o ritmo.',a:'alfa'},
+        {t:'Continuo meu dia. Respondo quando for conveniente.',a:'direto'},
+      ]},
+    { q:'Quando está com uma mulher que gosta, como é sua postura?',
+      opts:[
+        {t:'Fico mais atento, concordo mais, evito conflitos.',a:'niceguy'},
+        {t:'Sou eu mesmo, mas um pouco mais cuidadoso.',a:'alfa'},
+        {t:'Sou o mesmo de sempre, sem filtros.',a:'direto'},
+        {t:'Fico mais provocativo — quero ver a reação dela.',a:'provocador'},
+      ]},
+    { q:'Como a maioria das pessoas te descreveria em grupo?',
+      opts:[
+        {t:'O gentil, sempre prestativo.',a:'niceguy'},
+        {t:'O quieto — mas quando fala, todo mundo ouve.',a:'alfa'},
+        {t:'O engraçado, sempre com uma resposta afiada.',a:'provocador'},
+        {t:'O direto, sem rodeios.',a:'direto'},
+      ]},
+
+    // ── FASE 2 ──
+    { q:'Quando uma mulher que você gosta age fria, o que sente primeiro?',
+      opts:[
+        {t:'Ansiedade — fico tentando entender o que fiz de errado.',a:'niceguy'},
+        {t:'Irritação — odeio esse tipo de jogo.',a:'alfa'},
+        {t:'Indiferença — se ela quer sumir, problema dela.',a:'direto'},
+        {t:'Curiosidade — quero entender o que está acontecendo.',a:'provocador'},
+      ]},
+    { q:'Você pede desculpas frequentemente em relacionamentos?',
+      opts:[
+        {t:'Sim, mesmo sem ter certeza se errei.',a:'niceguy'},
+        {t:'Só quando claramente errei.',a:'alfa'},
+        {t:'Raramente. Prefiro discutir o problema direto.',a:'direto'},
+        {t:'Depende — avalio o momento.',a:'provocador'},
+      ]},
+    { q:'O que mais te trava numa conversa com uma mulher atraente?',
+      opts:[
+        {t:'Não saber o que dizer sem parecer genérico.',a:'niceguy'},
+        {t:'Medo de parecer arrogante ou forçado.',a:'alfa'},
+        {t:'Nada me trava — sou natural.',a:'direto'},
+        {t:'O timing — não sei quando avançar.',a:'provocador'},
+      ]},
+    { q:'Como você lida com rejeição?',
+      opts:[
+        {t:'Fico ruminando o que poderia ter feito diferente.',a:'niceguy'},
+        {t:'Fico bravo por um tempo e depois sigo em frente.',a:'alfa'},
+        {t:'Passo pra próxima quase imediatamente.',a:'direto'},
+        {t:'Analiso o que aconteceu para usar depois.',a:'provocador'},
+      ]},
+    { q:'O que você faz quando a conversa está esfriando?',
+      opts:[
+        {t:'Mando mais mensagens tentando reaquecer.',a:'niceguy'},
+        {t:'Faço uma pergunta diferente pra mudar o rumo.',a:'alfa'},
+        {t:'Deixo esfriar — se ela quiser, ela volta.',a:'direto'},
+        {t:'Faço algo inesperado — uma provocação, uma história.',a:'provocador'},
+      ]},
+    { q:'Como se sente quando ela testa você com provocações?',
+      opts:[
+        {t:'Fico sem saber o que responder, me sinto pressionado.',a:'niceguy'},
+        {t:'Fico irritado — não gosto de jogos.',a:'alfa'},
+        {t:'Respondo com calma, sem me abalar.',a:'direto'},
+        {t:'Gosto — é onde me sinto mais à vontade.',a:'provocador'},
+      ]},
+
+    // ── FASE 3 ──
+    { q:'O que as pessoas mais admiram em você?',
+      opts:[
+        {t:'Minha lealdade e confiabilidade.',a:'niceguy'},
+        {t:'Minha segurança e presença.',a:'alfa'},
+        {t:'Minha objetividade e clareza.',a:'direto'},
+        {t:'Meu humor e imprevisibilidade.',a:'provocador'},
+      ]},
+    { q:'Qual dessas frases mais te representa?',
+      opts:[
+        {t:'"Faço de tudo para as pessoas ao meu redor estarem bem."',a:'niceguy'},
+        {t:'"Sei o que quero e vou atrás sem pedir permissão."',a:'alfa'},
+        {t:'"Prefiro 5 minutos de conversa real a 1 hora de papo vazio."',a:'direto'},
+        {t:'"Me divirto com tudo — inclusive com as reações das pessoas."',a:'provocador'},
+      ]},
+    { q:'Como você age quando quer algo de alguém?',
+      opts:[
+        {t:'Dou indiretas e espero a pessoa perceber.',a:'niceguy'},
+        {t:'Crio a situação onde a pessoa me oferece sem eu pedir.',a:'alfa'},
+        {t:'Peço diretamente, sem rodeios.',a:'direto'},
+        {t:'Jogo o jogo — mas sou eu que controlo o tabuleiro.',a:'provocador'},
+      ]},
+    { q:'Qual é sua maior força num relacionamento?',
+      opts:[
+        {t:'Sou totalmente presente e dedicado.',a:'niceguy'},
+        {t:'Crio uma dinâmica de atração constante.',a:'alfa'},
+        {t:'Sou honesto e sem jogos.',a:'direto'},
+        {t:'Sou estável sem ser previsível.',a:'provocador'},
+      ]},
+    { q:'O que mais quer mudar em relação às mulheres?',
+      opts:[
+        {t:'Parar de me importar tanto com a opinião delas.',a:'niceguy'},
+        {t:'Ter mais confiança natural, sem forçar.',a:'alfa'},
+        {t:'Saber o momento certo de avançar.',a:'direto'},
+        {t:'Ser menos intenso — às vezes exagero.',a:'provocador'},
+      ]},
+    { q:'Como você se vê em 6 meses aplicando o que aprender?',
+      opts:[
+        {t:'Mais seguro, com mais clareza de quem sou.',a:'niceguy'},
+        {t:'Com mais mulheres interessadas de forma natural.',a:'alfa'},
+        {t:'Com relacionamentos mais diretos e sem jogos.',a:'direto'},
+        {t:'Com relações mais intensas e autênticas.',a:'provocador'},
+      ]},
+];
+
+// Interrupts: índice da pergunta → {headline, body}
+const COMMENTS = {
+    2: {
+        headline: 'Esse padrão revelou algo que <span>9 em 10 homens nunca percebem</span> sobre si mesmos.',
+        body: 'Continue. O que vem a seguir vai começar a fazer muito sentido quando você ver o diagnóstico final.'
+    },
+    5: {
+        headline: 'Identificamos o traço que separa os <span>8% de homens com resultados reais</span> dos outros 92%.',
+        body: 'Seus padrões de resposta têm uma consistência rara. Isso vai influenciar diretamente a bio que vai funcionar pra você.'
+    },
+    9: {
+        headline: '<span>Ponto crítico detectado.</span> Esse comportamento explica uma parte importante dos seus resultados.',
+        body: 'Poucos homens têm clareza disso. A fase 3 vai revelar exatamente como transformar isso a seu favor.'
+    },
+    13: {
+        headline: 'Sistema identificou um traço que aparece em <span>menos de 1 em 10 perfis</span> analisados.',
+        body: 'Isso muda completamente o tipo de estratégia que vai funcionar pra você. Última fase — e a mais reveladora.'
+    },
+    17: {
+        headline: 'Quase lá. Seu arquétipo é <span>mais específico do que você imagina</span> — e mais valioso.',
+        body: 'A última pergunta vai confirmar algo que provavelmente ninguém te disse ainda sobre seu perfil.'
+    },
+};
+
+const ARCHETYPES = {
+    niceguy: {
+        badge: 'Arquétipo Identificado',
+        name: 'O Gentleman em Evolução',
+        desc: 'Você tem empatia genuína e presença real — ativos raros. Mas ainda coloca os desejos dos outros antes dos seus, especialmente com mulheres. Isso cria dinâmica de amizade onde você queria atração. O trabalho é redirecionar isso com mais valor próprio e menos aprovação externa.',
+        template: 'Direto ao ponto: não estou aqui pra impressionar. {profissao}, {idade} anos. Se você gosta de conversa com substância e sem jogos, é por aqui.',
+        bios: [
+            { version:'Versão Direta',    style:'Tom: Seguro, sem necessidade de aprovação',         effect:'Filtra mulheres que querem papo vazio. Atrai quem valoriza presença real.' },
+            { version:'Versão Provocadora', style:'Tom: Levemente irônico, com autoridade implícita', effect:'Quebra o padrão de perfis genéricos. Gera vontade de te testar.' },
+            { version:'Versão Gentleman', style:'Tom: Sofisticado, com substância',                  effect:'Passa status sem se vender. Atrai mulheres que buscam homem com clareza.' },
+        ]
+    },
+    alfa: {
+        badge: 'Arquétipo Identificado',
+        name: 'O Alfa Consolidado',
+        desc: 'Você tem presença natural e age com segurança na maioria das situações. As mulheres percebem isso. O risco do seu perfil é a frieza excessiva — uma presença que atrai mas não conecta. O equilíbrio entre polo e calor separa o Alfa funcional do Alfa completo.',
+        template: 'Não estou aqui pra agradar todo mundo — e tudo bem. {profissao}, {idade} anos. Se gosta de conversa real, continuamos. Se não, sem drama.',
+        bios: [
+            { version:'Versão Direta',    style:'Tom: Confiante, sem explicações',       effect:'Filtra imediatamente. Mulheres de alto valor reconhecem e respondem.' },
+            { version:'Versão Provocadora', style:'Tom: Desafiador, com leveza',         effect:'Cria polarização — quem não aguenta sai, quem fica está interessada.' },
+            { version:'Versão Gentleman', style:'Tom: Seguro e acessível ao mesmo tempo', effect:'Reduz intimidação sem perder o polo. Gera mais conversas de qualidade.' },
+        ]
+    },
+    provocador: {
+        badge: 'Arquétipo Identificado',
+        name: 'O Provocador',
+        desc: 'Você usa humor e imprevisibilidade como ferramentas de atração — e funciona. Cria tensão, gera reações, nunca é entediante. O ponto cego: às vezes a provocação vira escudo e impede conexão real. Saber quando soltar a armadura é o que separa o Provocador do Alfa completo.',
+        template: 'Aviso antes: sou daqueles que faz você rir quando menos espera. {profissao}, {idade} anos. Dica: minha segunda foto conta mais que a primeira.',
+        bios: [
+            { version:'Versão Direta',    style:'Tom: Imprevisível, com confiança',       effect:'Gera curiosidade imediata. Ela vai querer entender quem você é.' },
+            { version:'Versão Provocadora', style:'Tom: Irônico, com calor implícito',    effect:'Cria tensão positiva que puxa a conversa. Dificilmente ignorado.' },
+            { version:'Versão Gentleman', style:'Tom: Inteligente e sofisticado',         effect:'Mostra profundidade além do humor. Atrai mulheres que querem mais.' },
+        ]
+    },
+    direto: {
+        badge: 'Arquétipo Identificado',
+        name: 'O Direto',
+        desc: 'Você fala o que pensa e age com clareza. Isso é raro e valioso — mas pode intimidar em culturas que esperam jogo. Seu maior ativo é a autenticidade. Embrulhar sua objetividade com um pouco mais de calor transforma resultados bons em resultados excepcionais.',
+        template: 'Objetivo: conversa real que vire encontro real. {profissao}, {idade} anos, {altura}cm. Se também cansou de papo vazio, começa com uma pergunta boa.',
+        bios: [
+            { version:'Versão Direta',    style:'Tom: Objetivo, sem enrolação',          effect:'Filtra mulheres que jogam. Atrai quem quer algo real.' },
+            { version:'Versão Provocadora', style:'Tom: Direto com uma pitada de ironia', effect:'Mantém sua clareza mas adiciona leveza que gera interesse.' },
+            { version:'Versão Gentleman', style:'Tom: Assertivo e sofisticado',           effect:'Passa clareza com elegância. Atrai mulheres de alto padrão.' },
+        ]
+    },
+};
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+
+let userName = '';
+let userData = {};
+let scores   = {niceguy:0, alfa:0, provocador:0, direto:0};
+let curQ     = 0;
+let delivery = 'whats';
+let pendingCallback = null;
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+
+window.onload = () => {
+    const p = new URLSearchParams(window.location.search);
+    userName = p.get('nome') || p.get('name') || p.get('first_name') || '';
+    if (userName) {
+        document.getElementById('welcome-title').textContent =
+            `Olá, ${userName}! Vamos descobrir quem você realmente é.`;
+    }
+};
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+
+function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+}
+
+function startQuiz() {
+    const idade    = document.getElementById('f-idade').value;
+    const profissao= document.getElementById('f-profissao').value;
+    if (!idade || !profissao) { alert('Preencha idade e profissão para continuar.'); return; }
+    userData = {
+        nome: userName,
+        idade:    document.getElementById('f-idade').value,
+        altura:   document.getElementById('f-altura').value,
+        peso:     document.getElementById('f-peso').value,
+        profissao:document.getElementById('f-profissao').value,
+    };
+    show('s-p1');
+}
+
+function goQ(index) {
+    curQ = index;
+    renderQ();
+    show('s-quiz');
+}
+
+function goBack() {
+    if (curQ === 0)  { show('s-p1'); return; }
+    if (curQ === 7)  { show('s-p2'); return; }
+    if (curQ === 14) { show('s-p3'); return; }
+    curQ--;
+    scores[QS[curQ+1].opts[0].a] = Math.max(0, scores[QS[curQ+1].opts[0].a]); // rough undo
+    renderQ();
+}
+
+// ═══════════════════════════════════════
+// PROCESSING BUTTON (Obsidian-style)
+// ═══════════════════════════════════════
+
+function processBtn(btnId, ms, callback) {
+    const btn = document.getElementById(btnId);
+    btn.classList.add('scanning');
+    const orig = btn.textContent;
+    let dots = 0;
+    const iv = setInterval(() => {
+        dots = (dots+1) % 4;
+        btn.textContent = 'Analisando' + '...'.slice(0, dots+1);
+    }, 350);
+
+    setTimeout(() => {
+        clearInterval(iv);
+        btn.classList.remove('scanning');
+        btn.classList.add('ready');
+        btn.textContent = '✓ Análise concluída — continuar';
+        setTimeout(() => {
+            btn.classList.remove('ready');
+            btn.textContent = orig;
+            callback();
+        }, 700);
+    }, ms);
+}
+
+// ═══════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════
+
+function renderQ() {
+    const q     = QS[curQ];
+    const phase = getPhase(curQ);
+    const pos   = curQ - phase.start;
+    const len   = phase.end - phase.start + 1;
+    const pct   = Math.round((pos / len) * 100);
+
+    document.getElementById('q-phase-label').textContent = phase.label;
+    document.getElementById('q-phase-name').textContent  = phase.name;
+    document.getElementById('q-counter').textContent = `PERGUNTA ${pos+1} DE ${len}`;
+    document.getElementById('q-pct').textContent     = `${pct}%`;
+    document.getElementById('q-bar').style.width     = `${pct}%`;
+    document.getElementById('q-text').textContent    = q.q;
+
+    const c = document.getElementById('q-opts');
+    c.innerHTML = '';
+    q.opts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.textContent = opt.t;
+        btn.onclick = () => pick(btn, opt.a);
+        c.appendChild(btn);
+    });
+}
+
+function pick(btn, arch) {
+    if (btn.classList.contains('picked')) return;
+    document.querySelectorAll('.option').forEach(o => { o.classList.remove('picked'); o.disabled = true; });
+    btn.classList.add('picked');
+    scores[arch]++;
+
+    if (COMMENTS[curQ]) {
+        setTimeout(() => openComment(COMMENTS[curQ]), 300);
+    } else {
+        setTimeout(nextQ, 480);
+    }
+}
+
+function nextQ() {
+    if (curQ >= 19) { show('s-gate'); return; }
+    curQ++;
+    const phase = getPhase(curQ);
+    if (curQ === phase.start && curQ > 0) {
+        if (curQ === 7)  { resetPhaseBtn('btn-p2'); show('s-p2'); }
+        if (curQ === 14) { resetPhaseBtn('btn-p3'); show('s-p3'); }
+    } else {
+        renderQ();
+    }
+}
+
+function resetPhaseBtn(id) {
+    const b = document.getElementById(id);
+    b.classList.remove('scanning','ready');
+    b.disabled = false;
+}
+
+function getPhase(i) {
+    return PHASES.find(p => i >= p.start && i <= p.end);
+}
+
+// ═══════════════════════════════════════
+// COMMENT MODAL
+// ═══════════════════════════════════════
+
+function openComment(data) {
+    document.getElementById('c-headline').innerHTML = data.headline;
+    document.getElementById('c-body').textContent   = data.body;
+    document.getElementById('c-overlay').classList.add('open');
+}
+
+function closeComment() {
+    document.getElementById('c-overlay').classList.remove('open');
+    setTimeout(nextQ, 300);
+}
+
+// ═══════════════════════════════════════
+// GATE
+// ═══════════════════════════════════════
+
+function selectDelivery(type) {
+    delivery = type;
+    document.getElementById('ch-whats').classList.toggle('selected', type === 'whats');
+    document.getElementById('ch-email').classList.toggle('selected', type === 'email');
+}
+
+// ═══════════════════════════════════════
+// GENERATE
+// ═══════════════════════════════════════
+
+async function doGenerate() {
+    const email    = document.getElementById('f-email').value.trim();
+    const whatsapp = document.getElementById('f-whatsapp').value.trim();
+    if (!email && !whatsapp) { alert('Preencha pelo menos um contato para receber seu relatório.'); return; }
+
+    userData.email    = email;
+    userData.whatsapp = whatsapp;
+    userData.delivery = delivery;
+
+    const dominant = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+    userData.arquetipo = dominant;
+
+    show('s-loading');
+    ['ls1','ls2','ls3','ls4'].forEach((id,i) =>
+        setTimeout(() => document.getElementById(id).classList.add('done'), 700 + i*800)
+    );
+
+    try {
+        const res  = await fetch('/api/generate-bio', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({archetype:dominant, userData, scores}),
+        });
+        const data = await res.json();
+
+        fetch('/api/save-lead', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(userData),
+        }).catch(()=>{});
+
+        showResult(dominant, data.bios);
+    } catch {
+        const arch = ARCHETYPES[dominant];
+        const bio  = arch.template
+            .replace('{profissao}', userData.profissao||'')
+            .replace('{idade}',    userData.idade||'')
+            .replace('{altura}',   userData.altura||'');
+        showResult(dominant, [bio, bio, bio]);
+    }
+}
+
+function showResult(arch, bios) {
+    const a = ARCHETYPES[arch];
+    document.getElementById('r-badge').textContent = a.badge;
+    document.getElementById('r-name').textContent  = a.name;
+    document.getElementById('r-desc').textContent  = a.desc;
+
+    const c = document.getElementById('r-bios');
+    c.innerHTML = '';
+
+    bios.slice(0,3).forEach((bio, i) => {
+        const meta = a.bios[i] || {version:`Versão ${i+1}`, style:'', effect:''};
+        const card = document.createElement('div');
+        card.className = 'bio-card';
+        card.innerHTML = `
+            <div class="bio-type-header">
+                <div class="bio-type-info">
+                    <div class="bio-version">${meta.version}</div>
+                    <div class="bio-style">${meta.style}</div>
+                </div>
+                <div class="bio-effect">${meta.effect}</div>
+            </div>
+            <div class="bio-divider"></div>
+            <div class="bio-text" id="bio-${i}">${bio}</div>
+            <button class="copy-btn" onclick="copyBio(this,${i})">Copiar bio</button>`;
+        c.appendChild(card);
+    });
+
+    show('s-result');
+}
+
+function copyBio(btn, i) {
+    navigator.clipboard.writeText(document.getElementById(`bio-${i}`).textContent).then(() => {
+        btn.textContent = '✓ Copiada!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copiar bio'; btn.classList.remove('copied'); }, 2000);
+    });
+}
+</script>
+</body>
+</html>
