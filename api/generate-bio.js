@@ -1,13 +1,38 @@
 const Anthropic = require('@anthropic-ai/sdk');
+const fs = require('fs');
+const path = require('path');
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const TEMPLATES = {
-    niceguy:    'Direto ao ponto: não estou aqui pra impressionar. {profissao}, {idade} anos. Se você gosta de conversa com substância e sem jogos, é por aqui.',
-    alfa:       'Não estou aqui pra agradar todo mundo — e tudo bem. {profissao}, {idade} anos. Se gosta de conversa real, continuamos. Se não, sem drama.',
-    provocador: 'Aviso antes: sou daqueles que faz você rir quando menos espera. {profissao}, {idade} anos. Dica: minha segunda foto conta mais que a primeira.',
-    direto:     'Objetivo: conversa real que vire encontro real. {profissao}, {idade} anos, {altura}cm. Se também cansou de papo vazio, começa com uma pergunta boa.',
+// Mapa arquétipo → perfil ADICAS composto
+const ADICAS_MAP = {
+    niceguy:    { perfil: 'DI', secoes: ['§31.5', '§31.8', '§34'] },
+    alfa:       { perfil: 'AC', secoes: ['§31.3', '§31.4', '§33'] },
+    provocador: { perfil: 'DS', secoes: ['§31.2', '§31.6', '§32'] },
+    direto:     { perfil: 'CA', secoes: ['§31.3', '§37'] },
 };
+
+function loadVault() {
+    const corePath = path.join(__dirname, '..', 'vault', 'VAULT-CORE.md');
+    const exPath   = path.join(__dirname, '..', 'vault', 'VAULT-EXEMPLOS.md');
+    const core = fs.existsSync(corePath) ? fs.readFileSync(corePath, 'utf8') : '';
+    const exemplos = fs.existsSync(exPath) ? fs.readFileSync(exPath, 'utf8') : '';
+    return { core, exemplos };
+}
+
+// Extrai até 3 blocos de exemplos relevantes por seção
+function getExemplos(exemplos, secoes) {
+    const blocos = exemplos.split(/^## EX-\d+\./m).filter(Boolean);
+    const selecionados = [];
+    for (const bloco of blocos) {
+        if (selecionados.length >= 3) break;
+        // Inclui EX-1 (aberturas) e EX-6 (elogios) sempre para bios
+        if (bloco.includes('ABERT') || bloco.includes('ELOGIO') || bloco.includes('BIO') || bloco.includes('MENSAGENS INFALÍVEIS')) {
+            selecionados.push(bloco.trim());
+        }
+    }
+    return selecionados.join('\n\n---\n\n');
+}
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -15,40 +40,65 @@ module.exports = async function handler(req, res) {
     const { archetype, userData } = req.body;
     const { profissao = '', idade = '', altura = '' } = userData || {};
 
-    const base = (TEMPLATES[archetype] || TEMPLATES.direto)
-        .replace('{profissao}', profissao)
-        .replace('{idade}', idade)
-        .replace('{altura}', altura);
+    const mapping = ADICAS_MAP[archetype] || ADICAS_MAP.direto;
+    const { core, exemplos } = loadVault();
+    const fewShot = getExemplos(exemplos, mapping.secoes);
+
+    const systemPrompt = core
+        ? `${core}\n\n---\n\nEXEMPLOS DE REFERÊNCIA (few-shot):\n${fewShot}`
+        : 'Você cria bios masculinas para Tinder que geram atração genuína. Máximo 3 linhas, sem clichês, sem emojis.';
+
+    const userMsg = `Perfil ADICAS do usuário: ${mapping.perfil}
+Profissão: ${profissao}
+Idade: ${idade} anos
+Altura: ${altura} cm
+
+Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio) e no perfil ADICAS ${mapping.perfil}:
+
+1. Gere 3 bios para Tinder. Cada bio deve:
+   - Usar profissão e idade do usuário
+   - Ter no máximo 3 linhas
+   - Refletir o perfil ${mapping.perfil} (traços dominantes do framework ADICAS)
+   - Variar a estrutura: use estruturas diferentes do §2 para cada uma
+   - Ser específica — sem clichês (adoro viajar, apaixonado por, amante de)
+   - Sem emojis
+
+2. Para cada bio, indique em 1 linha curta: "Estrutura usada" e "Por que funciona"
+
+Formato de resposta — repita exatamente este padrão 3 vezes:
+BIO: [texto da bio]
+ESTRUTURA: [nome da estrutura do §2]
+MOTIVO: [1 frase curta]
+|||`;
 
     try {
         const message = await client.messages.create({
             model: 'claude-haiku-4-5-20251001',
-            max_tokens: 420,
-            system: 'Você cria bios masculinas para Tinder que geram atração genuína. Regras: máximo 3 linhas por bio, sem clichês (adoro viajar, apaixonado por, amante de), sem emojis, linguagem natural e específica ao usuário.',
-            messages: [{
-                role: 'user',
-                content: `Arquétipo: ${archetype}
-Profissão: ${profissao}
-Idade: ${idade} anos
-Bio-base (template): "${base}"
-
-Gere 3 versões de bio para Tinder usando os dados acima. Cada versão deve:
-- Usar a profissão e idade do usuário
-- Variar o tom: 1ª direta, 2ª levemente provocadora, 3ª gentleman/sofisticada
-- Ter no máximo 3 linhas
-- Ser diferente uma da outra
-
-Retorne APENAS as 3 bios separadas por "|||". Sem numeração, sem explicação.`,
-            }],
+            max_tokens: 800,
+            system: systemPrompt,
+            messages: [{ role: 'user', content: userMsg }],
         });
 
         const raw = message.content[0].text || '';
-        const bios = raw.split('|||').map(b => b.trim()).filter(Boolean).slice(0, 3);
-        while (bios.length < 3) bios.push(base);
+        const blocos = raw.split('|||').map(b => b.trim()).filter(Boolean).slice(0, 3);
 
-        return res.status(200).json({ bios });
+        const bios = blocos.map(b => {
+            const bioMatch = b.match(/BIO:\s*(.+?)(?=ESTRUTURA:|$)/s);
+            const estruturaMatch = b.match(/ESTRUTURA:\s*(.+?)(?=MOTIVO:|$)/s);
+            const motivoMatch = b.match(/MOTIVO:\s*(.+)/s);
+            return {
+                bio: bioMatch ? bioMatch[1].trim() : b,
+                estrutura: estruturaMatch ? estruturaMatch[1].trim() : '',
+                motivo: motivoMatch ? motivoMatch[1].trim() : '',
+            };
+        });
+
+        while (bios.length < 3) bios.push({ bio: `${profissao}, ${idade} anos. Conversa real primeiro.`, estrutura: '', motivo: '' });
+
+        return res.status(200).json({ bios, perfil_adicas: mapping.perfil });
     } catch (err) {
         console.error('API error:', err);
-        return res.status(200).json({ bios: [base, base, base] });
+        const fallback = { bio: `${profissao}, ${idade} anos. Conversa real primeiro.`, estrutura: '', motivo: '' };
+        return res.status(200).json({ bios: [fallback, fallback, fallback], perfil_adicas: mapping.perfil });
     }
 };
