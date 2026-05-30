@@ -917,6 +917,9 @@ body {
             Salve as bios e teste cada uma. O relatório completo<br>
             chegará no canal que você escolheu.
         </div>
+        <a id="btn-app-msg" href="/mensagens" style="display:block;width:100%;margin-top:16px;margin-bottom:8px;padding:16px;border-radius:14px;background:rgba(0,200,160,0.08);border:1px solid rgba(0,200,160,0.3);color:#00c8a0;font-size:15px;font-weight:600;text-align:center;text-decoration:none;">
+            ✦ Gerar mensagens para conversas
+        </a>
     </div>
 </div>
 
@@ -1506,16 +1509,6 @@ function showResult(arch, bios) {
             <button class="copy-btn" onclick="copyBio(this,${i})">Copiar bio</button>`;
         c.appendChild(card);
     });
-
-    // Botão App de Mensagens (adiciona uma vez)
-    if (!document.getElementById('btn-app-msg')) {
-        const btnMsg = document.createElement('a');
-        btnMsg.id = 'btn-app-msg';
-        btnMsg.href = '/mensagens';
-        btnMsg.style.cssText = 'display:block;width:100%;margin-top:16px;padding:16px;border-radius:14px;background:rgba(0,200,160,0.08);border:1px solid rgba(0,200,160,0.3);color:#00c8a0;font-size:15px;font-weight:600;text-align:center;text-decoration:none;';
-        btnMsg.textContent = '✦ Gerar mensagens para conversas';
-        c.parentElement.appendChild(btnMsg);
-    }
 
     show('s-result');
 }
