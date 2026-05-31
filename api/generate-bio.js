@@ -13,11 +13,13 @@ const ADICAS_MAP = {
 };
 
 function loadVault() {
-    const corePath = path.join(__dirname, '..', 'vault', 'VAULT-CORE.md');
-    const exPath   = path.join(__dirname, '..', 'vault', 'VAULT-EXEMPLOS.md');
-    const core = fs.existsSync(corePath) ? fs.readFileSync(corePath, 'utf8') : '';
-    const exemplos = fs.existsSync(exPath) ? fs.readFileSync(exPath, 'utf8') : '';
-    return { core, exemplos };
+    const corePath  = path.join(__dirname, '..', 'vault', 'VAULT-CORE.md');
+    const mbtiPath  = path.join(__dirname, '..', 'vault', 'VAULT-MBTI.md');
+    const exPath    = path.join(__dirname, '..', 'vault', 'VAULT-EXEMPLOS.md');
+    const core    = fs.existsSync(corePath)  ? fs.readFileSync(corePath,  'utf8') : '';
+    const mbti    = fs.existsSync(mbtiPath)  ? fs.readFileSync(mbtiPath,  'utf8') : '';
+    const exemplos= fs.existsSync(exPath)    ? fs.readFileSync(exPath,    'utf8') : '';
+    return { core, mbti, exemplos };
 }
 
 // Extrai até 3 blocos de exemplos relevantes por seção
@@ -37,28 +39,37 @@ function getExemplos(exemplos, secoes) {
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { archetype, userData } = req.body;
+    const { archetype, mbtiTipo = '', adicas = {}, userData } = req.body;
     const { profissao = '', idade = '', altura = '' } = userData || {};
 
     const mapping = ADICAS_MAP[archetype] || ADICAS_MAP.direto;
-    const { core, exemplos } = loadVault();
+    const { core, mbti, exemplos } = loadVault();
     const fewShot = getExemplos(exemplos, mapping.secoes);
 
-    const systemPrompt = core
-        ? `${core}\n\n---\n\nEXEMPLOS DE REFERÊNCIA (few-shot):\n${fewShot}`
-        : 'Você cria bios masculinas para Tinder que geram atração genuína. Máximo 3 linhas, sem clichês, sem emojis.';
+    // Monta traços ADICAS mais fortes e mais fracos para o prompt
+    const adicasEntries = Object.entries(adicas).sort((a, b) => b[1] - a[1]);
+    const tracosFort  = adicasEntries.slice(0, 2).map(([k]) => k).join(' e ') || mapping.perfil;
+    const tracosFraco = adicasEntries.slice(-1).map(([k]) => k).join('') || '';
 
-    const userMsg = `Perfil ADICAS do usuário: ${mapping.perfil}
+    const systemPrompt = (core && mbti)
+        ? `${core}\n\n---\n\n${mbti}\n\n---\n\nEXEMPLOS DE REFERÊNCIA (few-shot):\n${fewShot}`
+        : core
+            ? `${core}\n\n---\n\nEXEMPLOS DE REFERÊNCIA (few-shot):\n${fewShot}`
+            : 'Você cria bios masculinas para Tinder que geram atração genuína. Máximo 3 linhas, sem clichês, sem emojis.';
+
+    const userMsg = `Tipo MBTI do usuário: ${mbtiTipo || 'não identificado'}
+Traços ADICAS mais fortes: ${tracosFort}
+Traço ADICAS mais fraco: ${tracosFraco}
 Profissão: ${profissao}
 Idade: ${idade} anos
 Altura: ${altura} cm
 
-Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio) e no perfil ADICAS ${mapping.perfil}:
+Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBTI (perfil ${mbtiTipo}) e nos traços ADICAS acima:
 
 1. Gere 3 bios para Tinder. Cada bio deve:
    - Usar profissão e idade do usuário
    - Ter no máximo 3 linhas
-   - Refletir o perfil ${mapping.perfil} (traços dominantes do framework ADICAS)
+   - Amplificar os traços mais fortes (${tracosFort}) do perfil deste usuário
    - Variar a estrutura: use estruturas diferentes do §2 para cada uma
    - Ser específica — sem clichês (adoro viajar, apaixonado por, amante de)
    - Sem emojis

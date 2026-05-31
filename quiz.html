@@ -893,7 +893,7 @@ body {
     <div class="loading-wrap">
         <div class="spinner"></div>
         <div class="loading-title">Montando seu diagnóstico...</div>
-        <div class="loading-sub">Processando 19 respostas. Aguarde.</div>
+        <div class="loading-sub">Processando 20 respostas. Aguarde.</div>
         <div class="lsteps">
             <div class="lstep" id="ls1"><div class="lstep-dot"></div>Cruzando padrões comportamentais</div>
             <div class="lstep" id="ls2"><div class="lstep-dot"></div>Identificando arquétipo dominante</div>
@@ -943,6 +943,8 @@ body {
     </div>
 </div>
 
+<script src="/banco-perguntas.js"></script>
+<script src="/quiz-logic.js"></script>
 <script>
 // ═══════════════════════════════════════
 // DATA
@@ -951,10 +953,14 @@ body {
 const PHASES = [
     { label:'FASE 1 DE 3', name:'Como ela te vê hoje',    start:0,  end:6  },
     { label:'FASE 2 DE 3', name:'O que está te travando', start:7,  end:13 },
-    { label:'FASE 3 DE 3', name:'Seu arquétipo real',     start:14, end:18 },
+    { label:'FASE 3 DE 3', name:'Seu arquétipo real',     start:14, end:19 },
 ];
 
-const QS = [
+// Preenchido dinamicamente em startQuiz() via QuizLogic.sortearPerguntas()
+let QS = [];
+
+// ── Perguntas originais mantidas como fallback caso o banco não carregue ──
+const QS_FALLBACK = [
     // ── FASE 1 ──
     { q:'Ela cancela o encontro na última hora sem dar explicação. Você:',
       opts:[
@@ -1170,12 +1176,30 @@ const ARCHETYPES = {
 // STATE
 // ═══════════════════════════════════════
 
-let userName = '';
-let userData = {};
-let scores   = {niceguy:0, alfa:0, provocador:0, direto:0};
-let curQ     = 0;
-let delivery = 'whats';
+let userName  = '';
+let userData  = {};
+let respostas = []; // { a: string } por índice de pergunta
+let curQ      = 0;
+let delivery  = 'whats';
 let pendingCallback = null;
+
+// ─────────────────────────────────────────
+// HELPER — deriva arquétipo dos scores ADICAS
+// (mantém compatibilidade com ARCHETYPES e generate-bio.js)
+// ─────────────────────────────────────────
+function archetypeFromAdicas(adicas) {
+    const sorted = Object.entries(adicas).sort((a, b) => b[1] - a[1]);
+    const top    = sorted.slice(0, 2).map(([k]) => k);
+    if (top.includes('divertido') && top.includes('sexual'))      return 'provocador';
+    if (top.includes('ambicioso') && top.includes('confiavel'))   return 'alfa';
+    if (top.includes('divertido') && top.includes('inteligente')) return 'niceguy';
+    const first = sorted[0][0];
+    if (first === 'sexual' || first === 'aventureiro') return 'provocador';
+    if (first === 'ambicioso' || first === 'confiavel') return 'alfa';
+    if (first === 'divertido') return 'provocador';
+    if (first === 'inteligente') return 'direto';
+    return 'alfa';
+}
 
 // ═══════════════════════════════════════
 // INIT
@@ -1285,12 +1309,19 @@ function startQuiz() {
     const profissao= document.getElementById('f-profissao').value;
     if (!idade || !profissao) { alert('Preencha idade e profissão para continuar.'); return; }
     userData = {
-        nome: userName,
-        idade:    document.getElementById('f-idade').value,
-        altura:   document.getElementById('f-altura').value,
-        peso:     document.getElementById('f-peso').value,
-        profissao:document.getElementById('f-profissao').value,
+        nome:      userName,
+        idade:     document.getElementById('f-idade').value,
+        altura:    document.getElementById('f-altura').value,
+        peso:      document.getElementById('f-peso').value,
+        profissao: document.getElementById('f-profissao').value,
     };
+    // Sorteia 20 perguntas balanceadas (2 por eixo MBTI × 4 + 2 por traço ADICAS × 6)
+    try {
+        QS = QuizLogic.sortearPerguntas(2, 2);
+    } catch (e) {
+        QS = QS_FALLBACK; // fallback se banco não carregar
+    }
+    respostas = [];
     show('s-p1');
 }
 
@@ -1305,7 +1336,7 @@ function goBack() {
     if (curQ === 7)  { show('s-p2'); return; }
     if (curQ === 14) { show('s-p3'); return; }
     curQ--;
-    scores[QS[curQ+1].opts[0].a] = Math.max(0, scores[QS[curQ+1].opts[0].a]); // rough undo
+    respostas.splice(curQ, 1); // desfaz resposta da pergunta anterior
     renderQ();
 }
 
@@ -1365,11 +1396,11 @@ function renderQ() {
     });
 }
 
-function pick(btn, arch) {
+function pick(btn, polo) {
     if (btn.classList.contains('picked')) return;
     document.querySelectorAll('.option').forEach(o => { o.classList.remove('picked'); o.disabled = true; });
     btn.classList.add('picked');
-    scores[arch]++;
+    respostas[curQ] = { a: polo };
 
     if (COMMENTS[curQ]) {
         setTimeout(() => openComment(COMMENTS[curQ]), 300);
@@ -1379,7 +1410,7 @@ function pick(btn, arch) {
 }
 
 function nextQ() {
-    if (curQ >= 18) { show('s-gate'); return; }
+    if (curQ >= QS.length - 1) { show('s-gate'); return; }
     curQ++;
     const phase = getPhase(curQ);
     if (curQ === phase.start && curQ > 0) {
@@ -1438,8 +1469,11 @@ async function doGenerate() {
     userData.whatsapp = whatsapp;
     userData.delivery = delivery;
 
-    const dominant = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+    // Calcula MBTI + ADICAS e deriva arquétipo para compatibilidade com ARCHETYPES
+    const s        = QuizLogic.calcularScores(respostas);
+    const dominant = archetypeFromAdicas(s.adicas);
     userData.arquetipo = dominant;
+    userData.mbtiTipo  = s.mbtiTipo;
 
     show('s-loading');
     ['ls1','ls2','ls3','ls4'].forEach((id,i) =>
@@ -1450,7 +1484,12 @@ async function doGenerate() {
         const res  = await fetch('/api/generate-bio', {
             method:'POST',
             headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({archetype:dominant, userData, scores}),
+            body: JSON.stringify({
+                archetype: dominant,
+                mbtiTipo:  s.mbtiTipo,
+                adicas:    s.adicas,
+                userData,
+            }),
         });
         const data = await res.json();
 
@@ -1462,6 +1501,7 @@ async function doGenerate() {
 
         const perfilAdicas = data.perfil_adicas || 'CA';
         localStorage.setItem('perfil_adicas', perfilAdicas);
+        localStorage.setItem('mbti_tipo', s.mbtiTipo);
 
         showResult(dominant, data.bios);
     } catch {
