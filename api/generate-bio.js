@@ -70,6 +70,43 @@ function getExemplos(exemplos, secoes) {
     return selecionados.join('\n\n---\n\n');
 }
 
+/**
+ * Parser robusto das bios geradas pela IA.
+ * Tolera: separador "|||" OU blocos numerados "BIO 1:/2:/3:".
+ * Remove: cabeçalhos markdown ("# ..."), linhas "---" e título antes da 1ª bio.
+ */
+function parseBios(raw) {
+    let txt = (raw || '').trim();
+
+    // 1) Remove tudo antes do primeiro marcador de bio (cabeçalho/título/markdown)
+    const primeiroBio = txt.search(/BIO\s*\d*\s*:/i);
+    if (primeiroBio > 0) txt = txt.slice(primeiroBio);
+
+    // 2) Tenta separar por "|||"; se não houver, separa por "BIO N:" / "BIO:"
+    let blocos = txt.includes('|||')
+        ? txt.split('|||')
+        : txt.split(/(?=BIO\s*\d*\s*:)/i);
+
+    blocos = blocos.map(b => b.trim()).filter(Boolean);
+
+    const bios = blocos.map(b => {
+        // Aceita "BIO:", "BIO 1:" etc. como início
+        const bioMatch       = b.match(/BIO\s*\d*\s*:\s*(.+?)(?=ESTRUTURA\s*:|$)/is);
+        const estruturaMatch = b.match(/ESTRUTURA\s*:\s*(.+?)(?=MOTIVO\s*:|$)/is);
+        const motivoMatch    = b.match(/MOTIVO\s*:\s*(.+)/is);
+        let bio = bioMatch ? bioMatch[1].trim() : b;
+        // Limpa resíduos markdown/título que possam ter sobrado na 1ª bio
+        bio = bio.replace(/^#+\s.*$/gm, '').replace(/^-{3,}\s*$/gm, '').trim();
+        return {
+            bio,
+            estrutura: estruturaMatch ? estruturaMatch[1].trim() : '',
+            motivo:    motivoMatch    ? motivoMatch[1].trim()    : '',
+        };
+    }).filter(b => b.bio); // descarta blocos vazios
+
+    return bios;
+}
+
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -111,7 +148,13 @@ Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBT
 
 2. Para cada bio, indique em 1 linha curta: "Estrutura usada" e "Por que funciona"
 
-Formato de resposta — repita exatamente este padrão 3 vezes:
+REGRAS DE FORMATO (obrigatórias):
+- NÃO escreva título, cabeçalho, introdução ou markdown (nada de "#", "BIO 1:", "---").
+- NÃO numere as bios.
+- Comece a resposta DIRETO no primeiro "BIO:".
+- Separe cada uma das 3 bios com uma linha contendo apenas: |||
+
+Use EXATAMENTE este padrão, repetido 3 vezes:
 BIO: [texto da bio]
 ESTRUTURA: [nome da estrutura do §2]
 MOTIVO: [1 frase curta]
@@ -126,25 +169,14 @@ MOTIVO: [1 frase curta]
         });
 
         const raw = message.content[0].text || '';
-        const blocos = raw.split('|||').map(b => b.trim()).filter(Boolean).slice(0, 3);
-
-        const bios = blocos.map(b => {
-            const bioMatch = b.match(/BIO:\s*(.+?)(?=ESTRUTURA:|$)/s);
-            const estruturaMatch = b.match(/ESTRUTURA:\s*(.+?)(?=MOTIVO:|$)/s);
-            const motivoMatch = b.match(/MOTIVO:\s*(.+)/s);
-            return {
-                bio: bioMatch ? bioMatch[1].trim() : b,
-                estrutura: estruturaMatch ? estruturaMatch[1].trim() : '',
-                motivo: motivoMatch ? motivoMatch[1].trim() : '',
-            };
-        });
+        const bios = parseBios(raw);
 
         if (bios.length < 3) {
             console.error('parse incompleto: apenas', bios.length, 'bio(s) extraídas.');
             return res.status(500).json({ error: 'incomplete_response', bios_found: bios.length });
         }
 
-        return res.status(200).json({ bios, perfil_adicas: mapping.perfil });
+        return res.status(200).json({ bios: bios.slice(0, 3), perfil_adicas: mapping.perfil });
     } catch (err) {
         console.error('API error:', err);
         return res.status(500).json({ error: err.message || 'api_error' });
