@@ -165,24 +165,44 @@ body {
 select.form-input { cursor: pointer; padding-right: 28px; }
 select.form-input option { background: var(--card); color: var(--text); }
 
-/* Chips de múltipla escolha (apps) */
-.chips { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-.chip {
+/* Multi-seleção compacta (apps) — caixa única igual aos selects */
+.ms { position: relative; }
+.ms-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    cursor: pointer;
+    gap: 8px;
+}
+.ms-box .ms-label { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ms-box .ms-label.placeholder { color: var(--muted2); }
+.ms-box .ms-caret { color: var(--muted2); flex-shrink: 0; font-size: 11px; }
+.ms-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 9px;
-    padding: 9px 10px;
-    color: var(--muted);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-    font-family: inherit;
-    transition: all 0.18s;
-    -webkit-appearance: none;
+    border-radius: 10px;
+    padding: 5px;
+    z-index: 50;
+    display: none;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.55);
 }
-.chip.selected { border-color: var(--primary); color: var(--primary); background: #071e30; }
-.chip.selected::before { content: '✓ '; font-weight: 800; }
+.ms-panel.open { display: block; }
+.ms-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+}
+.ms-option:hover { background: #071e30; }
+.ms-option input { accent-color: var(--primary); width: 16px; height: 16px; }
 
 .form-label {
     display: block;
@@ -804,13 +824,19 @@ select.form-input option { background: var(--card); color: var(--text); }
             </div>
         </div>
         <div class="form-group">
-            <label class="form-label">Apps que usa (marque os que usar)</label>
-            <div class="chips" id="f-apps">
-                <button type="button" class="chip" onclick="toggleApp(this)">Tinder</button>
-                <button type="button" class="chip" onclick="toggleApp(this)">Bumble</button>
-                <button type="button" class="chip" onclick="toggleApp(this)">Badoo</button>
-                <button type="button" class="chip" onclick="toggleApp(this)">Inner Circle</button>
-                <button type="button" class="chip" onclick="toggleApp(this)">Happn</button>
+            <label class="form-label">Apps que usa</label>
+            <div class="ms" id="ms-apps">
+                <button type="button" class="form-input ms-box" onclick="toggleAppsPanel(event)">
+                    <span class="ms-label placeholder" id="ms-apps-label">Selecione</span>
+                    <span class="ms-caret">▾</span>
+                </button>
+                <div class="ms-panel" id="ms-apps-panel">
+                    <label class="ms-option"><input type="checkbox" value="Tinder" onchange="onAppToggle()"> Tinder</label>
+                    <label class="ms-option"><input type="checkbox" value="Bumble" onchange="onAppToggle()"> Bumble</label>
+                    <label class="ms-option"><input type="checkbox" value="Badoo" onchange="onAppToggle()"> Badoo</label>
+                    <label class="ms-option"><input type="checkbox" value="Inner Circle" onchange="onAppToggle()"> Inner Circle</label>
+                    <label class="ms-option"><input type="checkbox" value="Happn" onchange="onAppToggle()"> Happn</label>
+                </div>
             </div>
         </div>
         <div class="form-row">
@@ -1304,17 +1330,34 @@ window.onload = () => {
     if (p.get('adjust') === '1') initAdjustMode();
 };
 
-// Apps selecionados (múltipla escolha)
+// Apps selecionados (múltipla escolha em caixa única)
 let selectedApps = [];
-function toggleApp(btn) {
-    btn.classList.toggle('selected');
-    const app = btn.textContent.replace(/^✓\s*/, '').trim();
-    if (btn.classList.contains('selected')) {
-        if (!selectedApps.includes(app)) selectedApps.push(app);
+
+function toggleAppsPanel(e) {
+    if (e) e.stopPropagation();
+    document.getElementById('ms-apps-panel').classList.toggle('open');
+}
+
+function onAppToggle() {
+    const checks = document.querySelectorAll('#ms-apps-panel input[type=checkbox]');
+    selectedApps = Array.from(checks).filter(c => c.checked).map(c => c.value);
+    const label = document.getElementById('ms-apps-label');
+    if (selectedApps.length) {
+        label.textContent = selectedApps.join(', ');
+        label.classList.remove('placeholder');
     } else {
-        selectedApps = selectedApps.filter(a => a !== app);
+        label.textContent = 'Selecione';
+        label.classList.add('placeholder');
     }
 }
+
+// Fecha o painel ao tocar fora dele
+document.addEventListener('click', (e) => {
+    const ms = document.getElementById('ms-apps');
+    if (ms && !ms.contains(e.target)) {
+        document.getElementById('ms-apps-panel').classList.remove('open');
+    }
+});
 
 // ═══════════════════════════════════════
 // ADJUST MODE (URL: ?adjust=1)
