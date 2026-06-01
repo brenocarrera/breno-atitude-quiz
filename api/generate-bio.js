@@ -76,6 +76,12 @@ module.exports = async function handler(req, res) {
     const { archetype, mbtiTipo = '', adicas = {}, userData } = req.body;
     const { profissao = '', idade = '', altura = '' } = userData || {};
 
+    // ── DEBUG TEMPORÁRIO — entrada ────────────────────────────────
+    console.log('[DEBUG] req.archetype:', archetype);
+    console.log('[DEBUG] req.mbtiTipo:', mbtiTipo);
+    console.log('[DEBUG] req.adicas:', JSON.stringify(adicas));
+    // ──────────────────────────────────────────────────────────────
+
     const mapping = ADICAS_MAP[archetype] || ADICAS_MAP.direto;
     const { core, mbti, exemplos } = loadVault();
     const fewShot     = getExemplos(exemplos, mapping.secoes);
