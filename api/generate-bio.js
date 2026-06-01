@@ -2,7 +2,7 @@ const Anthropic = require('@anthropic-ai/sdk');
 const fs = require('fs');
 const path = require('path');
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const client = new Anthropic({ apiKey: (process.env.ANTHROPIC_API_KEY || '').trim() });
 
 // Mapa arquétipo → perfil ADICAS composto
 const ADICAS_MAP = {
@@ -76,12 +76,6 @@ module.exports = async function handler(req, res) {
     const { archetype, mbtiTipo = '', adicas = {}, userData } = req.body;
     const { profissao = '', idade = '', altura = '' } = userData || {};
 
-    // ── DEBUG TEMPORÁRIO — entrada ────────────────────────────────
-    console.log('[DEBUG] req.archetype:', archetype);
-    console.log('[DEBUG] req.mbtiTipo:', mbtiTipo);
-    console.log('[DEBUG] req.adicas:', JSON.stringify(adicas));
-    // ──────────────────────────────────────────────────────────────
-
     const mapping = ADICAS_MAP[archetype] || ADICAS_MAP.direto;
     const { core, mbti, exemplos } = loadVault();
     const fewShot     = getExemplos(exemplos, mapping.secoes);
@@ -132,13 +126,7 @@ MOTIVO: [1 frase curta]
         });
 
         const raw = message.content[0].text || '';
-        // ── DEBUG TEMPORÁRIO ──────────────────────────────────────────
-        console.log('[DEBUG] system_prompt_chars:', systemPrompt.length, '≈tokens:', Math.round(systemPrompt.length/4));
-        console.log('[DEBUG] raw_output:', JSON.stringify(raw));
-        const blocosBrutos = raw.split('|||');
-        console.log('[DEBUG] split_por_pipe:', blocosBrutos.length, 'partes:', JSON.stringify(blocosBrutos.map(b => b.trim().slice(0, 60))));
-        // ─────────────────────────────────────────────────────────────
-        const blocos = blocosBrutos.map(b => b.trim()).filter(Boolean).slice(0, 3);
+        const blocos = raw.split('|||').map(b => b.trim()).filter(Boolean).slice(0, 3);
 
         const bios = blocos.map(b => {
             const bioMatch = b.match(/BIO:\s*(.+?)(?=ESTRUTURA:|$)/s);
@@ -152,7 +140,7 @@ MOTIVO: [1 frase curta]
         });
 
         if (bios.length < 3) {
-            console.error('parse incompleto: apenas', bios.length, 'bio(s) extraídas. Raw:', raw.slice(0, 300));
+            console.error('parse incompleto: apenas', bios.length, 'bio(s) extraídas.');
             return res.status(500).json({ error: 'incomplete_response', bios_found: bios.length });
         }
 
