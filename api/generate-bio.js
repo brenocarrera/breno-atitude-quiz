@@ -111,7 +111,8 @@ module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
     const { archetype, mbtiTipo = '', adicas = {}, userData } = req.body;
-    const { profissao = '', idade = '', altura = '' } = userData || {};
+    const { nome = '', idade = '', cidade = '', altura = '', apps = [], signo = '', ultimoDate = '' } = userData || {};
+    const appsTxt = Array.isArray(apps) ? apps.join(', ') : (apps || '');
 
     const mapping = ADICAS_MAP[archetype] || ADICAS_MAP.direto;
     const { core, mbti, exemplos } = loadVault();
@@ -129,17 +130,21 @@ module.exports = async function handler(req, res) {
             ? `${core}\n\n---\n\nEXEMPLOS DE REFERÊNCIA (few-shot):\n${fewShot}`
             : 'Você cria bios masculinas para Tinder que geram atração genuína. Máximo 3 linhas, sem clichês, sem emojis.';
 
-    const userMsg = `Tipo MBTI do usuário: ${mbtiTipo || 'não identificado'}
+    const userMsg = `CONTEXTO DO USUÁRIO (use para enriquecer o tom — NUNCA copie esses dados crus na bio):
+Tipo MBTI: ${mbtiTipo || 'não identificado'}
 Traços ADICAS mais fortes: ${tracosFort}
 Traço ADICAS mais fraco: ${tracosFraco}
-Profissão: ${profissao}
-Idade: ${idade} anos
-Altura: ${altura} cm
+Idade: ${idade || 'n/d'}
+Cidade: ${cidade || 'n/d'}
+Altura: ${altura || 'n/d'}
+Apps que usa: ${appsTxt || 'n/d'}
+Signo: ${signo || 'n/d'}
+Tempo desde o último date: ${ultimoDate || 'n/d'}
 
 Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBTI (perfil ${mbtiTipo}) e nos traços ADICAS acima:
 
 1. Gere 3 bios para Tinder. Cada bio deve:
-   - Usar profissão e idade do usuário
+   - Usar o contexto acima apenas para CALIBRAR o tom — jamais escrever idade, cidade, altura ou signo literalmente na bio
    - Ter no máximo 3 linhas
    - Amplificar os traços mais fortes (${tracosFort}) do perfil deste usuário
    - Variar a estrutura: use estruturas diferentes do §2 para cada uma

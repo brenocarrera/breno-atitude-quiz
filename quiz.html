@@ -159,7 +159,30 @@ body {
 }
 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.form-group { margin-bottom: 11px; }
+.form-group { margin-bottom: 9px; }
+
+/* Select com a mesma cara do form-input */
+select.form-input { cursor: pointer; padding-right: 28px; }
+select.form-input option { background: var(--card); color: var(--text); }
+
+/* Chips de múltipla escolha (apps) */
+.chips { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 9px 10px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    font-family: inherit;
+    transition: all 0.18s;
+    -webkit-appearance: none;
+}
+.chip.selected { border-color: var(--primary); color: var(--primary); background: #071e30; }
+.chip.selected::before { content: '✓ '; font-weight: 800; }
 
 .form-label {
     display: block;
@@ -385,6 +408,9 @@ body {
 }
 
 .options { display: flex; flex-direction: column; gap: 8px; }
+/* 2 colunas quando há muitas opções ou texto curto (cabe sem rolar) */
+.options.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.options.grid2 .option { font-size: 14px; padding: 11px 13px; }
 
 .option {
     background: var(--card);
@@ -755,25 +781,58 @@ body {
     <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
         <div class="badge">Análise de Arquétipo</div>
         <h1 class="screen-title" id="welcome-title">Vamos descobrir quem você realmente é.</h1>
-        <p class="screen-sub">Em 8 minutos você entende como as mulheres te percebem — e o que muda para ter os resultados que merece.</p>
+        <p class="screen-sub">Em 8 minutos você entende como as mulheres te percebem.</p>
         <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Nome</label>
+                <input type="text" id="f-nome" class="form-input" placeholder="Seu nome">
+            </div>
             <div class="form-group">
                 <label class="form-label">Idade</label>
                 <input type="number" id="f-idade" class="form-input" placeholder="Ex: 32" min="18" max="70" inputmode="numeric">
             </div>
+        </div>
+        <div class="form-row">
             <div class="form-group">
-                <label class="form-label">Altura (cm)</label>
-                <input type="number" id="f-altura" class="form-input" placeholder="Ex: 178" inputmode="numeric">
+                <label class="form-label">Cidade</label>
+                <input type="text" id="f-cidade" class="form-input" placeholder="Ex: São Paulo">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Altura</label>
+                <input type="text" id="f-altura" class="form-input" placeholder="Ex: 1,78m">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Apps que usa (marque os que usar)</label>
+            <div class="chips" id="f-apps">
+                <button type="button" class="chip" onclick="toggleApp(this)">Tinder</button>
+                <button type="button" class="chip" onclick="toggleApp(this)">Bumble</button>
+                <button type="button" class="chip" onclick="toggleApp(this)">Badoo</button>
+                <button type="button" class="chip" onclick="toggleApp(this)">Inner Circle</button>
+                <button type="button" class="chip" onclick="toggleApp(this)">Happn</button>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">Peso (kg)</label>
-                <input type="number" id="f-peso" class="form-input" placeholder="Ex: 80" inputmode="numeric">
+                <label class="form-label">Signo</label>
+                <select id="f-signo" class="form-input">
+                    <option value="">Selecione</option>
+                    <option>Áries</option><option>Touro</option><option>Gêmeos</option>
+                    <option>Câncer</option><option>Leão</option><option>Virgem</option>
+                    <option>Libra</option><option>Escorpião</option><option>Sagitário</option>
+                    <option>Capricórnio</option><option>Aquário</option><option>Peixes</option>
+                </select>
             </div>
             <div class="form-group">
-                <label class="form-label">Profissão</label>
-                <input type="text" id="f-profissao" class="form-input" placeholder="Ex: Médico">
+                <label class="form-label">Último date</label>
+                <select id="f-ultimo-date" class="form-input">
+                    <option value="">Selecione</option>
+                    <option>menos de 1 mês</option>
+                    <option>1 a 6 meses</option>
+                    <option>6 meses a 1 ano</option>
+                    <option>mais de 1 ano</option>
+                    <option>nunca tive</option>
+                </select>
             </div>
         </div>
         <button class="btn" id="btn-start" onclick="startQuiz()">Iniciar minha análise →</button>
@@ -1238,9 +1297,23 @@ window.onload = () => {
     if (userName) {
         document.getElementById('welcome-title').textContent =
             `Olá, ${userName}! Vamos descobrir quem você realmente é.`;
+        const fn = document.getElementById('f-nome');
+        if (fn) fn.value = userName; // pré-preenche o campo Nome
     }
     if (p.get('adjust') === '1') initAdjustMode();
 };
+
+// Apps selecionados (múltipla escolha)
+let selectedApps = [];
+function toggleApp(btn) {
+    btn.classList.toggle('selected');
+    const app = btn.textContent.replace(/^✓\s*/, '').trim();
+    if (btn.classList.contains('selected')) {
+        if (!selectedApps.includes(app)) selectedApps.push(app);
+    } else {
+        selectedApps = selectedApps.filter(a => a !== app);
+    }
+}
 
 // ═══════════════════════════════════════
 // ADJUST MODE (URL: ?adjust=1)
@@ -1332,15 +1405,18 @@ function show(id) {
 }
 
 function startQuiz() {
-    const idade    = document.getElementById('f-idade').value;
-    const profissao= document.getElementById('f-profissao').value;
-    if (!idade || !profissao) { alert('Preencha idade e profissão para continuar.'); return; }
+    const nome  = document.getElementById('f-nome').value.trim();
+    const idade = document.getElementById('f-idade').value;
+    if (!nome || !idade) { alert('Preencha nome e idade para continuar.'); return; }
+    userName = nome;
     userData = {
-        nome:      userName,
-        idade:     document.getElementById('f-idade').value,
-        altura:    document.getElementById('f-altura').value,
-        peso:      document.getElementById('f-peso').value,
-        profissao: document.getElementById('f-profissao').value,
+        nome,
+        idade,
+        cidade:     document.getElementById('f-cidade').value.trim(),
+        altura:     document.getElementById('f-altura').value.trim(),
+        apps:       selectedApps.slice(),
+        signo:      document.getElementById('f-signo').value,
+        ultimoDate: document.getElementById('f-ultimo-date').value,
     };
     // Sorteia 20 perguntas balanceadas (2 por eixo MBTI × 4 + 2 por traço ADICAS × 6)
     try {
@@ -1414,6 +1490,9 @@ function renderQ() {
 
     const c = document.getElementById('q-opts');
     c.innerHTML = '';
+    // 2 colunas quando todas as opções forem curtas (cabe sem rolar)
+    const maxLen = Math.max(...q.opts.map(o => o.t.length));
+    c.classList.toggle('grid2', maxLen <= 45);
     q.opts.forEach(opt => {
         const btn = document.createElement('button');
         btn.className = 'option';
@@ -1532,12 +1611,8 @@ async function doGenerate() {
 
         showResult(dominant, data.bios);
     } catch {
-        const arch = ARCHETYPES[dominant];
-        const bio  = arch.template
-            .replace('{profissao}', userData.profissao||'')
-            .replace('{idade}',    userData.idade||'')
-            .replace('{altura}',   userData.altura||'');
-        const fallback = { bio, estrutura:'', motivo:'' };
+        // Fallback neutro (sem despejar dados crus do usuário na bio)
+        const fallback = { bio: 'Conversa real primeiro. O resto a gente descobre pessoalmente.', estrutura:'', motivo:'' };
         showResult(dominant, [fallback, fallback, fallback]);
     }
 }
