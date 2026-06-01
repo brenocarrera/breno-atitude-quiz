@@ -44,7 +44,9 @@ body {
     position: relative;
     background: #071828;
     overflow: hidden;
+    display: none; /* visível só na pré-sell */
 }
+body.presell-mode .expert-header { display: block; }
 
 .expert-header img {
     width: 100%;
@@ -809,19 +811,19 @@ body.presell-mode .expert-header { height: 300px; }
     margin-bottom: 14px;
     color: var(--text);
 }
-.presell-headline .accent { color: #C0C4CC; }
+.presell-headline .accent { color: var(--text); }
 
 .presell-sub {
     color: var(--muted);
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 28px;
+    line-height: 1.5;
     margin-bottom: 22px;
 }
 
 @media (max-height: 680px) {
     body.presell-mode .expert-header { height: 220px; }
     .presell-headline { font-size: 23px; margin-bottom: 10px; }
-    .presell-sub { font-size: 13px; margin-bottom: 16px; }
+    .presell-sub { font-size: 22px; margin-bottom: 16px; }
 }
 </style>
 </head>
