@@ -1184,21 +1184,48 @@ let delivery  = 'whats';
 let pendingCallback = null;
 
 // ─────────────────────────────────────────
-// HELPER — deriva arquétipo dos scores ADICAS
+// HELPER — deriva arquétipo (ADICAS + desempate por MBTI)
 // (mantém compatibilidade com ARCHETYPES e generate-bio.js)
 // ─────────────────────────────────────────
-function archetypeFromAdicas(adicas) {
-    const sorted = Object.entries(adicas).sort((a, b) => b[1] - a[1]);
-    const top    = sorted.slice(0, 2).map(([k]) => k);
-    if (top.includes('divertido') && top.includes('sexual'))      return 'provocador';
-    if (top.includes('ambicioso') && top.includes('confiavel'))   return 'alfa';
-    if (top.includes('divertido') && top.includes('inteligente')) return 'niceguy';
-    const first = sorted[0][0];
-    if (first === 'sexual' || first === 'aventureiro') return 'provocador';
-    if (first === 'ambicioso' || first === 'confiavel') return 'alfa';
-    if (first === 'divertido') return 'provocador';
-    if (first === 'inteligente') return 'direto';
+
+// Mapa MBTI → arquétipo, baseado nos traços naturais de cada tipo no VAULT-MBTI.md
+// provocador = Divertido/Sexual/Aventureiro | alfa = Ambicioso/Confiável (TJ)
+// niceguy = empatia/Confiável (F provedor)   | direto = Inteligente/objetivo (NT/ST introvertido)
+const MBTI_ARQUETIPO = {
+    ENTJ:'alfa',  ESTJ:'alfa',  ISTJ:'alfa',
+    ENFJ:'niceguy', ESFJ:'niceguy', INFJ:'niceguy', INFP:'niceguy', ISFJ:'niceguy',
+    ENTP:'provocador', ENFP:'provocador', ESTP:'provocador', ESFP:'provocador', ISFP:'provocador',
+    INTJ:'direto', INTP:'direto', ISTP:'direto',
+};
+
+// Peso por traço (2º critério de desempate — NÃO usa ordem de chave do objeto)
+const TRACO_PESO = { sexual:6, ambicioso:5, divertido:4, inteligente:3, confiavel:2, aventureiro:1 };
+
+function arquetipoPorTraco(traco) {
+    if (traco === 'sexual' || traco === 'aventureiro' || traco === 'divertido') return 'provocador';
+    if (traco === 'ambicioso' || traco === 'confiavel') return 'alfa';
+    if (traco === 'inteligente') return 'direto';
     return 'alfa';
+}
+
+function archetypeFromAdicas(adicas, mbtiTipo) {
+    const sorted   = Object.entries(adicas).sort((a, b) => b[1] - a[1]);
+    const maxScore = sorted[0][1];
+    const topTied  = sorted.filter(([, v]) => v === maxScore).map(([k]) => k);
+
+    // 1) Vencedor único entre os traços → mapeia direto pelo traço dominante
+    if (topTied.length === 1) {
+        return arquetipoPorTraco(topTied[0]);
+    }
+
+    // 2) Empate → desempata pelo tipo MBTI (regras do VAULT-MBTI)
+    if (mbtiTipo && MBTI_ARQUETIPO[mbtiTipo]) {
+        return MBTI_ARQUETIPO[mbtiTipo];
+    }
+
+    // 3) Sem MBTI → 2º critério: maior peso entre os traços empatados (não ordem de chave)
+    const melhor = topTied.sort((a, b) => TRACO_PESO[b] - TRACO_PESO[a])[0];
+    return arquetipoPorTraco(melhor);
 }
 
 // ═══════════════════════════════════════
@@ -1471,7 +1498,7 @@ async function doGenerate() {
 
     // Calcula MBTI + ADICAS e deriva arquétipo para compatibilidade com ARCHETYPES
     const s        = QuizLogic.calcularScores(respostas);
-    const dominant = archetypeFromAdicas(s.adicas);
+    const dominant = archetypeFromAdicas(s.adicas, s.mbtiTipo);
     userData.arquetipo = dominant;
     userData.mbtiTipo  = s.mbtiTipo;
 
