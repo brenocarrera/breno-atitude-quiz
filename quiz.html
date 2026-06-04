@@ -18,6 +18,7 @@
     --muted:   #3d6a8a;
     --muted2:  #2e5470;
     --danger:  #ff6b6b;
+    --amber:   #ffb020;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -365,7 +366,7 @@ select.form-input option { background: var(--card); color: var(--text); }
 ══════════════════════════════════════ */
 .phase-label {
     font-size: 13px;
-    color: var(--primary);
+    color: var(--accent, var(--primary));
     letter-spacing: 3px;
     text-transform: uppercase;
     font-weight: 700;
@@ -425,6 +426,10 @@ select.form-input option { background: var(--card); color: var(--text); }
     box-shadow: 0 0 10px var(--primary);
 }
 
+/* Barra "esquenta" ao passar de 70% */
+.progress-fill.hot { background: linear-gradient(90deg, var(--amber), var(--danger)); }
+.progress-fill.hot::after { background: var(--amber); box-shadow: 0 0 10px var(--amber); }
+
 .question-text {
     font-size: 24px;
     font-weight: 700;
@@ -432,19 +437,22 @@ select.form-input option { background: var(--card); color: var(--text); }
     margin-bottom: 14px;
 }
 
-.options { display: flex; flex-direction: column; gap: 8px; }
+.options { display: flex; flex-direction: column; gap: 10px; counter-reset: option-num; }
 /* 2 colunas quando há muitas opções ou texto curto (cabe sem rolar) */
-.options.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.options.grid2 .option { font-size: 14px; padding: 11px 13px; }
+.options.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.options.grid2 .option { font-size: 14px; padding: 11px 12px 11px 38px; }
 
 .option {
+    counter-increment: option-num;
+    position: relative;
     background: var(--card);
     border: 1px solid var(--border);
+    border-left: 3px solid var(--pos-color, var(--border));
     border-radius: 11px;
-    padding: 14px 15px;
+    padding: 13px 14px 13px 42px;
     cursor: pointer;
     font-size: 17px;
-    line-height: 1.45;
+    line-height: 1.55;
     text-align: left;
     color: #7aacc8;
     transition: all 0.18s;
@@ -453,7 +461,38 @@ select.form-input option { background: var(--card); color: var(--text); }
     opacity: 0;
     transform: translateY(8px);
     animation: up 0.28s ease forwards;
+    /* clamp leve de segurança — não corta o conteúdo atual, só evita estouro */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
+
+/* Badge numérico (numeração automática via CSS counter) */
+.option::before {
+    content: counter(option-num);
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px;
+    font-size: 12px; font-weight: 800;
+    color: var(--accent, var(--primary));
+    border: 1px solid var(--accent, var(--primary));
+    background: rgba(255,255,255,0.02);
+}
+.options.grid2 .option::before { left: 8px; width: 20px; height: 20px; }
+
+/* Negrito automático nas 1as palavras (via JS) */
+.option .opt-head { color: var(--text); font-weight: 700; }
+
+/* Cores fixas por posição (stripe lateral esquerda) */
+.option:nth-child(1) { --pos-color: var(--primary); }
+.option:nth-child(2) { --pos-color: var(--blue); }
+.option:nth-child(3) { --pos-color: var(--amber); }
+.option:nth-child(4) { --pos-color: var(--danger); }
 
 .option:nth-child(1) { animation-delay: 0.04s; }
 .option:nth-child(2) { animation-delay: 0.10s; }
@@ -462,9 +501,14 @@ select.form-input option { background: var(--card); color: var(--text); }
 
 @keyframes up { to { opacity:1; transform:translateY(0); } }
 
-.option:hover  { border-color: var(--primary); background: #071e30; color: var(--text); }
-.option.picked { border-color: var(--primary); background: #071e30; color: var(--text); pointer-events: none; }
-.option.picked::before { content: '✓  '; color: var(--primary); font-weight:800; }
+.option:hover  { border-color: var(--accent, var(--primary)); background: #071e30; color: var(--text); }
+.option.picked { border-color: var(--accent, var(--primary)); background: #071e30; color: var(--text); pointer-events: none; }
+.option.picked::before { content: '✓'; color: #06101e; background: var(--accent, var(--primary)); border-color: var(--accent, var(--primary)); }
+
+/* Sotaque por fase (muda só a cor de destaque) */
+#s-quiz.accent-1 { --accent: var(--primary); }
+#s-quiz.accent-2 { --accent: var(--blue); }
+#s-quiz.accent-3 { --accent: var(--amber); }
 
 /* ══════════════════════════════════════
    COMMENT MODAL (interrupt)
@@ -503,6 +547,11 @@ select.form-input option { background: var(--card); color: var(--text); }
 .comment-overlay.open .comment-card {
     transform: scale(1) translateY(0);
 }
+
+/* Variante âmbar (1 dos interrupts) */
+.comment-card.amber { border-color: var(--amber); box-shadow: 0 0 40px rgba(255,176,32,0.28), 0 20px 60px rgba(0,0,0,0.6); }
+.comment-card.amber .comment-chip { background: linear-gradient(135deg, var(--amber), var(--danger)); }
+.comment-card.amber .comment-headline span { color: var(--amber); }
 
 .comment-chip {
     display: inline-flex;
@@ -868,6 +917,22 @@ body.presell-mode .expert-header { height: 300px; }
         </div>
         <div class="form-row">
             <div class="form-group">
+                <label class="form-label">Profissão</label>
+                <input type="text" id="f-profissao" class="form-input" placeholder="Ex: Engenheiro">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Signo</label>
+                <select id="f-signo" class="form-input">
+                    <option value="">Selecione</option>
+                    <option>Áries</option><option>Touro</option><option>Gêmeos</option>
+                    <option>Câncer</option><option>Leão</option><option>Virgem</option>
+                    <option>Libra</option><option>Escorpião</option><option>Sagitário</option>
+                    <option>Capricórnio</option><option>Aquário</option><option>Peixes</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
                 <label class="form-label">Cidade</label>
                 <input type="text" id="f-cidade" class="form-input" placeholder="Ex: São Paulo">
             </div>
@@ -892,28 +957,16 @@ body.presell-mode .expert-header { height: 300px; }
                 </div>
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label class="form-label">Signo</label>
-                <select id="f-signo" class="form-input">
-                    <option value="">Selecione</option>
-                    <option>Áries</option><option>Touro</option><option>Gêmeos</option>
-                    <option>Câncer</option><option>Leão</option><option>Virgem</option>
-                    <option>Libra</option><option>Escorpião</option><option>Sagitário</option>
-                    <option>Capricórnio</option><option>Aquário</option><option>Peixes</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Último date</label>
-                <select id="f-ultimo-date" class="form-input">
-                    <option value="">Selecione</option>
-                    <option>menos de 1 mês</option>
-                    <option>1 a 6 meses</option>
-                    <option>6 meses a 1 ano</option>
-                    <option>mais de 1 ano</option>
-                    <option>nunca tive</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label class="form-label">Último date</label>
+            <select id="f-ultimo-date" class="form-input">
+                <option value="">Selecione</option>
+                <option>menos de 1 mês</option>
+                <option>1 a 6 meses</option>
+                <option>6 meses a 1 ano</option>
+                <option>mais de 1 ano</option>
+                <option>nunca tive</option>
+            </select>
         </div>
         <button class="btn" id="btn-start" onclick="startQuiz()">Iniciar minha análise →</button>
     </div>
@@ -1511,6 +1564,7 @@ function startQuiz() {
     userData = {
         nome,
         idade,
+        profissao:  document.getElementById('f-profissao').value.trim(),
         cidade:     document.getElementById('f-cidade').value.trim(),
         altura:     document.getElementById('f-altura').value.trim(),
         apps:       selectedApps.slice(),
@@ -1584,21 +1638,38 @@ function renderQ() {
     document.getElementById('q-phase-name').textContent  = phase.name;
     document.getElementById('q-counter').textContent = `PERGUNTA ${pos+1} DE ${len}`;
     document.getElementById('q-pct').textContent     = `${pct}%`;
-    document.getElementById('q-bar').style.width     = `${pct}%`;
+    const bar = document.getElementById('q-bar');
+    bar.style.width = `${pct}%`;
+    bar.classList.toggle('hot', pct >= 70); // barra "esquenta" no fim
     document.getElementById('q-text').textContent    = q.q;
+
+    // Sotaque por fase (verde / azul / âmbar) — só muda a cor de destaque
+    const phaseIdx = PHASES.indexOf(phase);
+    const quizScreen = document.getElementById('s-quiz');
+    quizScreen.classList.remove('accent-1', 'accent-2', 'accent-3');
+    quizScreen.classList.add('accent-' + (phaseIdx + 1));
 
     const c = document.getElementById('q-opts');
     c.innerHTML = '';
     // 2 colunas quando todas as opções forem curtas (cabe sem rolar)
     const maxLen = Math.max(...q.opts.map(o => o.t.length));
     c.classList.toggle('grid2', maxLen <= 45);
-    q.opts.forEach(opt => {
+    q.opts.forEach((opt) => {
         const btn = document.createElement('button');
         btn.className = 'option';
-        btn.textContent = opt.t;
+        btn.innerHTML = boldHead(opt.t); // negrito nas 1as palavras; numeração é via CSS
         btn.onclick = () => pick(btn, opt.a);
         c.appendChild(btn);
     });
+}
+
+// Coloca as 2 primeiras palavras em negrito (apresentação; não altera o conteúdo)
+function boldHead(texto) {
+    const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const palavras = texto.trim().split(/\s+/);
+    const head = palavras.slice(0, 2).join(' ');
+    const tail = palavras.slice(2).join(' ');
+    return `<span class="opt-head">${esc(head)}</span>${tail ? ' ' + esc(tail) : ''}`;
 }
 
 function pick(btn, polo) {
@@ -1608,7 +1679,8 @@ function pick(btn, polo) {
     respostas[curQ] = { a: polo };
 
     if (COMMENTS[curQ]) {
-        setTimeout(() => openComment(COMMENTS[curQ]), 300);
+        const amber = (curQ === 17); // 1 interrupt em tom quente (fase final)
+        setTimeout(() => openComment(COMMENTS[curQ], amber), 300);
     } else {
         setTimeout(nextQ, 480);
     }
@@ -1640,9 +1712,10 @@ function getPhase(i) {
 // COMMENT MODAL
 // ═══════════════════════════════════════
 
-function openComment(data) {
+function openComment(data, amber) {
     document.getElementById('c-headline').innerHTML = data.headline;
     document.getElementById('c-body').textContent   = data.body;
+    document.querySelector('#c-overlay .comment-card').classList.toggle('amber', !!amber);
     document.getElementById('c-overlay').classList.add('open');
 }
 
