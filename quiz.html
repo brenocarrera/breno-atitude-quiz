@@ -874,9 +874,67 @@ body.presell-mode .expert-header { height: 300px; }
     .presell-headline { font-size: 23px; margin-bottom: 10px; }
     .presell-sub { font-size: 17px; margin-bottom: 16px; }
 }
+
+/* ══════════════════════════════════════
+   BOTÃO DE MUDO
+══════════════════════════════════════ */
+.mute-btn {
+    position: fixed;
+    top: 10px; right: 10px;
+    z-index: 600;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: rgba(11,24,41,0.8);
+    color: var(--primary);
+    font-size: 17px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+    transition: color 0.2s, border-color 0.2s;
+}
+.mute-btn.muted { color: var(--muted2); border-color: var(--muted2); }
+
+/* ══════════════════════════════════════
+   PROVA SOCIAL (na tela de loading)
+══════════════════════════════════════ */
+.social-proof { width: 100%; margin-top: 18px; }
+.sp-count {
+    text-align: center;
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+.sp-count strong { color: var(--primary); font-size: 17px; }
+.sp-bubbles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+.sp-bubble {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 9px 13px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #7aacc8;
+    max-width: 46%;
+}
+.sp-bubble:nth-child(odd)  { border-left: 3px solid var(--primary); }
+.sp-bubble:nth-child(even) { border-left: 3px solid var(--blue); }
+
+@media (max-height: 680px) {
+    .social-proof { margin-top: 12px; }
+    .sp-bubble { padding: 7px 11px; font-size: 12px; }
+}
 </style>
 </head>
 <body>
+
+<!-- ═══ BOTÃO DE MUDO ═══ -->
+<button class="mute-btn" id="mute-btn" onclick="toggleMute()" aria-label="Som" title="Som ligado/desligado">🔊</button>
 
 <!-- ═══ EXPERT HEADER ═══ -->
 <header class="expert-header">
@@ -1091,6 +1149,17 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="lstep" id="ls2"><div class="lstep-dot"></div>Identificando arquétipo dominante</div>
             <div class="lstep" id="ls3"><div class="lstep-dot"></div>Mapeando pontos cegos</div>
             <div class="lstep" id="ls4"><div class="lstep-dot"></div>Gerando bios personalizadas</div>
+        </div>
+
+        <!-- Prova social (textos placeholder — preencher depois) -->
+        <div class="social-proof">
+            <div class="sp-count">Junte-se a <strong>+21.000 homens</strong></div>
+            <div class="sp-bubbles">
+                <div class="sp-bubble">Depoimento 1</div>
+                <div class="sp-bubble">Depoimento 2</div>
+                <div class="sp-bubble">Depoimento 3</div>
+                <div class="sp-bubble">Depoimento 4</div>
+            </div>
         </div>
     </div>
 </div>
@@ -1376,6 +1445,47 @@ let delivery  = 'whats';
 let pendingCallback = null;
 
 // ─────────────────────────────────────────
+// SOM (Web Audio API — gerado por código, sem arquivos)
+// Obs: Web Audio não lê o botão físico de silencioso do iOS;
+// por isso o botão de mudo é o controle do usuário (lembrado no aparelho).
+// ─────────────────────────────────────────
+let audioCtx = null;
+let muted = localStorage.getItem('quiz_muted') === '1';
+
+function beep(freq, durMs, vol) {
+    if (muted) return;
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc  = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const t = audioCtx.currentTime;
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(vol, t + 0.005);          // ataque rápido
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + durMs/1000); // decaimento curto
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(t); osc.stop(t + durMs/1000);
+    } catch (e) { /* silencioso se o navegador bloquear */ }
+}
+
+function soundClick()   { beep(660, 70, 0.05); }                    // seleção de opção
+function soundAdvance() { beep(880, 90, 0.05); }                    // avançar de tela
+
+function toggleMute() {
+    muted = !muted;
+    localStorage.setItem('quiz_muted', muted ? '1' : '0');
+    updateMuteBtn();
+}
+function updateMuteBtn() {
+    const b = document.getElementById('mute-btn');
+    if (!b) return;
+    b.textContent = muted ? '🔇' : '🔊';
+    b.classList.toggle('muted', muted);
+}
+
+// ─────────────────────────────────────────
 // HELPER — deriva arquétipo (ADICAS + desempate por MBTI)
 // (mantém compatibilidade com ARCHETYPES e generate-bio.js)
 // ─────────────────────────────────────────
@@ -1425,6 +1535,7 @@ function archetypeFromAdicas(adicas, mbtiTipo) {
 // ═══════════════════════════════════════
 
 window.onload = () => {
+    updateMuteBtn(); // reflete preferência de som salva
     document.body.classList.add('presell-mode'); // pré-sell começa ativa
     const p = new URLSearchParams(window.location.search);
     userName = p.get('nome') || p.get('name') || p.get('first_name') || '';
@@ -1677,6 +1788,7 @@ function pick(btn, polo) {
     document.querySelectorAll('.option').forEach(o => { o.classList.remove('picked'); o.disabled = true; });
     btn.classList.add('picked');
     respostas[curQ] = { a: polo };
+    soundClick(); // clique de seleção
 
     if (COMMENTS[curQ]) {
         const amber = (curQ === 17); // 1 interrupt em tom quente (fase final)
@@ -1687,6 +1799,7 @@ function pick(btn, polo) {
 }
 
 function nextQ() {
+    soundAdvance(); // som de avanço de tela
     if (curQ >= QS.length - 1) { show('s-gate'); return; }
     curQ++;
     const phase = getPhase(curQ);
