@@ -158,8 +158,9 @@ body.presell-mode .expert-header { display: block; }
 }
 
 .screen-sub {
-    color: var(--muted);
-    font-size: 16px;
+    color: var(--text);
+    opacity: 0.85;
+    font-size: clamp(0.95rem, 3.4vw, 1.1rem);
     line-height: 1.5;
     margin-bottom: 14px;
 }
@@ -300,7 +301,7 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .phase-number {
-    font-size: 11px;
+    font-size: clamp(0.75rem, 2.6vw, 0.95rem);
     color: var(--primary);
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -309,16 +310,17 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .phase-title {
-    font-size: 28px;
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
     font-weight: 800;
     line-height: 1.2;
     margin-bottom: 10px;
 }
 
 .phase-sub {
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.65;
+    color: var(--text);
+    opacity: 0.85;
+    font-size: clamp(1.05rem, 3.6vw, 1.3rem);
+    line-height: 1.6;
     margin-bottom: 22px;
 }
 
@@ -825,10 +827,10 @@ select.form-input option { background: var(--card); color: var(--text); }
 ══════════════════════════════════════ */
 @media (max-height: 680px) {
     .expert-header { height: 140px; }
-    .phase-title   { font-size: 24px; }
     .screen-title  { font-size: 20px; }
     .question-text { font-size: 18px; }
-    .phase-sub, .screen-sub { font-size: 12px; margin-bottom: 10px; }
+    /* fontes de fase/sub seguem o clamp() — aqui só reduz a margem p/ caber */
+    .phase-sub, .screen-sub { margin-bottom: 10px; }
     .phase-intro { padding: 4px 0; }
     .form-group  { margin-bottom: 7px; }
 }
