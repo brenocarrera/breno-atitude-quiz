@@ -932,6 +932,139 @@ body.presell-mode .expert-header { height: 300px; }
     .social-proof { margin-top: 12px; }
     .sp-bubble { padding: 7px 11px; font-size: 12px; }
 }
+
+/* ══════════════════════════════════════
+   RELATÓRIO FINAL (paleta APP 7 / Qwen — namespaced rep-)
+══════════════════════════════════════ */
+#s-report {
+    --r-bg:      #05070a;
+    --r-card:    #12151f;
+    --r-border:  #262b3a;
+    --r-primary: #8b5cf6;
+    --r-purple:  #a855f7;
+    --r-text:    #ffffff;
+    --r-muted:   #94a3b8;
+    --r-green:   #10b981;
+    --r-blue:    #3b82f6;
+    --r-orange:  #f59e0b;
+    --r-red:     #ef4444;
+    --r-pink:    #ec4899;
+}
+#s-report { background: var(--r-bg); }
+.rep-scroll { overflow-y: auto; flex: 1; padding: 4px 2px 24px; font-family: 'Inter','Segoe UI',sans-serif; }
+
+.rep-hero { text-align: center; padding: 14px 0 18px; border-bottom: 1px solid var(--r-border); margin-bottom: 16px; }
+.rep-kicker { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--r-muted); margin-bottom: 4px; }
+.rep-kicker.t2 { color: var(--r-primary); opacity: 0.8; margin-bottom: 14px; }
+.rep-pill {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--r-primary), var(--r-purple));
+    color: #fff; font-weight: 800; font-size: clamp(1.4rem, 6vw, 2rem);
+    padding: 12px 28px; border-radius: 40px;
+    box-shadow: 0 8px 30px rgba(139,92,246,0.35); margin-bottom: 14px;
+}
+.rep-hero-sub { color: var(--r-muted); font-size: 0.95rem; line-height: 1.6; max-width: 340px; margin: 0 auto 10px; }
+.rep-meta { font-size: 0.7rem; letter-spacing: 1px; color: var(--r-muted); text-transform: uppercase; opacity: 0.7; }
+
+/* Seções */
+.rep-section { margin-bottom: 22px; }
+.rep-sec-label { font-size: 0.68rem; letter-spacing: 3px; text-transform: uppercase; color: var(--r-primary); opacity: 0.7; margin-bottom: 4px; }
+.rep-sec-title { font-size: clamp(1.15rem, 4.5vw, 1.45rem); font-weight: 800; color: var(--r-text); margin-bottom: 8px; }
+.rep-sec-intro { font-size: 0.85rem; line-height: 1.55; color: var(--r-muted); margin-bottom: 14px; }
+
+.rep-card {
+    background: var(--r-card); border: 1px solid var(--r-border);
+    border-radius: 14px; padding: 14px; margin-bottom: 12px;
+}
+.rep-card.accent { border-left: 3px solid var(--r-primary); }
+.rep-card.green  { border-left: 3px solid var(--r-green); background: rgba(16,185,129,0.06); }
+.rep-card-title { font-weight: 700; font-size: 0.95rem; color: var(--r-text); margin-bottom: 6px; }
+.rep-card-title.green { color: var(--r-green); }
+.rep-q { font-size: 0.78rem; color: var(--r-muted); margin-bottom: 4px; }
+.rep-a { font-size: 0.9rem; color: var(--r-text); line-height: 1.45; font-weight: 600; }
+.rep-p { font-size: 0.85rem; color: var(--r-muted); line-height: 1.55; margin-bottom: 8px; }
+
+/* Tags */
+.rep-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.rep-tag { background: rgba(139,92,246,0.15); color: var(--r-purple); border: 1px solid rgba(139,92,246,0.3); padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; }
+
+/* Barras de dimensão */
+.rep-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.rep-bar-label { flex: 0 0 46%; font-size: 0.72rem; color: var(--r-muted); }
+.rep-bar { flex: 1; height: 7px; background: #1e2330; border-radius: 4px; overflow: hidden; }
+.rep-bar-fill { height: 100%; border-radius: 4px; }
+.rep-bar-val { flex: 0 0 34px; text-align: right; font-size: 0.72rem; font-weight: 700; }
+
+/* Grid 9 tipos */
+.rep-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.rep-type { background: var(--r-card); border: 1px solid var(--r-border); border-radius: 12px; padding: 10px 8px; text-align: center; }
+.rep-type.current { border-color: var(--r-primary); background: rgba(139,92,246,0.1); position: relative; }
+.rep-type-badge { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: var(--r-primary); color: #fff; font-size: 0.55rem; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+.rep-type-num { font-size: 0.55rem; letter-spacing: 1px; color: var(--r-muted); }
+.rep-type-ico { font-size: 1.3rem; margin: 4px 0; }
+.rep-type-name { font-size: 0.72rem; font-weight: 700; color: var(--r-text); }
+
+/* Dossiê CIA/FBI mono */
+.rep-dossier { font-family: 'Courier New', monospace; background: #0a0d14; border: 1px solid var(--r-border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+.rep-dossier-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.rep-seal { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--r-green); color: var(--r-green); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; flex-shrink: 0; }
+.rep-seal.fbi { border-color: var(--r-blue); color: var(--r-blue); }
+.rep-dossier-meta { font-size: 0.6rem; color: var(--r-muted); letter-spacing: 1px; }
+.rep-mono { font-size: 0.72rem; color: #c7d2e0; line-height: 1.6; }
+
+/* Mensagens (chat) */
+.rep-msg { padding: 10px 12px; border-radius: 12px; margin-bottom: 8px; font-size: 0.82rem; line-height: 1.4; max-width: 85%; }
+.rep-msg.him { background: linear-gradient(135deg, var(--r-primary), var(--r-purple)); color: #fff; margin-left: auto; }
+.rep-msg.her { background: var(--r-card); border: 1px solid var(--r-border); color: var(--r-text); }
+
+/* Pontos numerados */
+.rep-point { background: var(--r-card); border: 1px solid var(--r-border); border-left: 3px solid var(--r-red); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+.rep-point-n { display: inline-flex; width: 22px; height: 22px; border-radius: 6px; background: var(--r-red); color: #fff; font-size: 0.75rem; font-weight: 800; align-items: center; justify-content: center; margin-right: 8px; }
+
+/* ── BLUR PARCIAL (teaser visível + miolo borrado) ── */
+.rep-blur { filter: blur(6px); opacity: 0.65; user-select: none; pointer-events: none; transition: filter 0.5s, opacity 0.5s; position: relative; }
+.rep-revealed .rep-blur { filter: none; opacity: 1; user-select: auto; pointer-events: auto; }
+.rep-lockchip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--r-orange); margin-top: 6px; }
+.rep-revealed .rep-lockchip { display: none; }
+
+/* Escassez / timer */
+.rep-scarcity {
+    background: rgba(245,158,11,0.1); border: 1px solid var(--r-orange);
+    border-radius: 12px; padding: 12px 14px; margin-bottom: 18px; text-align: center;
+}
+.rep-scarcity-text { font-size: 0.8rem; color: #fcd9a0; line-height: 1.5; }
+.rep-timer { font-size: 1.6rem; font-weight: 800; color: var(--r-orange); font-variant-numeric: tabular-nums; margin-top: 6px; }
+
+/* Porta de captura */
+.rep-gate {
+    background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(168,85,247,0.08));
+    border: 1px solid var(--r-primary); border-radius: 16px; padding: 18px; margin: 18px 0;
+}
+.rep-gate-title { font-weight: 800; font-size: 1.05rem; color: var(--r-text); margin-bottom: 6px; text-align: center; }
+.rep-gate-sub { font-size: 0.8rem; color: var(--r-muted); text-align: center; margin-bottom: 14px; line-height: 1.5; }
+.rep-input {
+    width: 100%; background: #0a0d14; border: 1px solid var(--r-border); border-radius: 10px;
+    padding: 12px 13px; color: var(--r-text); font-size: 0.95rem; font-family: inherit; outline: none; margin-bottom: 10px;
+}
+.rep-input:focus { border-color: var(--r-primary); }
+.rep-input::placeholder { color: #5b6577; }
+.rep-consent { display: flex; gap: 9px; align-items: flex-start; font-size: 0.75rem; color: var(--r-muted); line-height: 1.4; margin-bottom: 14px; cursor: pointer; }
+.rep-consent input { margin-top: 2px; width: 16px; height: 16px; accent-color: var(--r-primary); flex-shrink: 0; }
+.rep-unlock-btn {
+    width: 100%; padding: 15px; border: none; border-radius: 12px; cursor: pointer;
+    background: linear-gradient(135deg, var(--r-primary), var(--r-purple)); color: #fff;
+    font-weight: 800; font-size: 1rem; font-family: inherit;
+    box-shadow: 0 6px 20px rgba(139,92,246,0.4);
+}
+.rep-unlock-btn:disabled { background: #1e2230; color: #5b6577; box-shadow: none; cursor: not-allowed; }
+.rep-err { color: var(--r-red); font-size: 0.78rem; text-align: center; margin-top: 8px; min-height: 16px; }
+
+.rep-final-cta {
+    display: block; width: 100%; text-align: center; padding: 16px;
+    background: linear-gradient(135deg, var(--r-primary), var(--r-purple)); color: #fff;
+    border: none; border-radius: 14px; font-weight: 800; font-size: 1rem; font-family: inherit;
+    cursor: pointer; margin-top: 18px;
+}
 </style>
 </head>
 <body>
@@ -1184,6 +1317,207 @@ body.presell-mode .expert-header { height: 300px; }
         <a id="btn-app-msg" href="/mensagens" style="display:block;width:100%;margin-top:16px;margin-bottom:8px;padding:16px;border-radius:14px;background:rgba(0,200,160,0.08);border:1px solid rgba(0,200,160,0.3);color:#00c8a0;font-size:15px;font-weight:600;text-align:center;text-decoration:none;">
             ✦ Gerar mensagens para conversas
         </a>
+        <button onclick="openReport()" style="display:block;width:100%;margin-top:10px;margin-bottom:8px;padding:16px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#a855f7);border:none;color:#fff;font-size:15px;font-weight:700;text-align:center;cursor:pointer;font-family:inherit;">
+            📄 Ver meu relatório completo →
+        </button>
+    </div>
+</div>
+
+<!-- ── RELATÓRIO FINAL ── -->
+<div id="s-report" class="screen">
+    <div class="rep-scroll">
+
+        <!-- HERO -->
+        <div class="rep-hero">
+            <div class="rep-kicker">Jogo do Texto · Análise de Perfil Completa</div>
+            <div class="rep-kicker t2">Resultado da sua análise</div>
+            <div class="rep-pill">O Cara da Conversa</div>
+            <p class="rep-hero-sub rep-blur">Ela acha você fascinante para trocar ideia. Mas não sente urgência de te ver pessoalmente. Você está a 3 calibrações de mudar completamente isso.</p>
+            <div class="rep-meta rep-blur">Rafael M. · 31 anos · São Paulo · Perfil INTJ</div>
+        </div>
+
+        <!-- ESCASSEZ / TIMER -->
+        <div class="rep-scarcity">
+            <div class="rep-scarcity-text">Geramos seu relatório agora. Por privacidade, ele fica disponível por <b>9 minutos</b> antes de ser apagado dos nossos servidores.</div>
+            <div class="rep-timer" id="rep-timer">09:00</div>
+        </div>
+
+        <!-- SEÇÃO 01 — Suas Respostas (PESSOAL: teaser + blur) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 01</div>
+            <div class="rep-sec-title">Suas Respostas</div>
+            <div class="rep-card accent">
+                <div class="rep-q">Como você inicia conversa depois de um match?</div>
+                <div class="rep-a">"Faço uma observação inteligente sobre algo no perfil dela — diferente do 'oi linda' que todo mundo manda."</div>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-card accent">
+                    <div class="rep-q">Quando ela demora a responder, você...</div>
+                    <div class="rep-a">"Fico elaborando mentalmente o que vou escrever. Às vezes reescrevo a mensagem inteira."</div>
+                </div>
+                <div class="rep-card accent">
+                    <div class="rep-q">Qual é seu principal objetivo na conversa?</div>
+                    <div class="rep-a">"Criar conexão genuína antes de qualquer coisa. Não gosto de marcar encontro com quem mal conheço."</div>
+                </div>
+                <div class="rep-card accent">
+                    <div class="rep-q">+ 6 respostas analisadas</div>
+                    <div class="rep-a">"..."</div>
+                </div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie para ver suas 9 respostas analisadas</span>
+        </div>
+
+        <!-- SEÇÃO 02 — Perfil MBTI (PESSOAL: teaser + blur) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 02</div>
+            <div class="rep-sec-title">Seu Perfil Myers-Briggs Conectado à Sedução</div>
+            <div class="rep-card accent">
+                <div class="rep-card-title">INTJ — O Estrategista que Analisa em Vez de Sentir</div>
+                <p class="rep-p">Você é um dos perfis mais raros e analiticamente poderosos do Myers-Briggs — menos de 2% da população. Quando você gosta de alguém, vai fundo de verdade.</p>
+                <div class="rep-blur">
+                    <p class="rep-p">O problema no contexto de sedução: sua maior força é seu maior obstáculo. Você otimiza a comunicação como se fosse um problema lógico — quando ela decide te encontrar com o cérebro primitivo, não com o racional. Lógica não gera desejo. Tensão calibrada gera.</p>
+                    <div class="rep-tags">
+                        <span class="rep-tag">Analítico</span><span class="rep-tag">Estratégico</span><span class="rep-tag">Independente</span><span class="rep-tag">Perfeccionista</span><span class="rep-tag">Reservado</span>
+                    </div>
+                </div>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-bar-row"><span class="rep-bar-label">Gerar interesse intelectual</span><span class="rep-bar"><span class="rep-bar-fill" style="width:94%;background:var(--r-primary)"></span></span><span class="rep-bar-val" style="color:var(--r-primary)">94%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Frame de confiança e alto valor</span><span class="rep-bar"><span class="rep-bar-fill" style="width:78%;background:var(--r-primary)"></span></span><span class="rep-bar-val" style="color:var(--r-primary)">78%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Resistência a testes femininos</span><span class="rep-bar"><span class="rep-bar-fill" style="width:61%;background:var(--r-purple)"></span></span><span class="rep-bar-val" style="color:var(--r-purple)">61%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Leveza e humor nas mensagens</span><span class="rep-bar"><span class="rep-bar-fill" style="width:32%;background:var(--r-orange)"></span></span><span class="rep-bar-val" style="color:var(--r-orange)">32%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Criação de tensão sexual via texto</span><span class="rep-bar"><span class="rep-bar-fill" style="width:21%;background:var(--r-red)"></span></span><span class="rep-bar-val" style="color:var(--r-red)">21%</span></div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie sua pontuação completa por dimensão</span>
+        </div>
+
+        <!-- SEÇÃO 03 — Os 9 Tipos (MÉTODO: aberto) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 03</div>
+            <div class="rep-sec-title">Os 9 Tipos que Ela Identifica em Menos de 3 Minutos</div>
+            <p class="rep-sec-intro">Baseado em David DeAngelo (Lover/Provider), Jogo do Texto e PT2 Female Mind — estes são os 9 arquétipos que o cérebro primitivo dela categoriza automaticamente nas primeiras mensagens.</p>
+            <div class="rep-grid">
+                <div class="rep-type"><div class="rep-type-num">Tipo 01</div><div class="rep-type-ico">👻</div><div class="rep-type-name">O Invisível</div></div>
+                <div class="rep-type"><div class="rep-type-num">Tipo 02</div><div class="rep-type-ico">💛</div><div class="rep-type-name">O Amigo Legal Demais</div></div>
+                <div class="rep-type current"><div class="rep-type-badge">SEU TIPO ATUAL</div><div class="rep-type-num">Tipo 03</div><div class="rep-type-ico">💬</div><div class="rep-type-name">O Cara da Conversa</div></div>
+                <div class="rep-type"><div class="rep-type-num">Tipo 04</div><div class="rep-type-ico">🙏</div><div class="rep-type-name">O Provider Ansioso</div></div>
+                <div class="rep-type"><div class="rep-type-num">Tipo 05</div><div class="rep-type-ico">〰️</div><div class="rep-type-name">O Fantasma Digital</div></div>
+                <div class="rep-type"><div class="rep-type-num">Tipo 06</div><div class="rep-type-ico">⚠️</div><div class="rep-type-name">O Predatório Óbvio</div></div>
+                <div class="rep-type"><div class="rep-type-num">Tipo 07</div><div class="rep-type-ico">🎲</div><div class="rep-type-name">O Bad Boy Instável</div></div>
+                <div class="rep-type"><div class="rep-type-num">Tipo 08</div><div class="rep-type-ico">🧭</div><div class="rep-type-name">O Aventureiro Calibrado</div></div>
+                <div class="rep-type"><div class="rep-type-num">Tipo 09</div><div class="rep-type-ico">♟️</div><div class="rep-type-name">O Homem de Alto Valor</div></div>
+            </div>
+            <div class="rep-card accent" style="margin-top:12px">
+                <div class="rep-card-title">Análise do seu tipo — O Cara da Conversa (Tipo 03)</div>
+                <p class="rep-p">O Tipo 03 é o mais próximo do topo que nunca chega lá por uma razão específica: <b style="color:var(--r-text)">ele substitui tensão sexual por profundidade intelectual.</b><span class="rep-blur"> Ela admira você. Confia em você. Mas não sente aquela urgência de te ver que aparece quando o cérebro primitivo é ativado. A distância entre Tipo 03 e Tipo 08 é menor do que parece — e é 100% técnica, não de personalidade.</span></p>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 04 — CIA/FBI (intro aberta, dossiê com teaser+blur) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 04</div>
+            <div class="rep-sec-title">Classificação CIA / FBI</div>
+            <p class="rep-sec-intro">Com base no "Manual de Persuasão do FBI" (Jack Schafer, Friendship Formula) + PT2 Female Mind — como agências de inteligência categorizariam e empregariam um perfil como o seu.</p>
+            <div class="rep-dossier">
+                <div class="rep-dossier-head">
+                    <div class="rep-seal">CIA</div>
+                    <div class="rep-dossier-meta">CENTRAL INTELLIGENCE AGENCY · DIRECTORATE OF ANALYSIS<br>TOP SECRET · Behavioral Profile Assessment</div>
+                </div>
+                <div class="rep-mono">FUNÇÃO PRIMÁRIA: Analista de Inteligência Estratégica<br>FUNÇÃO SECUNDÁRIA: Profiler Psicológico de Alvos</div>
+                <div class="rep-mono rep-blur" style="margin-top:8px">AVALIAÇÃO: Sujeito demonstra capacidade analítica excepcional. LIMITAÇÃO CRÍTICA: dificuldade em operações de aproximação emocional de curto prazo. DIAGNÓSTICO: o tipo que lê 300 páginas de inteligência sobre o alvo mas hesita no momento da abordagem real.</div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie o dossiê CIA + FBI completo</span>
+        </div>
+
+        <!-- SEÇÃO 05 — O Homem que Ela Vê (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 05</div>
+            <div class="rep-sec-title">O Homem que Ela Vê nas Suas Mensagens</div>
+            <div class="rep-card accent">
+                <div class="rep-card-title">"O Amigo Inteligente"</div>
+                <p class="rep-p">O cara que ela avisaria "oi sumido" quando precisar de um conselho.<span class="rep-blur"> Que ela apresentaria pra mãe. Mas que às 23h, sozinha no sofá, ela não está pensando em você. Ela está pensando no cara que criou tensão naquele dia.</span></p>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-card green">
+                    <div class="rep-card-title green">"O Arquiteto Sedutor"</div>
+                    <p class="rep-p">O homem que é ao mesmo tempo o mais interessante que ela conheceu E o que ela mais quer ver pessoalmente. Inteligência + tensão calibrada = obsessão genuína.</p>
+                </div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie a leitura completa das suas mensagens</span>
+        </div>
+
+        <!-- SEÇÃO 06 — O Melhor que Ela Veria (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 06</div>
+            <div class="rep-sec-title">O Melhor que Ela Conseguiria Ver em Você</div>
+            <div class="rep-card green">
+                <div class="rep-card-title green">O Arquiteto Sedutor — INTJ Desbloqueado</div>
+                <p class="rep-p">O INTJ que aprende a usar sua inteligência estratégica a favor da sedução se torna o tipo mais poderoso do espectro.<span class="rep-blur"> Enquanto o Bad Boy é excitante mas imprevisível, e o Provider é estável mas sem tensão — o INTJ calibrado entrega os dois ao mesmo tempo: intelectualmente dominante E estrategicamente imprevisível. Ele cria o "momento" não por acaso, mas por design.</span></p>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie sua projeção completa</span>
+        </div>
+
+        <!-- SEÇÃO 07 — 5 Pontos de Ajuste (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 07</div>
+            <div class="rep-sec-title">5 Pontos de Ajuste na Comunicação</div>
+            <div class="rep-point">
+                <div><span class="rep-point-n">1</span><b style="color:var(--r-text)">Profundidade sem leveza — o peso da primeira impressão</b></div>
+                <p class="rep-p" style="margin-top:8px">Você vai fundo cedo demais. A primeira conversa parece uma entrevista filosófica.<span class="rep-blur"> Ela sente o esforço mental necessário e associa você à palavra "pesado" antes de sentir qualquer atração. O conteúdo é bom — o timing é errado. ▶ Ajuste: leveza nos primeiros 5 minutos.</span></p>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-point"><div><span class="rep-point-n">2</span><b style="color:var(--r-text)">Lógica nos testes — a resposta que mata a tensão</b></div><p class="rep-p" style="margin-top:8px">Quando ela te testa, você explica seu ponto logicamente. Um homem de alto valor não explica — reage com calma, humor ou inverte o jogo.</p></div>
+                <div class="rep-point"><div><span class="rep-point-n">3</span><b style="color:var(--r-text)">Pipeline de 1 — a ansiedade que ela sente</b></div><p class="rep-p" style="margin-top:8px">Quando você foca só nela, sua energia muda de forma sutil mas detectável. Você perde o frame de escassez que cria atração.</p></div>
+                <div class="rep-point" style="opacity:0.6"><div><span class="rep-point-n">4</span><b style="color:var(--r-text)">+ 2 pontos críticos identificados</b></div></div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie os 5 ajustes com o passo a passo</span>
+        </div>
+
+        <!-- SEÇÃO 08 — Bios (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 08</div>
+            <div class="rep-sec-title">Bios Estratégicas por Plataforma</div>
+            <div class="rep-card accent">
+                <div class="rep-card-title">🔥 Tinder — Gerador de Curiosidade</div>
+                <p class="rep-p">Arquiteto de dia. Investigador de comportamento humano por hobby.<span class="rep-blur"> Minhas ex namoram melhor depois de mim — pelo menos é o que elas dizem. Especialista em fazer café perfeito e em não responder mensagem de voz. Se você também acha que conversa de madrugada revela mais do que qualquer perfil de app — talvez a gente se dê bem.</span></p>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-card accent"><div class="rep-card-title">📷 Instagram — Eu Sou o Prêmio</div><p class="rep-p">Leio pessoas mais rápido do que leio livros. E leio muito livro. As fotos são 80% ângulo estratégico. Os textos são 100% o que eu realmente penso.</p></div>
+                <div class="rep-card green"><div class="rep-card-title green">💬 WhatsApp — Frame de Alto Valor</div><p class="rep-p">Respondo quando quero conversar de verdade. Isso acontece com frequência menor do que você espera e com qualidade maior do que você está acostumada.</p></div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie suas 3 bios prontas para copiar</span>
+        </div>
+
+        <!-- SEÇÃO 09 — 1ª Mensagem (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 09</div>
+            <div class="rep-sec-title">Primeira Mensagem Pós-Match Matadora</div>
+            <div class="rep-msg her">Ela tem foto em Amsterdã no perfil</div>
+            <div class="rep-msg him">Amsterdã fica melhor na foto ou pessoalmente? Pergunto porque quem foi costuma ter opinião bem forte sobre isso.</div>
+            <div class="rep-blur">
+                <div class="rep-msg her">Pessoalmente com certeza haha mas o que você quer dizer com "opinião forte"?</div>
+                <div class="rep-msg him">Tem uma galera que idealiza tanto que se decepciona. Outra que chega sem expectativa e se apaixona. Pela foto você parece do segundo grupo.</div>
+                <div class="rep-msg her">Acertou kkk fui completamente apaixonada. Você já foi?</div>
+                <div class="rep-card accent" style="margin-top:8px"><div class="rep-card-title green">Por que essa abertura funciona</div><p class="rep-p">Não começa com elogio à aparência · pressuposto embutido · "opinião forte" gera curiosidade · leitura fria · ela faz a pergunta no fim = inversão completa.</p></div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie a sequência completa + análise técnica</span>
+        </div>
+
+        <!-- PORTA DE CAPTURA -->
+        <div class="rep-gate" id="rep-gate">
+            <div class="rep-gate-title">Liberar meu relatório completo</div>
+            <div class="rep-gate-sub">Tudo que está embaçado acima é sobre você. Desbloqueie agora antes que expire.</div>
+            <input type="tel" class="rep-input" id="rep-whats" placeholder="WhatsApp (com DDD)" inputmode="tel">
+            <input type="email" class="rep-input" id="rep-email" placeholder="Seu melhor e-mail" inputmode="email">
+            <label class="rep-consent">
+                <input type="checkbox" id="rep-consent">
+                <span>Autorizo o contato e o uso dos meus dados conforme a política de privacidade.</span>
+            </label>
+            <button class="rep-unlock-btn" id="rep-unlock" onclick="unlockReport()">🔓 Liberar meu relatório completo</button>
+            <div class="rep-err" id="rep-err"></div>
+        </div>
+
+        <button class="rep-final-cta" onclick="show('s-result')">← Voltar para minhas bios</button>
     </div>
 </div>
 
@@ -1998,6 +2332,50 @@ function copyBio(btn, i) {
         btn.classList.add('copied');
         setTimeout(() => { btn.textContent = 'Copiar bio'; btn.classList.remove('copied'); }, 2000);
     });
+}
+
+// ═══════════════════════════════════════
+// RELATÓRIO FINAL — abrir, timer 9min, desbloquear blur
+// ═══════════════════════════════════════
+let repTimerId = null;
+
+function openReport() {
+    show('s-report');
+    startReportTimer(9 * 60); // 9 minutos
+}
+
+function startReportTimer(totalSec) {
+    if (repTimerId) clearInterval(repTimerId);
+    let s = totalSec;
+    const el = document.getElementById('rep-timer');
+    const render = () => {
+        const m = Math.floor(s / 60), ss = s % 60;
+        if (el) el.textContent = `${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+    };
+    render();
+    repTimerId = setInterval(() => {
+        s--;
+        if (s <= 0) { s = 0; render(); clearInterval(repTimerId); if (el) el.textContent = 'EXPIRADO'; return; }
+        render();
+    }, 1000);
+}
+
+function unlockReport() {
+    const whats   = document.getElementById('rep-whats').value.trim();
+    const email   = document.getElementById('rep-email').value.trim();
+    const consent = document.getElementById('rep-consent').checked;
+    const err     = document.getElementById('rep-err');
+
+    if (!whats && !email) { err.textContent = 'Preencha o WhatsApp ou o e-mail.'; soundError(); return; }
+    if (!consent) { err.textContent = 'Marque o consentimento para liberar.'; soundError(); return; }
+    err.textContent = '';
+
+    // Remove o blur de todas as seções (somente front; gravação do lead é passo posterior)
+    document.getElementById('s-report').classList.add('rep-revealed');
+    const gate = document.getElementById('rep-gate');
+    if (gate) gate.style.display = 'none';
+    soundSuccess();
+    document.querySelector('#s-report .rep-scroll').scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>
 </body>
