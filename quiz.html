@@ -1240,38 +1240,6 @@ body.presell-mode .expert-header { height: 300px; }
     <div class="options" id="q-opts"></div>
 </div>
 
-<!-- ── GATE ── -->
-<div id="s-gate" class="screen">
-    <button class="back-btn" onclick="goQ(18)">
-        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-        Voltar
-    </button>
-    <div class="gate-wrap">
-        <div class="gate-lock">🔐</div>
-        <h2 class="gate-title">Seu diagnóstico está pronto.<br>E vai te incomodar.</h2>
-        <p class="gate-sub">O relatório tem <strong style="color:var(--text)">análise completa do seu arquétipo</strong>, os padrões que te travam, pontos cegos que você nunca viu — e as 3 bios calibradas pra você. É extenso. Vale cada linha.<br><br>Por onde quer receber?</p>
-        <div class="delivery-choice">
-            <button class="choice-btn selected" id="ch-whats" onclick="selectDelivery('whats')">
-                <span class="choice-icon">📱</span>
-                WhatsApp
-            </button>
-            <button class="choice-btn" id="ch-email" onclick="selectDelivery('email')">
-                <span class="choice-icon">📧</span>
-                Email
-            </button>
-        </div>
-        <div class="form-group">
-            <label class="form-label">WhatsApp (com DDD)</label>
-            <input type="tel" id="f-whatsapp" class="form-input" placeholder="(11) 99999-9999" inputmode="tel">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Seu melhor email</label>
-            <input type="email" id="f-email" class="form-input" placeholder="email@exemplo.com" inputmode="email">
-        </div>
-        <button class="btn" onclick="doGenerate()">Quero meu diagnóstico completo →</button>
-    </div>
-</div>
-
 <!-- ── LOADING ── -->
 <div id="s-loading" class="screen">
     <div class="loading-wrap">
@@ -1308,16 +1276,52 @@ body.presell-mode .expert-header { height: 300px; }
         </div>
         <div class="bios-section-title">SUAS 3 BIOS — CALIBRADAS PARA VOCÊ</div>
         <div id="r-bios"></div>
-        <div class="result-bottom-note">
-            Salve as bios e teste cada uma. O relatório completo<br>
-            chegará no canal que você escolheu.
+
+        <!-- Aviso de escassez + timer 9 min -->
+        <div class="rep-scarcity" style="margin-top:16px">
+            <div class="rep-scarcity-text">Geramos seu relatório agora. Por privacidade, ele fica disponível por <b>9 minutos</b> antes de ser apagado dos nossos servidores.</div>
+            <div class="rep-timer" id="bio-timer">09:00</div>
         </div>
+
+        <!-- Botão que revela a captura -->
+        <button id="btn-reveal-capture" onclick="revealCapture()" style="display:block;width:100%;margin-top:6px;margin-bottom:8px;padding:16px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#a855f7);border:none;color:#fff;font-size:15px;font-weight:700;text-align:center;cursor:pointer;font-family:inherit;">
+            📄 Ver meu relatório completo →
+        </button>
+
+        <!-- Bloco de captura (escondido até clicar no botão acima) -->
+        <div id="bio-capture" class="gate-wrap" style="display:none;flex:none;margin-top:8px;">
+            <div class="gate-lock">🔐</div>
+            <h2 class="gate-title">Seu diagnóstico está pronto.<br>E vai te incomodar.</h2>
+            <p class="gate-sub">O relatório tem <strong style="color:var(--text)">análise completa do seu arquétipo</strong>, os padrões que te travam, pontos cegos que você nunca viu — e as 3 bios calibradas pra você. É extenso. Vale cada linha.<br><br>Por onde quer receber?</p>
+            <div class="delivery-choice">
+                <button class="choice-btn selected" id="ch-whats" onclick="selectDelivery('whats')">
+                    <span class="choice-icon">📱</span>
+                    WhatsApp
+                </button>
+                <button class="choice-btn" id="ch-email" onclick="selectDelivery('email')">
+                    <span class="choice-icon">📧</span>
+                    Email
+                </button>
+            </div>
+            <div class="form-group" id="fg-whats">
+                <label class="form-label">WhatsApp (com DDD)</label>
+                <input type="tel" id="f-whatsapp" class="form-input" placeholder="(11) 99999-9999" inputmode="tel">
+            </div>
+            <div class="form-group" id="fg-email" style="display:none">
+                <label class="form-label">Seu melhor email</label>
+                <input type="email" id="f-email" class="form-input" placeholder="email@exemplo.com" inputmode="email">
+            </div>
+            <label class="rep-consent" style="margin-bottom:14px;color:var(--muted);font-size:13px;display:flex;gap:9px;align-items:flex-start;cursor:pointer;">
+                <input type="checkbox" id="cap-consent" style="margin-top:2px;width:16px;height:16px;accent-color:var(--primary);flex-shrink:0;">
+                <span>Autorizo o contato e o uso dos meus dados conforme a política de privacidade.</span>
+            </label>
+            <button class="btn" onclick="submitCapture()">Quero meu diagnóstico completo →</button>
+            <div class="rep-err" id="cap-err" style="color:var(--danger);font-size:13px;text-align:center;margin-top:8px;min-height:16px;"></div>
+        </div>
+
         <a id="btn-app-msg" href="/mensagens" style="display:block;width:100%;margin-top:16px;margin-bottom:8px;padding:16px;border-radius:14px;background:rgba(0,200,160,0.08);border:1px solid rgba(0,200,160,0.3);color:#00c8a0;font-size:15px;font-weight:600;text-align:center;text-decoration:none;">
             ✦ Gerar mensagens para conversas
         </a>
-        <button onclick="openReport()" style="display:block;width:100%;margin-top:10px;margin-bottom:8px;padding:16px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#a855f7);border:none;color:#fff;font-size:15px;font-weight:700;text-align:center;cursor:pointer;font-family:inherit;">
-            📄 Ver meu relatório completo →
-        </button>
     </div>
 </div>
 
@@ -1334,13 +1338,8 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="rep-meta rep-blur">Rafael M. · 31 anos · São Paulo · Perfil INTJ</div>
         </div>
 
-        <!-- ESCASSEZ / TIMER -->
-        <div class="rep-scarcity">
-            <div class="rep-scarcity-text">Geramos seu relatório agora. Por privacidade, ele fica disponível por <b>9 minutos</b> antes de ser apagado dos nossos servidores.</div>
-            <div class="rep-timer" id="rep-timer">09:00</div>
-        </div>
+        <!-- SEÇÃO 01 — Suas Respostas -->
 
-        <!-- SEÇÃO 01 — Suas Respostas (PESSOAL: teaser + blur) -->
         <div class="rep-section">
             <div class="rep-sec-label">Seção 01</div>
             <div class="rep-sec-title">Suas Respostas</div>
@@ -1499,20 +1498,6 @@ body.presell-mode .expert-header { height: 300px; }
                 <div class="rep-card accent" style="margin-top:8px"><div class="rep-card-title green">Por que essa abertura funciona</div><p class="rep-p">Não começa com elogio à aparência · pressuposto embutido · "opinião forte" gera curiosidade · leitura fria · ela faz a pergunta no fim = inversão completa.</p></div>
             </div>
             <span class="rep-lockchip">🔒 Desbloqueie a sequência completa + análise técnica</span>
-        </div>
-
-        <!-- PORTA DE CAPTURA -->
-        <div class="rep-gate" id="rep-gate">
-            <div class="rep-gate-title">Liberar meu relatório completo</div>
-            <div class="rep-gate-sub">Tudo que está embaçado acima é sobre você. Desbloqueie agora antes que expire.</div>
-            <input type="tel" class="rep-input" id="rep-whats" placeholder="WhatsApp (com DDD)" inputmode="tel">
-            <input type="email" class="rep-input" id="rep-email" placeholder="Seu melhor e-mail" inputmode="email">
-            <label class="rep-consent">
-                <input type="checkbox" id="rep-consent">
-                <span>Autorizo o contato e o uso dos meus dados conforme a política de privacidade.</span>
-            </label>
-            <button class="rep-unlock-btn" id="rep-unlock" onclick="unlockReport()">🔓 Liberar meu relatório completo</button>
-            <div class="rep-err" id="rep-err"></div>
         </div>
 
         <button class="rep-final-cta" onclick="show('s-result')">← Voltar para minhas bios</button>
@@ -2181,7 +2166,7 @@ function pick(btn, polo) {
 }
 
 function nextQ() {
-    if (curQ >= QS.length - 1) { soundAdvance(); show('s-gate'); return; }
+    if (curQ >= QS.length - 1) { soundAdvance(); doGenerate(); return; }
     curQ++;
     const phase = getPhase(curQ);
     if (curQ === phase.start && curQ > 0) {
@@ -2228,6 +2213,37 @@ function selectDelivery(type) {
     delivery = type;
     document.getElementById('ch-whats').classList.toggle('selected', type === 'whats');
     document.getElementById('ch-email').classList.toggle('selected', type === 'email');
+    // Mostra apenas o campo correspondente (nunca os dois)
+    const fgW = document.getElementById('fg-whats');
+    const fgE = document.getElementById('fg-email');
+    if (fgW) fgW.style.display = (type === 'whats') ? 'block' : 'none';
+    if (fgE) fgE.style.display = (type === 'email') ? 'block' : 'none';
+}
+
+// Revela o bloco de captura ao clicar em "Ver meu relatório completo"
+function revealCapture() {
+    const cap = document.getElementById('bio-capture');
+    const btn = document.getElementById('btn-reveal-capture');
+    if (cap) cap.style.display = 'block';
+    if (btn) btn.style.display = 'none';
+    selectDelivery('whats'); // WhatsApp pré-selecionado
+    soundAdvance();
+    if (cap) cap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Valida campo dinâmico + consentimento e abre o relatório
+function submitCapture() {
+    const err = document.getElementById('cap-err');
+    const val = (delivery === 'whats')
+        ? document.getElementById('f-whatsapp').value.trim()
+        : document.getElementById('f-email').value.trim();
+    if (!val) { err.textContent = 'Preencha seu ' + (delivery === 'whats' ? 'WhatsApp' : 'e-mail') + '.'; soundError(); return; }
+    if (!document.getElementById('cap-consent').checked) { err.textContent = 'Marque o consentimento para liberar.'; soundError(); return; }
+    err.textContent = '';
+    userData.delivery = delivery;
+    userData[delivery === 'whats' ? 'whatsapp' : 'email'] = val;
+    soundSuccess();
+    openReport();
 }
 
 // ═══════════════════════════════════════
@@ -2235,14 +2251,6 @@ function selectDelivery(type) {
 // ═══════════════════════════════════════
 
 async function doGenerate() {
-    const email    = document.getElementById('f-email').value.trim();
-    const whatsapp = document.getElementById('f-whatsapp').value.trim();
-    if (!email && !whatsapp) { soundError(); alert('Preencha pelo menos um contato para receber seu relatório.'); return; }
-
-    userData.email    = email;
-    userData.whatsapp = whatsapp;
-    userData.delivery = delivery;
-
     // Calcula MBTI + ADICAS e deriva arquétipo para compatibilidade com ARCHETYPES
     const s        = QuizLogic.calcularScores(respostas);
     const dominant = archetypeFromAdicas(s.adicas, s.mbtiTipo);
@@ -2321,6 +2329,13 @@ function showResult(arch, bios) {
         c.appendChild(card);
     });
 
+    // Reseta a captura e inicia o timer de 9 min na aba de bios
+    const cap = document.getElementById('bio-capture');
+    const btn = document.getElementById('btn-reveal-capture');
+    if (cap) cap.style.display = 'none';
+    if (btn) btn.style.display = 'block';
+    startTimer('bio-timer', 9 * 60);
+
     show('s-result');
 }
 
@@ -2337,15 +2352,11 @@ function copyBio(btn, i) {
 // ═══════════════════════════════════════
 let repTimerId = null;
 
-function openReport() {
-    show('s-report');
-    startReportTimer(9 * 60); // 9 minutos
-}
-
-function startReportTimer(totalSec) {
+// Timer regressivo genérico (mm:ss) para um elemento por id
+function startTimer(elId, totalSec) {
     if (repTimerId) clearInterval(repTimerId);
     let s = totalSec;
-    const el = document.getElementById('rep-timer');
+    const el = document.getElementById(elId);
     const render = () => {
         const m = Math.floor(s / 60), ss = s % 60;
         if (el) el.textContent = `${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
@@ -2358,22 +2369,10 @@ function startReportTimer(totalSec) {
     }, 1000);
 }
 
-function unlockReport() {
-    const whats   = document.getElementById('rep-whats').value.trim();
-    const email   = document.getElementById('rep-email').value.trim();
-    const consent = document.getElementById('rep-consent').checked;
-    const err     = document.getElementById('rep-err');
-
-    if (!whats && !email) { err.textContent = 'Preencha o WhatsApp ou o e-mail.'; soundError(); return; }
-    if (!consent) { err.textContent = 'Marque o consentimento para liberar.'; soundError(); return; }
-    err.textContent = '';
-
-    // Remove o blur de todas as seções (somente front; gravação do lead é passo posterior)
-    document.getElementById('s-report').classList.add('rep-revealed');
-    const gate = document.getElementById('rep-gate');
-    if (gate) gate.style.display = 'none';
-    soundSuccess();
-    document.querySelector('#s-report .rep-scroll').scrollTo({ top: 0, behavior: 'smooth' });
+function openReport() {
+    document.getElementById('s-report').classList.add('rep-revealed'); // garante tudo visível
+    show('s-report');
+    document.querySelector('#s-report .rep-scroll').scrollTo({ top: 0 });
 }
 </script>
 </body>
