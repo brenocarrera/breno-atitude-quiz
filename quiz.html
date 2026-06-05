@@ -1501,6 +1501,13 @@ body.presell-mode .expert-header { height: 300px; }
             <span class="rep-lockchip">🔒 Desbloqueie a sequência completa + análise técnica</span>
         </div>
 
+        <!-- BÔNUS — as 3 bios geradas (mesma fonte de dados da tela de bios) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Bônus</div>
+            <div class="rep-sec-title">Suas 3 Bios — Calibradas para Você</div>
+            <div id="rep-bios-list"></div>
+        </div>
+
         <button class="rep-final-cta" onclick="show('s-result')">← Voltar para minhas bios</button>
     </div>
 </div>
@@ -2296,6 +2303,8 @@ async function doGenerate() {
 
 function showResult(arch, bios) {
     soundSuccess(); // relatório pronto — arpejo de conquista (1x)
+    lastReportBios = bios; // guarda as mesmas bios p/ reaproveitar no #s-report
+    lastReportArch = arch;
     const a = ARCHETYPES[arch];
     document.getElementById('r-badge').textContent = a.badge;
     document.getElementById('r-name').textContent  = a.name;
@@ -2352,6 +2361,26 @@ function copyBio(btn, i) {
 // RELATÓRIO FINAL — abrir, timer 9min, desbloquear blur
 // ═══════════════════════════════════════
 let repTimerId = null;
+let lastReportBios = []; // mesmas bios geradas em showResult (reuso no #s-report)
+let lastReportArch = '';
+
+// Renderiza as 3 bios já geradas dentro do #s-report (sem nova chamada de API)
+function renderReportBios() {
+    const list = document.getElementById('rep-bios-list');
+    if (!list) return;
+    const a = ARCHETYPES[lastReportArch] || { bios: [] };
+    list.innerHTML = '';
+    (lastReportBios || []).slice(0,3).forEach((item, i) => {
+        const bioTexto = (typeof item === 'string') ? item : (item.bio || '');
+        const meta = (a.bios && a.bios[i]) || { version:`Versão ${i+1}`, style:'' };
+        const card = document.createElement('div');
+        card.className = 'rep-card accent';
+        card.innerHTML = `
+            <div class="rep-card-title">${meta.version}${meta.style ? ' · <span style="font-weight:400;color:var(--r-muted)">'+meta.style+'</span>' : ''}</div>
+            <p class="rep-a" id="rbio-${i}">${bioTexto}</p>`;
+        list.appendChild(card);
+    });
+}
 
 // Timer regressivo genérico (mm:ss) para um elemento por id
 function startTimer(elId, totalSec) {
@@ -2372,6 +2401,7 @@ function startTimer(elId, totalSec) {
 
 function openReport() {
     document.getElementById('s-report').classList.add('rep-revealed'); // garante tudo visível
+    renderReportBios(); // injeta as 3 bios já geradas no fim do relatório
     show('s-report');
     document.querySelector('#s-report .rep-scroll').scrollTo({ top: 0 });
 }
