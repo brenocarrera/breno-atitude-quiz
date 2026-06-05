@@ -1021,11 +1021,9 @@ body.presell-mode .expert-header { height: 300px; }
 .rep-point { background: var(--r-card); border: 1px solid var(--r-border); border-left: 3px solid var(--r-red); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
 .rep-point-n { display: inline-flex; width: 22px; height: 22px; border-radius: 6px; background: var(--r-red); color: #fff; font-size: 0.75rem; font-weight: 800; align-items: center; justify-content: center; margin-right: 8px; }
 
-/* ── BLUR PARCIAL (teaser visível + miolo borrado) ── */
-.rep-blur { filter: blur(6px); opacity: 0.65; user-select: none; pointer-events: none; transition: filter 0.5s, opacity 0.5s; position: relative; }
-.rep-revealed .rep-blur { filter: none; opacity: 1; user-select: auto; pointer-events: auto; }
-.rep-lockchip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--r-orange); margin-top: 6px; }
-.rep-revealed .rep-lockchip { display: none; }
+/* Blur desativado — relatório completo legível */
+.rep-blur { filter: none; opacity: 1; }
+.rep-lockchip { display: none; }
 
 /* Escassez / timer */
 .rep-scarcity {
