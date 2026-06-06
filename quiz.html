@@ -1169,8 +1169,8 @@ body.presell-mode .expert-header { height: 300px; }
                 <div id="rep-tipo-09" class="rep-type"><div class="rep-type-num">Tipo 09</div><div class="rep-type-ico">♟️</div><div class="rep-type-name">O Homem de Alto Valor</div></div>
             </div>
             <div class="rep-card accent" style="margin-top:12px">
-                <div class="rep-card-title">Análise do seu tipo — O Cara da Conversa (Tipo 03)</div>
-                <p class="rep-p">O Tipo 03 é o mais próximo do topo que nunca chega lá por uma razão específica: <b style="color:var(--r-text)">ele substitui tensão sexual por profundidade intelectual.</b><span class="rep-blur"> Ela admira você. Confia em você. Mas não sente aquela urgência de te ver que aparece quando o cérebro primitivo é ativado. A distância entre Tipo 03 e Tipo 08 é menor do que parece — e é 100% técnica, não de personalidade.</span></p>
+                <div class="rep-card-title" id="rep-diag-titulo">Análise do seu tipo</div>
+                <p class="rep-p" id="rep-diagnostico"></p>
             </div>
         </div>
 
@@ -2034,19 +2034,20 @@ async function doGenerate() {
         localStorage.setItem('perfil_adicas', perfilAdicas);
         localStorage.setItem('mbti_tipo', s.mbtiTipo);
 
-        showResult(dominant, data.bios);
+        showResult(dominant, data.bios, data.diagnostico);
     } catch {
         // Fallback neutro (sem despejar dados crus do usuário na bio)
         const fallback = { bio: 'Conversa real primeiro. O resto a gente descobre pessoalmente.', estrutura:'', motivo:'' };
-        showResult(dominant, [fallback, fallback, fallback]);
+        showResult(dominant, [fallback, fallback, fallback], '');
     }
 }
 
-// Guarda as bios geradas e abre direto o relatório (tela final única)
-function showResult(arch, bios) {
+// Guarda as bios + diagnóstico gerados e abre direto o relatório (tela final única)
+function showResult(arch, bios, diagnostico) {
     soundSuccess(); // relatório pronto — arpejo de conquista (1x)
     lastReportBios = bios;
     lastReportArch = arch;
+    lastReportDiagnostico = diagnostico || '';
     openReport();
 }
 
@@ -2056,6 +2057,7 @@ function showResult(arch, bios) {
 let repTimerId = null;
 let lastReportBios = []; // mesmas bios geradas em showResult (reuso no #s-report)
 let lastReportArch = '';
+let lastReportDiagnostico = ''; // diagnóstico real gerado pela IA
 
 // Renderiza as 3 bios já geradas dentro do #s-report (sem nova chamada de API)
 function renderReportBios() {
@@ -2126,6 +2128,13 @@ const ARQUETIPO_TIPO9 = {
     provocador: '07', // Bad Boy Instável — atração sem consistência
 };
 
+// Nome de cada um dos 9 tipos (para o título dinâmico do diagnóstico)
+const TIPO9_NOME = {
+    '01':'O Invisível', '02':'O Amigo Legal Demais', '03':'O Cara da Conversa',
+    '04':'O Provider Ansioso', '05':'O Fantasma Digital', '06':'O Predatório Óbvio',
+    '07':'O Bad Boy Instável', '08':'O Aventureiro Calibrado', '09':'O Homem de Alto Valor',
+};
+
 /**
  * preencherReportMBTI(scores)
  * Atualiza: título MBTI, tags, barras ADICAS, destaque do tipo 9.
@@ -2187,6 +2196,13 @@ function preencherReportMBTI(scores) {
             badgeExist.remove();
         }
     }
+
+    // 5. Diagnóstico real da IA — título coerente com o tipo destacado no grid
+    const elDiagT = document.getElementById('rep-diag-titulo');
+    const elDiag  = document.getElementById('rep-diagnostico');
+    if (elDiagT) elDiagT.textContent = `Análise do seu tipo — ${TIPO9_NOME[tipoId] || ''} (Tipo ${tipoId})`;
+    if (elDiag)  elDiag.textContent  = lastReportDiagnostico
+        || 'Seu diagnóstico personalizado aparece aqui assim que a análise é gerada.';
 }
 
 function openReport() {
