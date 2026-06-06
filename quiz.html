@@ -612,48 +612,6 @@ select.form-input option { background: var(--card); color: var(--text); }
 .btn-comment:hover { opacity: 0.88; }
 
 /* ══════════════════════════════════════
-   GATE
-══════════════════════════════════════ */
-.gate-wrap {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    justify-content: center;
-}
-
-.gate-lock { font-size: 36px; margin-bottom: 10px; }
-.gate-title { font-size: 22px; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
-.gate-sub   { color: var(--muted); font-size: 13px; line-height: 1.65; margin-bottom: 16px; }
-
-.delivery-choice {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 14px;
-}
-
-.choice-btn {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 11px 10px;
-    color: var(--muted);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    text-align: center;
-    transition: all 0.2s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-}
-
-.choice-btn .choice-icon { font-size: 20px; }
-.choice-btn.selected { border-color: var(--primary); color: var(--primary); background: #071e30; }
-
-/* ══════════════════════════════════════
    LOADING
 ══════════════════════════════════════ */
 .loading-wrap {
@@ -704,124 +662,6 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .lstep.done .lstep-dot { background: var(--primary); box-shadow: 0 0 7px var(--primary); }
-
-/* ══════════════════════════════════════
-   RESULT
-══════════════════════════════════════ */
-.result-top {
-    background: linear-gradient(135deg, rgba(0,200,160,0.08), rgba(0,102,204,0.08));
-    border: 1px solid rgba(0,200,160,0.2);
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 18px;
-}
-
-.r-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--primary), var(--blue));
-    color: #fff;
-    padding: 4px 13px;
-    border-radius: 20px;
-    font-size: 9px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.r-name { font-size: 28px; font-weight: 800; margin-bottom: 10px; line-height: 1.1; }
-
-.r-desc {
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.7;
-    border-left: 2px solid var(--border);
-    padding-left: 14px;
-}
-
-.bios-section-title {
-    font-size: 10px;
-    color: var(--primary);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin-bottom: 12px;
-    margin-top: 4px;
-}
-
-.bio-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 10px;
-    position: relative;
-}
-
-.bio-type-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    gap: 10px;
-}
-
-.bio-type-info {}
-
-.bio-version {
-    font-size: 12px;
-    font-weight: 800;
-    color: var(--text);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 2px;
-}
-
-.bio-style {
-    font-size: 11px;
-    color: var(--muted);
-}
-
-.bio-effect {
-    font-size: 11px;
-    color: var(--primary);
-    text-align: right;
-    flex-shrink: 0;
-    max-width: 140px;
-    line-height: 1.4;
-}
-
-.bio-divider {
-    height: 1px;
-    background: var(--border);
-    margin-bottom: 10px;
-}
-
-.bio-text { font-size: 15px; line-height: 1.75; color: #b8d4ec; }
-
-.copy-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 7px 14px;
-    border-radius: 8px;
-    font-size: 12px;
-    cursor: pointer;
-    margin-top: 11px;
-    transition: all 0.2s;
-    font-family: inherit;
-}
-
-.copy-btn:hover { border-color: var(--primary); color: var(--primary); }
-.copy-btn.copied { border-color: #00e5b0; color: #00e5b0; }
-
-.result-bottom-note {
-    text-align: center;
-    color: var(--muted2);
-    font-size: 12px;
-    line-height: 1.6;
-    padding: 16px 0 8px;
-}
 
 /* ══════════════════════════════════════
    RESPONSIVE
@@ -1033,37 +873,6 @@ body.presell-mode .expert-header { height: 300px; }
 .rep-scarcity-text { font-size: 0.92rem; color: #e7ecf5; line-height: 1.55; }
 .rep-scarcity-text b { color: var(--r-orange); font-weight: 700; }
 .rep-timer { font-size: 1.6rem; font-weight: 800; color: var(--r-orange); font-variant-numeric: tabular-nums; margin-top: 6px; }
-
-/* Porta de captura */
-.rep-gate {
-    background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(168,85,247,0.08));
-    border: 1px solid var(--r-primary); border-radius: 16px; padding: 18px; margin: 18px 0;
-}
-.rep-gate-title { font-weight: 800; font-size: 1.05rem; color: var(--r-text); margin-bottom: 6px; text-align: center; }
-.rep-gate-sub { font-size: 0.8rem; color: var(--r-muted); text-align: center; margin-bottom: 14px; line-height: 1.5; }
-.rep-input {
-    width: 100%; background: #0a0d14; border: 1px solid var(--r-border); border-radius: 10px;
-    padding: 12px 13px; color: var(--r-text); font-size: 0.95rem; font-family: inherit; outline: none; margin-bottom: 10px;
-}
-.rep-input:focus { border-color: var(--r-primary); }
-.rep-input::placeholder { color: #5b6577; }
-.rep-consent { display: flex; gap: 9px; align-items: flex-start; font-size: 0.75rem; color: var(--r-muted); line-height: 1.4; margin-bottom: 14px; cursor: pointer; }
-.rep-consent input { margin-top: 2px; width: 16px; height: 16px; accent-color: var(--r-primary); flex-shrink: 0; }
-.rep-unlock-btn {
-    width: 100%; padding: 15px; border: none; border-radius: 12px; cursor: pointer;
-    background: linear-gradient(135deg, var(--r-primary), var(--r-purple)); color: #fff;
-    font-weight: 800; font-size: 1rem; font-family: inherit;
-    box-shadow: 0 6px 20px rgba(139,92,246,0.4);
-}
-.rep-unlock-btn:disabled { background: #1e2230; color: #5b6577; box-shadow: none; cursor: not-allowed; }
-.rep-err { color: var(--r-red); font-size: 0.78rem; text-align: center; margin-top: 8px; min-height: 16px; }
-
-.rep-final-cta {
-    display: block; width: 100%; text-align: center; padding: 16px;
-    background: linear-gradient(135deg, var(--r-primary), var(--r-purple)); color: #fff;
-    border: none; border-radius: 14px; font-weight: 800; font-size: 1rem; font-family: inherit;
-    cursor: pointer; margin-top: 18px;
-}
 </style>
 </head>
 <body>
@@ -1267,65 +1076,6 @@ body.presell-mode .expert-header { height: 300px; }
     </div>
 </div>
 
-<!-- ── RESULT ── -->
-<div id="s-result" class="screen">
-    <div style="overflow-y:auto;flex:1;padding-bottom:8px;">
-        <div class="result-top">
-            <div class="r-badge" id="r-badge">Arquétipo</div>
-            <div class="r-name" id="r-name"></div>
-            <div class="r-desc" id="r-desc"></div>
-        </div>
-        <div class="bios-section-title">SUAS 3 BIOS — CALIBRADAS PARA VOCÊ</div>
-        <div id="r-bios"></div>
-
-        <!-- Aviso de escassez + timer 9 min -->
-        <div class="rep-scarcity" style="margin-top:16px">
-            <div class="rep-scarcity-text">Geramos seu relatório agora. Por privacidade, ele fica disponível por <b>9 minutos</b> antes de ser apagado dos nossos servidores.</div>
-            <div class="rep-timer" id="bio-timer">09:00</div>
-        </div>
-
-        <!-- Botão que revela a captura -->
-        <button id="btn-reveal-capture" onclick="revealCapture()" style="display:block;width:100%;margin-top:6px;margin-bottom:8px;padding:16px;border-radius:14px;background:linear-gradient(135deg,#8b5cf6,#a855f7);border:none;color:#fff;font-size:15px;font-weight:700;text-align:center;cursor:pointer;font-family:inherit;">
-            📄 Ver meu relatório completo →
-        </button>
-
-        <!-- Bloco de captura (escondido até clicar no botão acima) -->
-        <div id="bio-capture" class="gate-wrap" style="display:none;flex:none;margin-top:8px;">
-            <div class="gate-lock">🔐</div>
-            <h2 class="gate-title">Seu diagnóstico está pronto.<br>E vai te incomodar.</h2>
-            <p class="gate-sub">O relatório tem <strong style="color:var(--text)">análise completa do seu arquétipo</strong>, os padrões que te travam, pontos cegos que você nunca viu — e as 3 bios calibradas pra você. É extenso. Vale cada linha.<br><br>Por onde quer receber?</p>
-            <div class="delivery-choice">
-                <button class="choice-btn selected" id="ch-whats" onclick="selectDelivery('whats')">
-                    <span class="choice-icon">📱</span>
-                    WhatsApp
-                </button>
-                <button class="choice-btn" id="ch-email" onclick="selectDelivery('email')">
-                    <span class="choice-icon">📧</span>
-                    Email
-                </button>
-            </div>
-            <div class="form-group" id="fg-whats">
-                <label class="form-label">WhatsApp (com DDD)</label>
-                <input type="tel" id="f-whatsapp" class="form-input" placeholder="(11) 99999-9999" inputmode="tel">
-            </div>
-            <div class="form-group" id="fg-email" style="display:none">
-                <label class="form-label">Seu melhor email</label>
-                <input type="email" id="f-email" class="form-input" placeholder="email@exemplo.com" inputmode="email">
-            </div>
-            <label class="rep-consent" style="margin-bottom:14px;color:var(--muted);font-size:13px;display:flex;gap:9px;align-items:flex-start;cursor:pointer;">
-                <input type="checkbox" id="cap-consent" style="margin-top:2px;width:16px;height:16px;accent-color:var(--primary);flex-shrink:0;">
-                <span>Autorizo o contato e o uso dos meus dados conforme a política de privacidade.</span>
-            </label>
-            <button class="btn" onclick="submitCapture()">Quero meu diagnóstico completo →</button>
-            <div class="rep-err" id="cap-err" style="color:var(--danger);font-size:13px;text-align:center;margin-top:8px;min-height:16px;"></div>
-        </div>
-
-        <a id="btn-app-msg" href="/mensagens" style="display:block;width:100%;margin-top:16px;margin-bottom:8px;padding:16px;border-radius:14px;background:rgba(0,200,160,0.08);border:1px solid rgba(0,200,160,0.3);color:#00c8a0;font-size:15px;font-weight:600;text-align:center;text-decoration:none;">
-            ✦ Gerar mensagens para conversas
-        </a>
-    </div>
-</div>
-
 <!-- ── RELATÓRIO FINAL ── -->
 <div id="s-report" class="screen">
     <div class="rep-scroll">
@@ -1501,14 +1251,22 @@ body.presell-mode .expert-header { height: 300px; }
             <span class="rep-lockchip">🔒 Desbloqueie a sequência completa + análise técnica</span>
         </div>
 
-        <!-- BÔNUS — as 3 bios geradas (mesma fonte de dados da tela de bios) -->
+        <!-- BÔNUS — as 3 bios geradas -->
         <div class="rep-section">
             <div class="rep-sec-label">Bônus</div>
             <div class="rep-sec-title">Suas 3 Bios — Calibradas para Você</div>
             <div id="rep-bios-list"></div>
         </div>
 
-        <button class="rep-final-cta" onclick="show('s-result')">← Voltar para minhas bios</button>
+        <!-- Aviso de escassez + timer (fim do relatório — onde ficarão os botões depois) -->
+        <div class="rep-scarcity">
+            <div class="rep-scarcity-text">Geramos seu relatório agora. Por privacidade, ele fica disponível por <b>9 minutos</b> antes de ser apagado dos nossos servidores.</div>
+            <div class="rep-timer" id="bio-timer">09:00</div>
+        </div>
+
+        <a href="/mensagens" style="display:block;width:100%;margin-top:14px;padding:16px;border-radius:14px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.35);color:#a855f7;font-size:15px;font-weight:600;text-align:center;text-decoration:none;">
+            ✦ Gerar mensagens para conversas
+        </a>
     </div>
 </div>
 
@@ -1769,7 +1527,6 @@ let userName  = '';
 let userData  = {};
 let respostas = []; // { a: string } por índice de pergunta
 let curQ      = 0;
-let delivery  = 'whats';
 let pendingCallback = null;
 
 // ─────────────────────────────────────────
@@ -2214,47 +1971,6 @@ function closeComment() {
 }
 
 // ═══════════════════════════════════════
-// GATE
-// ═══════════════════════════════════════
-
-function selectDelivery(type) {
-    delivery = type;
-    document.getElementById('ch-whats').classList.toggle('selected', type === 'whats');
-    document.getElementById('ch-email').classList.toggle('selected', type === 'email');
-    // Mostra apenas o campo correspondente (nunca os dois)
-    const fgW = document.getElementById('fg-whats');
-    const fgE = document.getElementById('fg-email');
-    if (fgW) fgW.style.display = (type === 'whats') ? 'block' : 'none';
-    if (fgE) fgE.style.display = (type === 'email') ? 'block' : 'none';
-}
-
-// Revela o bloco de captura ao clicar em "Ver meu relatório completo"
-function revealCapture() {
-    const cap = document.getElementById('bio-capture');
-    const btn = document.getElementById('btn-reveal-capture');
-    if (cap) cap.style.display = 'block';
-    if (btn) btn.style.display = 'none';
-    selectDelivery('whats'); // WhatsApp pré-selecionado
-    soundAdvance();
-    if (cap) cap.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-// Valida campo dinâmico + consentimento e abre o relatório
-function submitCapture() {
-    const err = document.getElementById('cap-err');
-    const val = (delivery === 'whats')
-        ? document.getElementById('f-whatsapp').value.trim()
-        : document.getElementById('f-email').value.trim();
-    if (!val) { err.textContent = 'Preencha seu ' + (delivery === 'whats' ? 'WhatsApp' : 'e-mail') + '.'; soundError(); return; }
-    if (!document.getElementById('cap-consent').checked) { err.textContent = 'Marque o consentimento para liberar.'; soundError(); return; }
-    err.textContent = '';
-    userData.delivery = delivery;
-    userData[delivery === 'whats' ? 'whatsapp' : 'email'] = val;
-    soundSuccess();
-    openReport();
-}
-
-// ═══════════════════════════════════════
 // GENERATE
 // ═══════════════════════════════════════
 
@@ -2301,64 +2017,16 @@ async function doGenerate() {
     }
 }
 
+// Guarda as bios geradas e abre direto o relatório (tela final única)
 function showResult(arch, bios) {
     soundSuccess(); // relatório pronto — arpejo de conquista (1x)
-    lastReportBios = bios; // guarda as mesmas bios p/ reaproveitar no #s-report
+    lastReportBios = bios;
     lastReportArch = arch;
-    const a = ARCHETYPES[arch];
-    document.getElementById('r-badge').textContent = a.badge;
-    document.getElementById('r-name').textContent  = a.name;
-    document.getElementById('r-desc').textContent  = a.desc;
-
-    const c = document.getElementById('r-bios');
-    c.innerHTML = '';
-
-    bios.slice(0,3).forEach((item, i) => {
-        const bioTexto = (typeof item === 'string') ? item : (item.bio || '');
-        const bioEstrutura = (typeof item === 'object' && item.estrutura) ? item.estrutura : '';
-        const bioMotivo    = (typeof item === 'object' && item.motivo)    ? item.motivo    : '';
-        const meta = a.bios[i] || {version:`Versão ${i+1}`, style:'', effect:''};
-        const card = document.createElement('div');
-        card.className = 'bio-card';
-        const metaHtml = (bioEstrutura || bioMotivo) ? `
-            <div class="bio-divider"></div>
-            <div style="font-size:12px;color:#3d6a8a;margin-bottom:4px;">Estrutura: <span style="color:#00c8a0">${bioEstrutura}</span></div>
-            <div style="font-size:12px;color:#3d6a8a;">Por que funciona: <span style="color:#deeaf8">${bioMotivo}</span></div>` : '';
-        card.innerHTML = `
-            <div class="bio-type-header">
-                <div class="bio-type-info">
-                    <div class="bio-version">${meta.version}</div>
-                    <div class="bio-style">${meta.style}</div>
-                </div>
-                <div class="bio-effect">${meta.effect}</div>
-            </div>
-            <div class="bio-divider"></div>
-            <div class="bio-text" id="bio-${i}">${bioTexto}</div>
-            ${metaHtml}
-            <button class="copy-btn" onclick="copyBio(this,${i})">Copiar bio</button>`;
-        c.appendChild(card);
-    });
-
-    // Reseta a captura e inicia o timer de 9 min na aba de bios
-    const cap = document.getElementById('bio-capture');
-    const btn = document.getElementById('btn-reveal-capture');
-    if (cap) cap.style.display = 'none';
-    if (btn) btn.style.display = 'block';
-    startTimer('bio-timer', 9 * 60);
-
-    show('s-result');
-}
-
-function copyBio(btn, i) {
-    navigator.clipboard.writeText(document.getElementById(`bio-${i}`).textContent).then(() => {
-        btn.textContent = '✓ Copiada!';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'Copiar bio'; btn.classList.remove('copied'); }, 2000);
-    });
+    openReport();
 }
 
 // ═══════════════════════════════════════
-// RELATÓRIO FINAL — abrir, timer 9min, desbloquear blur
+// RELATÓRIO FINAL — abrir, timer 9min
 // ═══════════════════════════════════════
 let repTimerId = null;
 let lastReportBios = []; // mesmas bios geradas em showResult (reuso no #s-report)
@@ -2400,8 +2068,9 @@ function startTimer(elId, totalSec) {
 }
 
 function openReport() {
-    document.getElementById('s-report').classList.add('rep-revealed'); // garante tudo visível
+    document.getElementById('s-report').classList.add('rep-revealed'); // abre liberado (sem blur)
     renderReportBios(); // injeta as 3 bios já geradas no fim do relatório
+    startTimer('bio-timer', 9 * 60); // escassez no fim do relatório
     show('s-report');
     document.querySelector('#s-report .rep-scroll').scrollTo({ top: 0 });
 }
