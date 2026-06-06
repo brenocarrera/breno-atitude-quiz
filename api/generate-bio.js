@@ -107,6 +107,23 @@ function parseBios(raw) {
     return bios;
 }
 
+/**
+ * Extrai o diagnóstico (antes do separador @@@ / da 1ª BIO).
+ * Tolera com ou sem o rótulo "DIAGNOSTICO:" e limpa markdown residual.
+ */
+function parseDiagnostico(raw) {
+    let txt = (raw || '').trim();
+    // Pega tudo até o separador @@@ ou até o primeiro "BIO:"
+    const corte = txt.search(/@@@|BIO\s*\d*\s*:/i);
+    let diag = corte > -1 ? txt.slice(0, corte) : '';
+    diag = diag
+        .replace(/^#+\s.*$/gm, '')               // remove títulos markdown
+        .replace(/^-{3,}\s*$/gm, '')             // remove linhas ---
+        .replace(/^\s*DIAGNOSTICO\s*:?/im, '')   // remove o rótulo (início de linha)
+        .trim();
+    return diag;
+}
+
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -141,9 +158,16 @@ Apps que usa: ${appsTxt || 'n/d'}
 Signo: ${signo || 'n/d'}
 Tempo desde o último date: ${ultimoDate || 'n/d'}
 
-Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBTI (perfil ${mbtiTipo}) e nos traços ADICAS acima:
+Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBTI (perfil ${mbtiTipo}) e nos traços ADICAS acima, gere DOIS blocos: primeiro o DIAGNÓSTICO, depois as 3 BIOS.
 
-1. Gere 3 bios para Tinder. Cada bio deve:
+1. DIAGNÓSTICO (máximo ~130 palavras, no tom do Breno do VAULT-CORE: direto, masculino, prático, sem rodeio):
+   Baseado no tipo MBTI ${mbtiTipo}, nos traços fortes (${tracosFort}), no traço fraco (${tracosFraco}) e no arquétipo. Texto corrido em 3 partes encadeadas:
+   (a) o PADRÃO DOMINANTE do cara no jogo (como ele age na sedução);
+   (b) a MAIOR FORÇA dele;
+   (c) a ARMADILHA / ponto cego que trava ele no contexto de sedução.
+   Use o contexto (profissão/idade/apps) só para CALIBRAR — NUNCA cite dados crus (idade, cidade, altura, signo).
+
+2. Gere 3 bios para Tinder. Cada bio deve:
    - Usar o contexto acima apenas para CALIBRAR o tom — jamais escrever idade, cidade, altura ou signo literalmente na bio
    - Ter no máximo 3 linhas
    - Amplificar os traços mais fortes (${tracosFort}) do perfil deste usuário
@@ -151,37 +175,41 @@ Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBT
    - Ser específica — sem clichês (adoro viajar, apaixonado por, amante de)
    - Sem emojis
 
-2. Para cada bio, indique em 1 linha curta: "Estrutura usada" e "Por que funciona"
+3. Para cada bio, indique em 1 linha curta: "Estrutura usada" e "Por que funciona"
 
 REGRAS DE FORMATO (obrigatórias):
-- NÃO escreva título, cabeçalho, introdução ou markdown (nada de "#", "BIO 1:", "---").
-- NÃO numere as bios.
-- Comece a resposta DIRETO no primeiro "BIO:".
-- Separe cada uma das 3 bios com uma linha contendo apenas: |||
+- NÃO escreva título, cabeçalho ou markdown (nada de "#", "---").
+- Comece a resposta DIRETO em "DIAGNOSTICO:".
+- Separe o diagnóstico das bios com uma linha contendo apenas: @@@
+- Não numere as bios. Separe cada uma das 3 bios com uma linha contendo apenas: |||
 
-Use EXATAMENTE este padrão, repetido 3 vezes:
+Use EXATAMENTE este formato:
+DIAGNOSTICO: [texto corrido de até ~130 palavras]
+@@@
 BIO: [texto da bio]
 ESTRUTURA: [nome da estrutura do §2]
 MOTIVO: [1 frase curta]
-|||`;
+|||
+(repita o bloco BIO/ESTRUTURA/MOTIVO/||| exatamente 3 vezes)`;
 
     try {
         const message = await client.messages.create({
             model: 'claude-haiku-4-5-20251001',
-            max_tokens: 1400,
+            max_tokens: 1800,
             system: systemPrompt,
             messages: [{ role: 'user', content: userMsg }],
         });
 
         const raw = message.content[0].text || '';
         const bios = parseBios(raw);
+        const diagnostico = parseDiagnostico(raw);
 
         if (bios.length < 3) {
             console.error('parse incompleto: apenas', bios.length, 'bio(s) extraídas.');
             return res.status(500).json({ error: 'incomplete_response', bios_found: bios.length });
         }
 
-        return res.status(200).json({ bios: bios.slice(0, 3), perfil_adicas: mapping.perfil });
+        return res.status(200).json({ bios: bios.slice(0, 3), diagnostico, perfil_adicas: mapping.perfil });
     } catch (err) {
         console.error('API error:', err);
         return res.status(500).json({ error: err.message || 'api_error' });
