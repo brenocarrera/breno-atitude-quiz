@@ -18,6 +18,7 @@
     --muted:   #3d6a8a;
     --muted2:  #2e5470;
     --danger:  #ff6b6b;
+    --amber:   #ffb020;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -157,8 +158,9 @@ body.presell-mode .expert-header { display: block; }
 }
 
 .screen-sub {
-    color: var(--muted);
-    font-size: 16px;
+    color: var(--text);
+    opacity: 0.85;
+    font-size: clamp(0.95rem, 3.4vw, 1.1rem);
     line-height: 1.5;
     margin-bottom: 14px;
 }
@@ -299,7 +301,7 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .phase-number {
-    font-size: 11px;
+    font-size: clamp(0.75rem, 2.6vw, 0.95rem);
     color: var(--primary);
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -308,16 +310,17 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .phase-title {
-    font-size: 28px;
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
     font-weight: 800;
     line-height: 1.2;
     margin-bottom: 10px;
 }
 
 .phase-sub {
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.65;
+    color: var(--text);
+    opacity: 0.85;
+    font-size: clamp(1.05rem, 3.6vw, 1.3rem);
+    line-height: 1.6;
     margin-bottom: 22px;
 }
 
@@ -365,7 +368,7 @@ select.form-input option { background: var(--card); color: var(--text); }
 ══════════════════════════════════════ */
 .phase-label {
     font-size: 13px;
-    color: var(--primary);
+    color: var(--accent, var(--primary));
     letter-spacing: 3px;
     text-transform: uppercase;
     font-weight: 700;
@@ -425,6 +428,10 @@ select.form-input option { background: var(--card); color: var(--text); }
     box-shadow: 0 0 10px var(--primary);
 }
 
+/* Barra "esquenta" ao passar de 70% */
+.progress-fill.hot { background: linear-gradient(90deg, var(--amber), var(--danger)); }
+.progress-fill.hot::after { background: var(--amber); box-shadow: 0 0 10px var(--amber); }
+
 .question-text {
     font-size: 24px;
     font-weight: 700;
@@ -432,19 +439,22 @@ select.form-input option { background: var(--card); color: var(--text); }
     margin-bottom: 14px;
 }
 
-.options { display: flex; flex-direction: column; gap: 8px; }
+.options { display: flex; flex-direction: column; gap: 10px; counter-reset: option-num; }
 /* 2 colunas quando há muitas opções ou texto curto (cabe sem rolar) */
-.options.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.options.grid2 .option { font-size: 14px; padding: 11px 13px; }
+.options.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.options.grid2 .option { font-size: 14px; padding: 11px 12px 11px 38px; }
 
 .option {
+    counter-increment: option-num;
+    position: relative;
     background: var(--card);
     border: 1px solid var(--border);
+    border-left: 3px solid var(--pos-color, var(--border));
     border-radius: 11px;
-    padding: 14px 15px;
+    padding: 13px 14px 13px 42px;
     cursor: pointer;
     font-size: 17px;
-    line-height: 1.45;
+    line-height: 1.55;
     text-align: left;
     color: #7aacc8;
     transition: all 0.18s;
@@ -453,7 +463,38 @@ select.form-input option { background: var(--card); color: var(--text); }
     opacity: 0;
     transform: translateY(8px);
     animation: up 0.28s ease forwards;
+    /* clamp leve de segurança — não corta o conteúdo atual, só evita estouro */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
+
+/* Badge numérico (numeração automática via CSS counter) */
+.option::before {
+    content: counter(option-num);
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px;
+    font-size: 12px; font-weight: 800;
+    color: var(--accent, var(--primary));
+    border: 1px solid var(--accent, var(--primary));
+    background: rgba(255,255,255,0.02);
+}
+.options.grid2 .option::before { left: 8px; width: 20px; height: 20px; }
+
+/* Negrito automático nas 1as palavras (via JS) */
+.option .opt-head { color: var(--text); font-weight: 700; }
+
+/* Cores fixas por posição (stripe lateral esquerda) */
+.option:nth-child(1) { --pos-color: var(--primary); }
+.option:nth-child(2) { --pos-color: var(--blue); }
+.option:nth-child(3) { --pos-color: var(--amber); }
+.option:nth-child(4) { --pos-color: var(--danger); }
 
 .option:nth-child(1) { animation-delay: 0.04s; }
 .option:nth-child(2) { animation-delay: 0.10s; }
@@ -462,9 +503,14 @@ select.form-input option { background: var(--card); color: var(--text); }
 
 @keyframes up { to { opacity:1; transform:translateY(0); } }
 
-.option:hover  { border-color: var(--primary); background: #071e30; color: var(--text); }
-.option.picked { border-color: var(--primary); background: #071e30; color: var(--text); pointer-events: none; }
-.option.picked::before { content: '✓  '; color: var(--primary); font-weight:800; }
+.option:hover  { border-color: var(--accent, var(--primary)); background: #071e30; color: var(--text); }
+.option.picked { border-color: var(--accent, var(--primary)); background: #071e30; color: var(--text); pointer-events: none; }
+.option.picked::before { content: '✓'; color: #06101e; background: var(--accent, var(--primary)); border-color: var(--accent, var(--primary)); }
+
+/* Sotaque por fase (muda só a cor de destaque) */
+#s-quiz.accent-1 { --accent: var(--primary); }
+#s-quiz.accent-2 { --accent: var(--blue); }
+#s-quiz.accent-3 { --accent: var(--amber); }
 
 /* ══════════════════════════════════════
    COMMENT MODAL (interrupt)
@@ -504,6 +550,11 @@ select.form-input option { background: var(--card); color: var(--text); }
     transform: scale(1) translateY(0);
 }
 
+/* Variante âmbar (1 dos interrupts) */
+.comment-card.amber { border-color: var(--amber); box-shadow: 0 0 40px rgba(255,176,32,0.28), 0 20px 60px rgba(0,0,0,0.6); }
+.comment-card.amber .comment-chip { background: linear-gradient(135deg, var(--amber), var(--danger)); }
+.comment-card.amber .comment-headline span { color: var(--amber); }
+
 .comment-chip {
     display: inline-flex;
     align-items: center;
@@ -537,9 +588,10 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .comment-body-text {
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.65;
-    color: var(--muted);
+    color: var(--text);
+    opacity: 0.85;
     margin-bottom: 20px;
 }
 
@@ -558,48 +610,6 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .btn-comment:hover { opacity: 0.88; }
-
-/* ══════════════════════════════════════
-   GATE
-══════════════════════════════════════ */
-.gate-wrap {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    justify-content: center;
-}
-
-.gate-lock { font-size: 36px; margin-bottom: 10px; }
-.gate-title { font-size: 22px; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
-.gate-sub   { color: var(--muted); font-size: 13px; line-height: 1.65; margin-bottom: 16px; }
-
-.delivery-choice {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 14px;
-}
-
-.choice-btn {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 11px 10px;
-    color: var(--muted);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    text-align: center;
-    transition: all 0.2s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-}
-
-.choice-btn .choice-icon { font-size: 20px; }
-.choice-btn.selected { border-color: var(--primary); color: var(--primary); background: #071e30; }
 
 /* ══════════════════════════════════════
    LOADING
@@ -654,132 +664,14 @@ select.form-input option { background: var(--card); color: var(--text); }
 .lstep.done .lstep-dot { background: var(--primary); box-shadow: 0 0 7px var(--primary); }
 
 /* ══════════════════════════════════════
-   RESULT
-══════════════════════════════════════ */
-.result-top {
-    background: linear-gradient(135deg, rgba(0,200,160,0.08), rgba(0,102,204,0.08));
-    border: 1px solid rgba(0,200,160,0.2);
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 18px;
-}
-
-.r-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--primary), var(--blue));
-    color: #fff;
-    padding: 4px 13px;
-    border-radius: 20px;
-    font-size: 9px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.r-name { font-size: 28px; font-weight: 800; margin-bottom: 10px; line-height: 1.1; }
-
-.r-desc {
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.7;
-    border-left: 2px solid var(--border);
-    padding-left: 14px;
-}
-
-.bios-section-title {
-    font-size: 10px;
-    color: var(--primary);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin-bottom: 12px;
-    margin-top: 4px;
-}
-
-.bio-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 10px;
-    position: relative;
-}
-
-.bio-type-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    gap: 10px;
-}
-
-.bio-type-info {}
-
-.bio-version {
-    font-size: 12px;
-    font-weight: 800;
-    color: var(--text);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 2px;
-}
-
-.bio-style {
-    font-size: 11px;
-    color: var(--muted);
-}
-
-.bio-effect {
-    font-size: 11px;
-    color: var(--primary);
-    text-align: right;
-    flex-shrink: 0;
-    max-width: 140px;
-    line-height: 1.4;
-}
-
-.bio-divider {
-    height: 1px;
-    background: var(--border);
-    margin-bottom: 10px;
-}
-
-.bio-text { font-size: 15px; line-height: 1.75; color: #b8d4ec; }
-
-.copy-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 7px 14px;
-    border-radius: 8px;
-    font-size: 12px;
-    cursor: pointer;
-    margin-top: 11px;
-    transition: all 0.2s;
-    font-family: inherit;
-}
-
-.copy-btn:hover { border-color: var(--primary); color: var(--primary); }
-.copy-btn.copied { border-color: #00e5b0; color: #00e5b0; }
-
-.result-bottom-note {
-    text-align: center;
-    color: var(--muted2);
-    font-size: 12px;
-    line-height: 1.6;
-    padding: 16px 0 8px;
-}
-
-/* ══════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════ */
 @media (max-height: 680px) {
     .expert-header { height: 140px; }
-    .phase-title   { font-size: 24px; }
     .screen-title  { font-size: 20px; }
     .question-text { font-size: 18px; }
-    .phase-sub, .screen-sub { font-size: 12px; margin-bottom: 10px; }
+    /* fontes de fase/sub seguem o clamp() — aqui só reduz a margem p/ caber */
+    .phase-sub, .screen-sub { margin-bottom: 10px; }
     .phase-intro { padding: 4px 0; }
     .form-group  { margin-bottom: 7px; }
 }
@@ -825,9 +717,181 @@ body.presell-mode .expert-header { height: 300px; }
     .presell-headline { font-size: 23px; margin-bottom: 10px; }
     .presell-sub { font-size: 17px; margin-bottom: 16px; }
 }
+
+/* ══════════════════════════════════════
+   BOTÃO DE MUDO
+══════════════════════════════════════ */
+.mute-btn {
+    position: fixed;
+    top: 10px; right: 10px;
+    z-index: 600;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: rgba(11,24,41,0.8);
+    color: var(--primary);
+    font-size: 17px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+    transition: color 0.2s, border-color 0.2s;
+}
+.mute-btn.muted { color: var(--muted2); border-color: var(--muted2); }
+
+/* ══════════════════════════════════════
+   PROVA SOCIAL (na tela de loading)
+══════════════════════════════════════ */
+.social-proof { width: 100%; margin-top: 18px; }
+.sp-count {
+    text-align: center;
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+.sp-count strong { color: var(--primary); font-size: 17px; }
+.sp-bubbles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+.sp-bubble {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 9px 13px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #7aacc8;
+    max-width: 46%;
+}
+.sp-bubble:nth-child(odd)  { border-left: 3px solid var(--primary); }
+.sp-bubble:nth-child(even) { border-left: 3px solid var(--blue); }
+
+@media (max-height: 680px) {
+    .social-proof { margin-top: 12px; }
+    .sp-bubble { padding: 7px 11px; font-size: 12px; }
+}
+
+/* ══════════════════════════════════════
+   RELATÓRIO FINAL (paleta APP 7 / Qwen — namespaced rep-)
+══════════════════════════════════════ */
+#s-report {
+    --r-bg:      #05070a;
+    --r-card:    #12151f;
+    --r-border:  #262b3a;
+    --r-primary: #8b5cf6;
+    --r-purple:  #a855f7;
+    --r-text:    #ffffff;
+    --r-muted:   #94a3b8;
+    --r-green:   #10b981;
+    --r-blue:    #3b82f6;
+    --r-orange:  #f59e0b;
+    --r-red:     #ef4444;
+    --r-pink:    #ec4899;
+}
+#s-report { background: var(--r-bg); }
+.rep-scroll { overflow-y: auto; flex: 1; width: 100%; max-width: 680px; margin: 0 auto; padding: 8px clamp(16px, 5vw, 40px) 36px; font-family: 'Inter','Segoe UI',sans-serif; }
+
+.rep-hero { text-align: center; padding: 16px 0 24px; border-bottom: 1px solid var(--r-border); margin-bottom: 24px; }
+.rep-kicker { font-size: clamp(0.72rem, 2.6vw, 0.82rem); letter-spacing: 3px; text-transform: uppercase; color: var(--r-muted); margin-bottom: 5px; }
+.rep-kicker.t2 { color: var(--r-primary); opacity: 0.8; margin-bottom: 16px; }
+.rep-pill {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--r-primary), var(--r-purple));
+    color: #fff; font-weight: 800; font-size: clamp(1.4rem, 6vw, 2rem);
+    padding: 12px 28px; border-radius: 40px;
+    box-shadow: 0 8px 30px rgba(139,92,246,0.35); margin-bottom: 14px;
+}
+.rep-hero-sub { color: var(--r-muted); font-size: clamp(1rem, 3.6vw, 1.12rem); line-height: 1.7; max-width: 400px; margin: 0 auto 12px; }
+.rep-meta { font-size: clamp(0.72rem, 2.6vw, 0.82rem); letter-spacing: 1px; color: var(--r-muted); text-transform: uppercase; opacity: 0.7; }
+
+/* Seções */
+.rep-section { margin-bottom: 32px; }
+.rep-sec-label { font-size: clamp(0.7rem, 2.6vw, 0.8rem); letter-spacing: 3px; text-transform: uppercase; color: var(--r-primary); opacity: 0.7; margin-bottom: 6px; }
+.rep-sec-title { font-size: clamp(1.25rem, 5vw, 1.6rem); font-weight: 800; color: var(--r-text); margin-bottom: 12px; line-height: 1.25; }
+.rep-sec-intro { font-size: clamp(0.95rem, 3.4vw, 1.05rem); line-height: 1.7; color: var(--r-muted); margin-bottom: 18px; }
+
+.rep-card {
+    background: var(--r-card); border: 1px solid var(--r-border);
+    border-radius: 14px; padding: 16px 18px; margin-bottom: 14px;
+}
+.rep-card.accent { border-left: 3px solid var(--r-primary); }
+.rep-card.green  { border-left: 3px solid var(--r-green); background: rgba(16,185,129,0.06); }
+.rep-card-title { font-weight: 700; font-size: clamp(1rem, 3.8vw, 1.15rem); color: var(--r-text); margin-bottom: 8px; line-height: 1.35; }
+.rep-card-title.green { color: var(--r-green); }
+.rep-q { font-size: clamp(0.82rem, 3vw, 0.92rem); color: var(--r-muted); margin-bottom: 5px; }
+.rep-a { font-size: clamp(0.95rem, 3.5vw, 1.05rem); color: var(--r-text); line-height: 1.55; font-weight: 600; }
+.rep-p { font-size: clamp(0.92rem, 3.4vw, 1.02rem); color: var(--r-muted); line-height: 1.7; margin-bottom: 10px; }
+
+/* Tags */
+.rep-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.rep-tag { background: rgba(139,92,246,0.15); color: var(--r-purple); border: 1px solid rgba(139,92,246,0.3); padding: 4px 11px; border-radius: 12px; font-size: clamp(0.78rem, 2.8vw, 0.85rem); }
+
+/* Barras de dimensão */
+.rep-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.rep-bar-label { flex: 0 0 46%; font-size: clamp(0.8rem, 3vw, 0.92rem); color: var(--r-muted); line-height: 1.35; }
+.rep-bar { flex: 1; height: 9px; background: #1e2330; border-radius: 5px; overflow: hidden; }
+.rep-bar-fill { display: block; height: 100%; border-radius: 5px; transition: width 0.6s ease; }
+.rep-bar-val { flex: 0 0 40px; text-align: right; font-size: clamp(0.8rem, 3vw, 0.92rem); font-weight: 700; }
+
+/* Grid 9 tipos */
+.rep-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.rep-type { background: var(--r-card); border: 1px solid var(--r-border); border-radius: 12px; padding: 14px 10px; text-align: center; }
+.rep-type.current { border-color: var(--r-primary); background: rgba(139,92,246,0.1); position: relative; }
+.rep-type-badge { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: var(--r-primary); color: #fff; font-size: 0.58rem; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+.rep-type-num { font-size: 0.62rem; letter-spacing: 1px; color: var(--r-muted); }
+.rep-type-ico { font-size: 1.5rem; margin: 6px 0; }
+.rep-type-name { font-size: clamp(0.8rem, 3vw, 0.92rem); font-weight: 700; color: var(--r-text); line-height: 1.3; }
+
+/* Dossiê CIA/FBI mono */
+.rep-dossier { font-family: 'Courier New', monospace; background: #0a0d14; border: 1px solid var(--r-border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+.rep-dossier-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.rep-seal { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--r-green); color: var(--r-green); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; flex-shrink: 0; }
+.rep-seal.fbi { border-color: var(--r-blue); color: var(--r-blue); }
+.rep-dossier-meta { font-size: clamp(0.62rem, 2.4vw, 0.72rem); color: var(--r-muted); letter-spacing: 1px; line-height: 1.5; }
+.rep-mono { font-size: clamp(0.8rem, 3vw, 0.9rem); color: #c7d2e0; line-height: 1.75; }
+
+/* Mensagens (chat) */
+.rep-msg { padding: 11px 14px; border-radius: 12px; margin-bottom: 10px; font-size: clamp(0.9rem, 3.4vw, 1rem); line-height: 1.5; max-width: 85%; }
+.rep-msg.him { background: linear-gradient(135deg, var(--r-primary), var(--r-purple)); color: #fff; margin-left: auto; }
+.rep-msg.her { background: var(--r-card); border: 1px solid var(--r-border); color: var(--r-text); }
+
+/* Pontos numerados */
+.rep-point { background: var(--r-card); border: 1px solid var(--r-border); border-left: 3px solid var(--r-red); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; font-size: clamp(0.95rem, 3.6vw, 1.08rem); }
+.rep-point-n { display: inline-flex; width: 24px; height: 24px; border-radius: 6px; background: var(--r-red); color: #fff; font-size: 0.85rem; font-weight: 800; align-items: center; justify-content: center; margin-right: 9px; }
+
+/* Blur desativado — relatório completo legível */
+/* Blur médio: ilegível, mas percebe-se que há conteúdo embaixo */
+.rep-blur { filter: blur(4px); opacity: 0.9; user-select: none; pointer-events: none; }
+.rep-lockchip { display: none; }
+
+/* Escassez / timer */
+.rep-scarcity {
+    background: rgba(245,158,11,0.1); border: 1px solid var(--r-orange);
+    border-radius: 12px; padding: 12px 14px; margin-bottom: 18px; text-align: center;
+}
+.rep-scarcity-text { font-size: 0.92rem; color: #e7ecf5; line-height: 1.55; }
+.rep-scarcity-text b { color: var(--r-orange); font-weight: 700; }
+.rep-timer { font-size: 1.6rem; font-weight: 800; color: var(--r-orange); font-variant-numeric: tabular-nums; margin-top: 6px; }
+
+/* Botões de oferta (duas portas) */
+.rep-offers { display: flex; flex-direction: column; gap: 12px; margin-top: 18px; }
+.rep-offer-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    width: 100%; padding: 16px; border-radius: 14px; cursor: pointer;
+    font-family: inherit; border: none; color: #fff;
+}
+.rep-offer-btn .rep-offer-main { font-size: 1.05rem; font-weight: 800; }
+.rep-offer-btn .rep-offer-tag { font-size: 0.78rem; opacity: 0.9; }
+.rep-offer-btn.free { background: linear-gradient(135deg, var(--r-green), #059669); box-shadow: 0 6px 20px rgba(16,185,129,0.35); }
+.rep-offer-btn.paid { background: linear-gradient(135deg, var(--r-primary), var(--r-purple)); box-shadow: 0 6px 20px rgba(139,92,246,0.35); }
 </style>
 </head>
 <body>
+
+<!-- ═══ BOTÃO DE MUDO ═══ -->
+<button class="mute-btn" id="mute-btn" onclick="toggleMute()" aria-label="Som" title="Som ligado/desligado">🔊</button>
 
 <!-- ═══ EXPERT HEADER ═══ -->
 <header class="expert-header">
@@ -868,6 +932,22 @@ body.presell-mode .expert-header { height: 300px; }
         </div>
         <div class="form-row">
             <div class="form-group">
+                <label class="form-label">Profissão</label>
+                <input type="text" id="f-profissao" class="form-input" placeholder="Ex: Engenheiro">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Signo</label>
+                <select id="f-signo" class="form-input">
+                    <option value="">Selecione</option>
+                    <option>Áries</option><option>Touro</option><option>Gêmeos</option>
+                    <option>Câncer</option><option>Leão</option><option>Virgem</option>
+                    <option>Libra</option><option>Escorpião</option><option>Sagitário</option>
+                    <option>Capricórnio</option><option>Aquário</option><option>Peixes</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
                 <label class="form-label">Cidade</label>
                 <input type="text" id="f-cidade" class="form-input" placeholder="Ex: São Paulo">
             </div>
@@ -892,28 +972,16 @@ body.presell-mode .expert-header { height: 300px; }
                 </div>
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label class="form-label">Signo</label>
-                <select id="f-signo" class="form-input">
-                    <option value="">Selecione</option>
-                    <option>Áries</option><option>Touro</option><option>Gêmeos</option>
-                    <option>Câncer</option><option>Leão</option><option>Virgem</option>
-                    <option>Libra</option><option>Escorpião</option><option>Sagitário</option>
-                    <option>Capricórnio</option><option>Aquário</option><option>Peixes</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Último date</label>
-                <select id="f-ultimo-date" class="form-input">
-                    <option value="">Selecione</option>
-                    <option>menos de 1 mês</option>
-                    <option>1 a 6 meses</option>
-                    <option>6 meses a 1 ano</option>
-                    <option>mais de 1 ano</option>
-                    <option>nunca tive</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label class="form-label">Último date</label>
+            <select id="f-ultimo-date" class="form-input">
+                <option value="">Selecione</option>
+                <option>menos de 1 mês</option>
+                <option>1 a 6 meses</option>
+                <option>6 meses a 1 ano</option>
+                <option>mais de 1 ano</option>
+                <option>nunca tive</option>
+            </select>
         </div>
         <button class="btn" id="btn-start" onclick="startQuiz()">Iniciar minha análise →</button>
     </div>
@@ -952,7 +1020,7 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="p-pip active"></div>
             <div class="p-pip"></div>
         </div>
-        <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 2000, function(){ goQ(7); })">Continuar análise →</button>
+        <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 2000, function(){ goQ(8); })">Continuar análise →</button>
     </div>
 </div>
 
@@ -970,7 +1038,7 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="p-pip done"></div>
             <div class="p-pip active"></div>
         </div>
-        <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 2000, function(){ goQ(14); })">Revelar meu arquétipo →</button>
+        <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 2000, function(){ goQ(16); })">Revelar meu arquétipo →</button>
     </div>
 </div>
 
@@ -995,38 +1063,6 @@ body.presell-mode .expert-header { height: 300px; }
     <div class="options" id="q-opts"></div>
 </div>
 
-<!-- ── GATE ── -->
-<div id="s-gate" class="screen">
-    <button class="back-btn" onclick="goQ(18)">
-        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-        Voltar
-    </button>
-    <div class="gate-wrap">
-        <div class="gate-lock">🔐</div>
-        <h2 class="gate-title">Seu diagnóstico está pronto.<br>E vai te incomodar.</h2>
-        <p class="gate-sub">O relatório tem <strong style="color:var(--text)">análise completa do seu arquétipo</strong>, os padrões que te travam, pontos cegos que você nunca viu — e as 3 bios calibradas pra você. É extenso. Vale cada linha.<br><br>Por onde quer receber?</p>
-        <div class="delivery-choice">
-            <button class="choice-btn selected" id="ch-whats" onclick="selectDelivery('whats')">
-                <span class="choice-icon">📱</span>
-                WhatsApp
-            </button>
-            <button class="choice-btn" id="ch-email" onclick="selectDelivery('email')">
-                <span class="choice-icon">📧</span>
-                Email
-            </button>
-        </div>
-        <div class="form-group">
-            <label class="form-label">WhatsApp (com DDD)</label>
-            <input type="tel" id="f-whatsapp" class="form-input" placeholder="(11) 99999-9999" inputmode="tel">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Seu melhor email</label>
-            <input type="email" id="f-email" class="form-input" placeholder="email@exemplo.com" inputmode="email">
-        </div>
-        <button class="btn" onclick="doGenerate()">Quero meu diagnóstico completo →</button>
-    </div>
-</div>
-
 <!-- ── LOADING ── -->
 <div id="s-loading" class="screen">
     <div class="loading-wrap">
@@ -1039,24 +1075,221 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="lstep" id="ls3"><div class="lstep-dot"></div>Mapeando pontos cegos</div>
             <div class="lstep" id="ls4"><div class="lstep-dot"></div>Gerando bios personalizadas</div>
         </div>
+
+        <!-- Prova social (textos placeholder — preencher depois) -->
+        <div class="social-proof">
+            <div class="sp-count">Junte-se a <strong>+21.000 homens</strong></div>
+            <div class="sp-bubbles">
+                <div class="sp-bubble">Depoimento 1</div>
+                <div class="sp-bubble">Depoimento 2</div>
+                <div class="sp-bubble">Depoimento 3</div>
+                <div class="sp-bubble">Depoimento 4</div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- ── RESULT ── -->
-<div id="s-result" class="screen">
-    <div style="overflow-y:auto;flex:1;padding-bottom:8px;">
-        <div class="result-top">
-            <div class="r-badge" id="r-badge">Arquétipo</div>
-            <div class="r-name" id="r-name"></div>
-            <div class="r-desc" id="r-desc"></div>
+<!-- ── RELATÓRIO FINAL ── -->
+<div id="s-report" class="screen">
+    <div class="rep-scroll">
+
+        <!-- HERO -->
+        <div class="rep-hero">
+            <div class="rep-kicker">Jogo do Texto · Análise de Perfil Completa</div>
+            <div class="rep-kicker t2">Resultado da sua análise</div>
+            <div class="rep-pill">O Cara da Conversa</div>
+            <p class="rep-hero-sub rep-blur">Ela acha você fascinante para trocar ideia. Mas não sente urgência de te ver pessoalmente. Você está a 3 calibrações de mudar completamente isso.</p>
+            <div class="rep-meta rep-blur">Rafael M. · 31 anos · São Paulo · Perfil INTJ</div>
         </div>
-        <div class="bios-section-title">SUAS 3 BIOS — CALIBRADAS PARA VOCÊ</div>
-        <div id="r-bios"></div>
-        <div class="result-bottom-note">
-            Salve as bios e teste cada uma. O relatório completo<br>
-            chegará no canal que você escolheu.
+
+        <!-- SEÇÃO 01 — Suas Respostas -->
+
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 01</div>
+            <div class="rep-sec-title">Suas Respostas</div>
+            <div class="rep-card accent">
+                <div class="rep-q">Como você inicia conversa depois de um match?</div>
+                <div class="rep-a">"Faço uma observação inteligente sobre algo no perfil dela — diferente do 'oi linda' que todo mundo manda."</div>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-card accent">
+                    <div class="rep-q">Quando ela demora a responder, você...</div>
+                    <div class="rep-a">"Fico elaborando mentalmente o que vou escrever. Às vezes reescrevo a mensagem inteira."</div>
+                </div>
+                <div class="rep-card accent">
+                    <div class="rep-q">Qual é seu principal objetivo na conversa?</div>
+                    <div class="rep-a">"Criar conexão genuína antes de qualquer coisa. Não gosto de marcar encontro com quem mal conheço."</div>
+                </div>
+                <div class="rep-card accent">
+                    <div class="rep-q">+ 6 respostas analisadas</div>
+                    <div class="rep-a">"..."</div>
+                </div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie para ver suas 9 respostas analisadas</span>
         </div>
-        <a id="btn-app-msg" href="/mensagens" style="display:block;width:100%;margin-top:16px;margin-bottom:8px;padding:16px;border-radius:14px;background:rgba(0,200,160,0.08);border:1px solid rgba(0,200,160,0.3);color:#00c8a0;font-size:15px;font-weight:600;text-align:center;text-decoration:none;">
+
+        <!-- SEÇÃO 02 — Perfil MBTI (PESSOAL: teaser + blur) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 02</div>
+            <div class="rep-sec-title">Seu Perfil Myers-Briggs Conectado à Sedução</div>
+            <div class="rep-card accent">
+                <div class="rep-card-title" id="rep-mbti-titulo">INTJ — O Estrategista que Analisa em Vez de Sentir</div>
+                <p class="rep-p">Você é um dos perfis mais raros e analiticamente poderosos do Myers-Briggs — menos de 2% da população. Quando você gosta de alguém, vai fundo de verdade.</p>
+                <div class="rep-blur">
+                    <p class="rep-p">O problema no contexto de sedução: sua maior força é seu maior obstáculo. Você otimiza a comunicação como se fosse um problema lógico — quando ela decide te encontrar com o cérebro primitivo, não com o racional. Lógica não gera desejo. Tensão calibrada gera.</p>
+                    <div class="rep-tags" id="rep-mbti-tags">
+                        <span class="rep-tag">Analítico</span><span class="rep-tag">Estratégico</span><span class="rep-tag">Independente</span><span class="rep-tag">Perfeccionista</span><span class="rep-tag">Reservado</span>
+                    </div>
+                </div>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-bar-row"><span class="rep-bar-label">Gerar interesse intelectual</span><span class="rep-bar"><span id="bar-fill-inteligente" class="rep-bar-fill" style="width:94%;background:var(--r-primary)"></span></span><span id="bar-val-inteligente" class="rep-bar-val" style="color:var(--r-primary)">94%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Frame de confiança e alto valor</span><span class="rep-bar"><span id="bar-fill-confiavel" class="rep-bar-fill" style="width:78%;background:var(--r-primary)"></span></span><span id="bar-val-confiavel" class="rep-bar-val" style="color:var(--r-primary)">78%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Resistência a testes femininos</span><span class="rep-bar"><span id="bar-fill-ambicioso" class="rep-bar-fill" style="width:61%;background:var(--r-purple)"></span></span><span id="bar-val-ambicioso" class="rep-bar-val" style="color:var(--r-purple)">61%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Leveza e humor nas mensagens</span><span class="rep-bar"><span id="bar-fill-divertido" class="rep-bar-fill" style="width:32%;background:var(--r-orange)"></span></span><span id="bar-val-divertido" class="rep-bar-val" style="color:var(--r-orange)">32%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Criação de tensão sexual via texto</span><span class="rep-bar"><span id="bar-fill-sexual" class="rep-bar-fill" style="width:21%;background:var(--r-red)"></span></span><span id="bar-val-sexual" class="rep-bar-val" style="color:var(--r-red)">21%</span></div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie sua pontuação completa por dimensão</span>
+        </div>
+
+        <!-- SEÇÃO 03 — Os 9 Tipos (MÉTODO: aberto) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 03</div>
+            <div class="rep-sec-title">Os 9 Tipos que Ela Identifica em Menos de 3 Minutos</div>
+            <p class="rep-sec-intro">Baseado em David DeAngelo (Lover/Provider), Jogo do Texto e PT2 Female Mind — estes são os 9 arquétipos que o cérebro primitivo dela categoriza automaticamente nas primeiras mensagens.</p>
+            <div class="rep-grid">
+                <div id="rep-tipo-01" class="rep-type"><div class="rep-type-num">Tipo 01</div><div class="rep-type-ico">👻</div><div class="rep-type-name">O Invisível</div></div>
+                <div id="rep-tipo-02" class="rep-type"><div class="rep-type-num">Tipo 02</div><div class="rep-type-ico">💛</div><div class="rep-type-name">O Amigo Legal Demais</div></div>
+                <div id="rep-tipo-03" class="rep-type"><div class="rep-type-num">Tipo 03</div><div class="rep-type-ico">💬</div><div class="rep-type-name">O Cara da Conversa</div></div>
+                <div id="rep-tipo-04" class="rep-type"><div class="rep-type-num">Tipo 04</div><div class="rep-type-ico">🙏</div><div class="rep-type-name">O Provider Ansioso</div></div>
+                <div id="rep-tipo-05" class="rep-type"><div class="rep-type-num">Tipo 05</div><div class="rep-type-ico">〰️</div><div class="rep-type-name">O Fantasma Digital</div></div>
+                <div id="rep-tipo-06" class="rep-type"><div class="rep-type-num">Tipo 06</div><div class="rep-type-ico">⚠️</div><div class="rep-type-name">O Predatório Óbvio</div></div>
+                <div id="rep-tipo-07" class="rep-type"><div class="rep-type-num">Tipo 07</div><div class="rep-type-ico">🎲</div><div class="rep-type-name">O Bad Boy Instável</div></div>
+                <div id="rep-tipo-08" class="rep-type"><div class="rep-type-num">Tipo 08</div><div class="rep-type-ico">🧭</div><div class="rep-type-name">O Aventureiro Calibrado</div></div>
+                <div id="rep-tipo-09" class="rep-type"><div class="rep-type-num">Tipo 09</div><div class="rep-type-ico">♟️</div><div class="rep-type-name">O Homem de Alto Valor</div></div>
+            </div>
+            <div class="rep-card accent" style="margin-top:12px">
+                <div class="rep-card-title" id="rep-diag-titulo">Análise do seu tipo</div>
+                <p class="rep-p" id="rep-diagnostico"></p>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 04 — CIA/FBI (intro aberta, dossiê com teaser+blur) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 04</div>
+            <div class="rep-sec-title">Classificação CIA / FBI</div>
+            <p class="rep-sec-intro">Com base no "Manual de Persuasão do FBI" (Jack Schafer, Friendship Formula) + PT2 Female Mind — como agências de inteligência categorizariam e empregariam um perfil como o seu.</p>
+            <div class="rep-dossier">
+                <div class="rep-dossier-head">
+                    <div class="rep-seal">CIA</div>
+                    <div class="rep-dossier-meta">CENTRAL INTELLIGENCE AGENCY · DIRECTORATE OF ANALYSIS<br>TOP SECRET · Behavioral Profile Assessment</div>
+                </div>
+                <div class="rep-mono">FUNÇÃO PRIMÁRIA: Analista de Inteligência Estratégica<br>FUNÇÃO SECUNDÁRIA: Profiler Psicológico de Alvos</div>
+                <div class="rep-mono rep-blur" style="margin-top:8px">AVALIAÇÃO: Sujeito demonstra capacidade analítica excepcional. LIMITAÇÃO CRÍTICA: dificuldade em operações de aproximação emocional de curto prazo. DIAGNÓSTICO: o tipo que lê 300 páginas de inteligência sobre o alvo mas hesita no momento da abordagem real.</div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie o dossiê CIA + FBI completo</span>
+        </div>
+
+        <!-- SEÇÃO 05 — O Homem que Ela Vê (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 05</div>
+            <div class="rep-sec-title">O Homem que Ela Vê nas Suas Mensagens</div>
+            <div class="rep-card accent">
+                <div class="rep-card-title">"O Amigo Inteligente"</div>
+                <p class="rep-p">O cara que ela avisaria "oi sumido" quando precisar de um conselho.<span class="rep-blur"> Que ela apresentaria pra mãe. Mas que às 23h, sozinha no sofá, ela não está pensando em você. Ela está pensando no cara que criou tensão naquele dia.</span></p>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-card green">
+                    <div class="rep-card-title green">"O Arquiteto Sedutor"</div>
+                    <p class="rep-p">O homem que é ao mesmo tempo o mais interessante que ela conheceu E o que ela mais quer ver pessoalmente. Inteligência + tensão calibrada = obsessão genuína.</p>
+                </div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie a leitura completa das suas mensagens</span>
+        </div>
+
+        <!-- SEÇÃO 06 — O Melhor que Ela Veria (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 06</div>
+            <div class="rep-sec-title">O Melhor que Ela Conseguiria Ver em Você</div>
+            <div class="rep-card green">
+                <div class="rep-card-title green">O Arquiteto Sedutor — INTJ Desbloqueado</div>
+                <p class="rep-p">O INTJ que aprende a usar sua inteligência estratégica a favor da sedução se torna o tipo mais poderoso do espectro.<span class="rep-blur"> Enquanto o Bad Boy é excitante mas imprevisível, e o Provider é estável mas sem tensão — o INTJ calibrado entrega os dois ao mesmo tempo: intelectualmente dominante E estrategicamente imprevisível. Ele cria o "momento" não por acaso, mas por design.</span></p>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie sua projeção completa</span>
+        </div>
+
+        <!-- SEÇÃO 07 — 5 Pontos de Ajuste (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 07</div>
+            <div class="rep-sec-title">5 Pontos de Ajuste na Comunicação</div>
+            <div class="rep-point">
+                <div><span class="rep-point-n">1</span><b style="color:var(--r-text)">Profundidade sem leveza — o peso da primeira impressão</b></div>
+                <p class="rep-p" style="margin-top:8px">Você vai fundo cedo demais. A primeira conversa parece uma entrevista filosófica.<span class="rep-blur"> Ela sente o esforço mental necessário e associa você à palavra "pesado" antes de sentir qualquer atração. O conteúdo é bom — o timing é errado. ▶ Ajuste: leveza nos primeiros 5 minutos.</span></p>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-point"><div><span class="rep-point-n">2</span><b style="color:var(--r-text)">Lógica nos testes — a resposta que mata a tensão</b></div><p class="rep-p" style="margin-top:8px">Quando ela te testa, você explica seu ponto logicamente. Um homem de alto valor não explica — reage com calma, humor ou inverte o jogo.</p></div>
+                <div class="rep-point"><div><span class="rep-point-n">3</span><b style="color:var(--r-text)">Pipeline de 1 — a ansiedade que ela sente</b></div><p class="rep-p" style="margin-top:8px">Quando você foca só nela, sua energia muda de forma sutil mas detectável. Você perde o frame de escassez que cria atração.</p></div>
+                <div class="rep-point" style="opacity:0.6"><div><span class="rep-point-n">4</span><b style="color:var(--r-text)">+ 2 pontos críticos identificados</b></div></div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie os 5 ajustes com o passo a passo</span>
+        </div>
+
+        <!-- SEÇÃO 08 — Bios (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 08</div>
+            <div class="rep-sec-title">Bios Estratégicas por Plataforma</div>
+            <div class="rep-card accent">
+                <div class="rep-card-title">🔥 Tinder — Gerador de Curiosidade</div>
+                <p class="rep-p">Arquiteto de dia. Investigador de comportamento humano por hobby.<span class="rep-blur"> Minhas ex namoram melhor depois de mim — pelo menos é o que elas dizem. Especialista em fazer café perfeito e em não responder mensagem de voz. Se você também acha que conversa de madrugada revela mais do que qualquer perfil de app — talvez a gente se dê bem.</span></p>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-card accent"><div class="rep-card-title">📷 Instagram — Eu Sou o Prêmio</div><p class="rep-p">Leio pessoas mais rápido do que leio livros. E leio muito livro. As fotos são 80% ângulo estratégico. Os textos são 100% o que eu realmente penso.</p></div>
+                <div class="rep-card green"><div class="rep-card-title green">💬 WhatsApp — Frame de Alto Valor</div><p class="rep-p">Respondo quando quero conversar de verdade. Isso acontece com frequência menor do que você espera e com qualidade maior do que você está acostumada.</p></div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie suas 3 bios prontas para copiar</span>
+        </div>
+
+        <!-- SEÇÃO 09 — 1ª Mensagem (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 09</div>
+            <div class="rep-sec-title">Primeira Mensagem Pós-Match Matadora</div>
+            <div class="rep-msg her">Ela tem foto em Amsterdã no perfil</div>
+            <div class="rep-msg him">Amsterdã fica melhor na foto ou pessoalmente? Pergunto porque quem foi costuma ter opinião bem forte sobre isso.</div>
+            <div class="rep-blur">
+                <div class="rep-msg her">Pessoalmente com certeza haha mas o que você quer dizer com "opinião forte"?</div>
+                <div class="rep-msg him">Tem uma galera que idealiza tanto que se decepciona. Outra que chega sem expectativa e se apaixona. Pela foto você parece do segundo grupo.</div>
+                <div class="rep-msg her">Acertou kkk fui completamente apaixonada. Você já foi?</div>
+                <div class="rep-card accent" style="margin-top:8px"><div class="rep-card-title green">Por que essa abertura funciona</div><p class="rep-p">Não começa com elogio à aparência · pressuposto embutido · "opinião forte" gera curiosidade · leitura fria · ela faz a pergunta no fim = inversão completa.</p></div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie a sequência completa + análise técnica</span>
+        </div>
+
+        <!-- BÔNUS — as 3 bios geradas -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Bônus</div>
+            <div class="rep-sec-title">Suas 3 Bios — Calibradas para Você</div>
+            <div id="rep-bios-list"></div>
+        </div>
+
+        <!-- Aviso de escassez + timer -->
+        <div class="rep-scarcity">
+            <div class="rep-scarcity-text">Geramos seu relatório agora. Por privacidade, ele fica disponível por <b>9 minutos</b> antes de ser apagado dos nossos servidores.</div>
+            <div class="rep-timer" id="bio-timer">09:00</div>
+        </div>
+
+        <!-- Botões de oferta (placeholder — sem integração ainda) -->
+        <div class="rep-offers" id="rep-offers">
+            <button class="rep-offer-btn free" onclick="chooseOffer('whats')">
+                <span class="rep-offer-main">Receber via WhatsApp</span>
+                <span class="rep-offer-tag">grátis</span>
+            </button>
+            <button class="rep-offer-btn paid" onclick="chooseOffer('paid')">
+                <span class="rep-offer-main">Baixar — R$9</span>
+                <span class="rep-offer-tag">na hora, sem espera</span>
+            </button>
+        </div>
+
+        <a href="/mensagens" style="display:block;width:100%;margin-top:14px;padding:16px;border-radius:14px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.35);color:#a855f7;font-size:15px;font-weight:600;text-align:center;text-decoration:none;">
             ✦ Gerar mensagens para conversas
         </a>
     </div>
@@ -1090,9 +1323,9 @@ body.presell-mode .expert-header { height: 300px; }
 // ═══════════════════════════════════════
 
 const PHASES = [
-    { label:'FASE 1 DE 3', name:'Como ela te vê hoje',    start:0,  end:6  },
-    { label:'FASE 2 DE 3', name:'O que está te travando', start:7,  end:13 },
-    { label:'FASE 3 DE 3', name:'Seu arquétipo real',     start:14, end:19 },
+    { label:'FASE 1 DE 3', name:'Como ela te vê hoje',    start:0,  end:7  },
+    { label:'FASE 2 DE 3', name:'O que está te travando', start:8,  end:15 },
+    { label:'FASE 3 DE 3', name:'Seu arquétipo real',     start:16, end:23 },
 ];
 
 // Preenchido dinamicamente em startQuiz() via QuizLogic.sortearPerguntas()
@@ -1246,19 +1479,19 @@ const COMMENTS = {
         headline: 'Esse padrão revelou algo que <span>9 em 10 homens nunca percebem</span> sobre si mesmos.',
         body: 'Continue. O que vem a seguir vai começar a fazer muito sentido quando você ver o diagnóstico final.'
     },
-    5: {
+    6: {
         headline: 'Identificamos o traço que separa os <span>8% de homens com resultados reais</span> dos outros 92%.',
         body: 'Seus padrões de resposta têm uma consistência rara. Isso vai influenciar diretamente a bio que vai funcionar pra você.'
     },
-    9: {
+    11: {
         headline: '<span>Ponto crítico detectado.</span> Esse comportamento explica uma parte importante dos seus resultados.',
         body: 'Poucos homens têm clareza disso. A fase 3 vai revelar exatamente como transformar isso a seu favor.'
     },
-    13: {
+    15: {
         headline: 'Sistema identificou um traço que aparece em <span>menos de 1 em 10 perfis</span> analisados.',
         body: 'Isso muda completamente o tipo de estratégia que vai funcionar pra você. Última fase — e a mais reveladora.'
     },
-    17: {
+    20: {
         headline: 'Quase lá. Seu arquétipo é <span>mais específico do que você imagina</span> — e mais valioso.',
         body: 'A última pergunta vai confirmar algo que provavelmente ninguém te disse ainda sobre seu perfil.'
     },
@@ -1319,8 +1552,95 @@ let userName  = '';
 let userData  = {};
 let respostas = []; // { a: string } por índice de pergunta
 let curQ      = 0;
-let delivery  = 'whats';
 let pendingCallback = null;
+
+// ─────────────────────────────────────────
+// SOM (Web Audio API — gerado por código, sem arquivos)
+// Obs: Web Audio não lê o botão físico de silencioso do iOS;
+// por isso o botão de mudo é o controle do usuário (lembrado no aparelho).
+// ─────────────────────────────────────────
+let audioCtx = null;
+let muted = localStorage.getItem('quiz_muted') === '1';
+
+function ensureCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+}
+
+// Toca 1 oscilador seco (corte abrupto, sem reverb). Agenda e retorna na hora.
+function osc(freq, freqEnd, type, durMs, vol, when) {
+    const ctx = ensureCtx();
+    const t = ctx.currentTime + (when || 0);
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(freq, t);
+    if (freqEnd && freqEnd !== freq) o.frequency.exponentialRampToValueAtTime(freqEnd, t + durMs/1000);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.004);                 // ataque rápido
+    g.gain.exponentialRampToValueAtTime(0.0001, t + durMs/1000);    // decaimento seco
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t); o.stop(t + durMs/1000 + 0.02);
+}
+
+// ── Biblioteca de micro-sons (cada um disparado por AÇÃO do usuário) ──
+
+// Selecionar opção: tick/pop seco com leve variação de pitch (anti-repetição)
+function soundClick() {
+    if (muted) return;
+    try { const f = 620 + Math.random()*150; osc(f, f*0.6, 'triangle', 95, 0.05, 0); } catch (e) {}
+}
+
+// Avançar de tela: whoosh curtíssimo (ruído filtrado, sweep ascendente)
+function soundAdvance() {
+    if (muted) return;
+    try {
+        const ctx = ensureCtx(), t = ctx.currentTime, dur = 0.18;
+        const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate*dur), ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random()*2 - 1;
+        const src = ctx.createBufferSource(); src.buffer = buf;
+        const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.8;
+        bp.frequency.setValueAtTime(400, t);
+        bp.frequency.exponentialRampToValueAtTime(1800, t + dur);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(0.05, t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        src.connect(bp); bp.connect(g); g.connect(ctx.destination);
+        src.start(t); src.stop(t + dur);
+    } catch (e) {}
+}
+
+// Completar uma fase: blip ascendente alegre (3 notas)
+function soundPhase() {
+    if (muted) return;
+    try { osc(523,0,'sine',70,0.05,0); osc(659,0,'sine',70,0.05,0.07); osc(880,0,'sine',90,0.05,0.14); } catch (e) {}
+}
+
+// Erro / campo vazio: tom curto descendente e suave (não agressivo)
+function soundError() {
+    if (muted) return;
+    try { osc(420, 300, 'sine', 150, 0.04, 0); } catch (e) {}
+}
+
+// Relatório pronto: arpejo de conquista de 3 notas (toca 1x)
+function soundSuccess() {
+    if (muted) return;
+    try { osc(523,0,'triangle',120,0.05,0); osc(659,0,'triangle',120,0.05,0.10); osc(784,0,'triangle',180,0.06,0.20); } catch (e) {}
+}
+
+function toggleMute() {
+    muted = !muted;
+    localStorage.setItem('quiz_muted', muted ? '1' : '0');
+    updateMuteBtn();
+}
+function updateMuteBtn() {
+    const b = document.getElementById('mute-btn');
+    if (!b) return;
+    b.textContent = muted ? '🔇' : '🔊';
+    b.classList.toggle('muted', muted);
+}
 
 // ─────────────────────────────────────────
 // HELPER — deriva arquétipo (ADICAS + desempate por MBTI)
@@ -1372,6 +1692,7 @@ function archetypeFromAdicas(adicas, mbtiTipo) {
 // ═══════════════════════════════════════
 
 window.onload = () => {
+    updateMuteBtn(); // reflete preferência de som salva
     document.body.classList.add('presell-mode'); // pré-sell começa ativa
     const p = new URLSearchParams(window.location.search);
     userName = p.get('nome') || p.get('name') || p.get('first_name') || '';
@@ -1506,11 +1827,12 @@ function show(id) {
 function startQuiz() {
     const nome  = document.getElementById('f-nome').value.trim();
     const idade = document.getElementById('f-idade').value;
-    if (!nome || !idade) { alert('Preencha nome e idade para continuar.'); return; }
+    if (!nome || !idade) { soundError(); alert('Preencha nome e idade para continuar.'); return; }
     userName = nome;
     userData = {
         nome,
         idade,
+        profissao:  document.getElementById('f-profissao').value.trim(),
         cidade:     document.getElementById('f-cidade').value.trim(),
         altura:     document.getElementById('f-altura').value.trim(),
         apps:       selectedApps.slice(),
@@ -1519,7 +1841,7 @@ function startQuiz() {
     };
     // Sorteia 20 perguntas balanceadas (2 por eixo MBTI × 4 + 2 por traço ADICAS × 6)
     try {
-        QS = QuizLogic.sortearPerguntas(2, 2);
+        QS = QuizLogic.sortearPerguntas(3, 2);
     } catch (e) {
         QS = QS_FALLBACK; // fallback se banco não carregar
     }
@@ -1535,8 +1857,8 @@ function goQ(index) {
 
 function goBack() {
     if (curQ === 0)  { show('s-p1'); return; }
-    if (curQ === 7)  { show('s-p2'); return; }
-    if (curQ === 14) { show('s-p3'); return; }
+    if (curQ === 8)  { show('s-p2'); return; }
+    if (curQ === 16) { show('s-p3'); return; }
     curQ--;
     respostas.splice(curQ, 1); // desfaz resposta da pergunta anterior
     renderQ();
@@ -1584,21 +1906,38 @@ function renderQ() {
     document.getElementById('q-phase-name').textContent  = phase.name;
     document.getElementById('q-counter').textContent = `PERGUNTA ${pos+1} DE ${len}`;
     document.getElementById('q-pct').textContent     = `${pct}%`;
-    document.getElementById('q-bar').style.width     = `${pct}%`;
+    const bar = document.getElementById('q-bar');
+    bar.style.width = `${pct}%`;
+    bar.classList.toggle('hot', pct >= 70); // barra "esquenta" no fim
     document.getElementById('q-text').textContent    = q.q;
+
+    // Sotaque por fase (verde / azul / âmbar) — só muda a cor de destaque
+    const phaseIdx = PHASES.indexOf(phase);
+    const quizScreen = document.getElementById('s-quiz');
+    quizScreen.classList.remove('accent-1', 'accent-2', 'accent-3');
+    quizScreen.classList.add('accent-' + (phaseIdx + 1));
 
     const c = document.getElementById('q-opts');
     c.innerHTML = '';
     // 2 colunas quando todas as opções forem curtas (cabe sem rolar)
     const maxLen = Math.max(...q.opts.map(o => o.t.length));
     c.classList.toggle('grid2', maxLen <= 45);
-    q.opts.forEach(opt => {
+    q.opts.forEach((opt) => {
         const btn = document.createElement('button');
         btn.className = 'option';
-        btn.textContent = opt.t;
+        btn.innerHTML = boldHead(opt.t); // negrito nas 1as palavras; numeração é via CSS
         btn.onclick = () => pick(btn, opt.a);
         c.appendChild(btn);
     });
+}
+
+// Coloca as 2 primeiras palavras em negrito (apresentação; não altera o conteúdo)
+function boldHead(texto) {
+    const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const palavras = texto.trim().split(/\s+/);
+    const head = palavras.slice(0, 2).join(' ');
+    const tail = palavras.slice(2).join(' ');
+    return `<span class="opt-head">${esc(head)}</span>${tail ? ' ' + esc(tail) : ''}`;
 }
 
 function pick(btn, polo) {
@@ -1606,22 +1945,26 @@ function pick(btn, polo) {
     document.querySelectorAll('.option').forEach(o => { o.classList.remove('picked'); o.disabled = true; });
     btn.classList.add('picked');
     respostas[curQ] = { a: polo };
+    soundClick(); // clique de seleção
 
     if (COMMENTS[curQ]) {
-        setTimeout(() => openComment(COMMENTS[curQ]), 300);
+        const amber = (curQ === 17); // 1 interrupt em tom quente (fase final)
+        setTimeout(() => openComment(COMMENTS[curQ], amber), 300);
     } else {
         setTimeout(nextQ, 480);
     }
 }
 
 function nextQ() {
-    if (curQ >= QS.length - 1) { show('s-gate'); return; }
+    if (curQ >= QS.length - 1) {  doGenerate(); return; }
     curQ++;
     const phase = getPhase(curQ);
     if (curQ === phase.start && curQ > 0) {
-        if (curQ === 7)  { resetPhaseBtn('btn-p2'); show('s-p2'); }
-        if (curQ === 14) { resetPhaseBtn('btn-p3'); show('s-p3'); }
+        soundPhase(); // completou uma fase
+        if (curQ === 8)  { resetPhaseBtn('btn-p2'); show('s-p2'); }
+        if (curQ === 16) { resetPhaseBtn('btn-p3'); show('s-p3'); }
     } else {
+        soundAdvance(); // avançar de tela
         renderQ();
     }
 }
@@ -1640,9 +1983,10 @@ function getPhase(i) {
 // COMMENT MODAL
 // ═══════════════════════════════════════
 
-function openComment(data) {
+function openComment(data, amber) {
     document.getElementById('c-headline').innerHTML = data.headline;
     document.getElementById('c-body').textContent   = data.body;
+    document.querySelector('#c-overlay .comment-card').classList.toggle('amber', !!amber);
     document.getElementById('c-overlay').classList.add('open');
 }
 
@@ -1652,29 +1996,17 @@ function closeComment() {
 }
 
 // ═══════════════════════════════════════
-// GATE
-// ═══════════════════════════════════════
-
-function selectDelivery(type) {
-    delivery = type;
-    document.getElementById('ch-whats').classList.toggle('selected', type === 'whats');
-    document.getElementById('ch-email').classList.toggle('selected', type === 'email');
-}
-
-// ═══════════════════════════════════════
 // GENERATE
 // ═══════════════════════════════════════
 
 async function doGenerate() {
-    const email    = document.getElementById('f-email').value.trim();
-    const whatsapp = document.getElementById('f-whatsapp').value.trim();
-    if (!email && !whatsapp) { alert('Preencha pelo menos um contato para receber seu relatório.'); return; }
+    const email    = document.getElementById('f-email')?.value.trim() || '';
+    const whatsapp = document.getElementById('f-whatsapp')?.value.trim() || '';
 
     userData.email    = email;
     userData.whatsapp = whatsapp;
-    userData.delivery = delivery;
+    userData.delivery = (typeof delivery !== 'undefined') ? delivery : '';
 
-    // Calcula MBTI + ADICAS e deriva arquétipo para compatibilidade com ARCHETYPES
     const s        = QuizLogic.calcularScores(respostas);
     const dominant = archetypeFromAdicas(s.adicas, s.mbtiTipo);
     userData.arquetipo = dominant;
@@ -1686,80 +2018,220 @@ async function doGenerate() {
     );
 
     try {
-        const res  = await fetch('/api/generate-bio', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({
-                archetype: dominant,
-                mbtiTipo:  s.mbtiTipo,
-                adicas:    s.adicas,
-                userData,
-            }),
+        const resBio = await fetch('/api/generate-bio', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ archetype: dominant, mbtiTipo: s.mbtiTipo, adicas: s.adicas, userData }),
         });
-        const data = await res.json();
+        const dataBio = await resBio.json();
+
+        let relatorioTexto = '';
+        try {
+            const resRep = await fetch('/api/generate-report', {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ archetype: dominant, mbtiTipo: s.mbtiTipo, adicas: s.adicas, nome: userData.nome, userData }),
+            });
+            const dataRep = await resRep.json();
+            relatorioTexto = dataRep.relatorio || '';
+        } catch (e) { relatorioTexto = ''; }
 
         fetch('/api/save-lead', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
+            method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify(userData),
         }).catch(()=>{});
 
-        const perfilAdicas = data.perfil_adicas || 'CA';
+        const perfilAdicas = dataBio.perfil_adicas || 'CA';
         localStorage.setItem('perfil_adicas', perfilAdicas);
         localStorage.setItem('mbti_tipo', s.mbtiTipo);
 
-        showResult(dominant, data.bios);
+        showResult(dominant, dataBio.bios, relatorioTexto);
     } catch {
-        // Fallback neutro (sem despejar dados crus do usuário na bio)
         const fallback = { bio: 'Conversa real primeiro. O resto a gente descobre pessoalmente.', estrutura:'', motivo:'' };
-        showResult(dominant, [fallback, fallback, fallback]);
+        showResult(dominant, [fallback, fallback, fallback], '');
     }
 }
 
-function showResult(arch, bios) {
-    const a = ARCHETYPES[arch];
-    document.getElementById('r-badge').textContent = a.badge;
-    document.getElementById('r-name').textContent  = a.name;
-    document.getElementById('r-desc').textContent  = a.desc;
-
-    const c = document.getElementById('r-bios');
-    c.innerHTML = '';
-
-    bios.slice(0,3).forEach((item, i) => {
-        const bioTexto = (typeof item === 'string') ? item : (item.bio || '');
-        const bioEstrutura = (typeof item === 'object' && item.estrutura) ? item.estrutura : '';
-        const bioMotivo    = (typeof item === 'object' && item.motivo)    ? item.motivo    : '';
-        const meta = a.bios[i] || {version:`Versão ${i+1}`, style:'', effect:''};
-        const card = document.createElement('div');
-        card.className = 'bio-card';
-        const metaHtml = (bioEstrutura || bioMotivo) ? `
-            <div class="bio-divider"></div>
-            <div style="font-size:12px;color:#3d6a8a;margin-bottom:4px;">Estrutura: <span style="color:#00c8a0">${bioEstrutura}</span></div>
-            <div style="font-size:12px;color:#3d6a8a;">Por que funciona: <span style="color:#deeaf8">${bioMotivo}</span></div>` : '';
-        card.innerHTML = `
-            <div class="bio-type-header">
-                <div class="bio-type-info">
-                    <div class="bio-version">${meta.version}</div>
-                    <div class="bio-style">${meta.style}</div>
-                </div>
-                <div class="bio-effect">${meta.effect}</div>
-            </div>
-            <div class="bio-divider"></div>
-            <div class="bio-text" id="bio-${i}">${bioTexto}</div>
-            ${metaHtml}
-            <button class="copy-btn" onclick="copyBio(this,${i})">Copiar bio</button>`;
-        c.appendChild(card);
-    });
-
-    show('s-result');
+// Guarda as bios + diagnóstico gerados e abre direto o relatório (tela final única)
+function showResult(arch, bios, relatorio) {
+    soundSuccess(); // relatório pronto — arpejo de conquista (1x)
+    lastReportBios = bios;
+    lastReportArch = arch;
+    lastReportDiagnostico = relatorio || '';
+    openReport();
 }
 
-function copyBio(btn, i) {
-    navigator.clipboard.writeText(document.getElementById(`bio-${i}`).textContent).then(() => {
-        btn.textContent = '✓ Copiada!';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'Copiar bio'; btn.classList.remove('copied'); }, 2000);
+// ═══════════════════════════════════════
+// RELATÓRIO FINAL — abrir, timer 9min
+// ═══════════════════════════════════════
+let repTimerId = null;
+let lastReportBios = []; // mesmas bios geradas em showResult (reuso no #s-report)
+let lastReportArch = '';
+let lastReportDiagnostico = ''; // diagnóstico real gerado pela IA
+
+// Renderiza as 3 bios já geradas dentro do #s-report (sem nova chamada de API)
+function renderReportBios() {
+    const list = document.getElementById('rep-bios-list');
+    if (!list) return;
+    const a = ARCHETYPES[lastReportArch] || { bios: [] };
+    list.innerHTML = '';
+    (lastReportBios || []).slice(0,3).forEach((item, i) => {
+        const bioTexto = (typeof item === 'string') ? item : (item.bio || '');
+        const meta = (a.bios && a.bios[i]) || { version:`Versão ${i+1}`, style:'' };
+        const card = document.createElement('div');
+        card.className = 'rep-card accent';
+        // Bio 1 legível; Bios 2 e 3 com blur médio
+        const textCls = (i >= 1) ? 'rep-a rep-blur' : 'rep-a';
+        card.innerHTML = `
+            <div class="rep-card-title">${meta.version}${meta.style ? ' · <span style="font-weight:400;color:var(--r-muted)">'+meta.style+'</span>' : ''}</div>
+            <p class="${textCls}" id="rbio-${i}">${bioTexto}</p>`;
+        list.appendChild(card);
     });
+}
+
+// Timer regressivo genérico (mm:ss) para um elemento por id
+function startTimer(elId, totalSec) {
+    if (repTimerId) clearInterval(repTimerId);
+    let s = totalSec;
+    const el = document.getElementById(elId);
+    const render = () => {
+        const m = Math.floor(s / 60), ss = s % 60;
+        if (el) el.textContent = `${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+    };
+    render();
+    repTimerId = setInterval(() => {
+        s--;
+        if (s <= 0) { s = 0; render(); clearInterval(repTimerId); if (el) el.textContent = 'EXPIRADO'; return; }
+        render();
+    }, 1000);
+}
+
+// ─────────────────────────────────────────
+// LOOKUP MBTI → dados do relatório
+// ─────────────────────────────────────────
+
+const MBTI_REP = {
+    ENTJ: { titulo: 'ENTJ — O Comandante',       tags: ['Decisivo','Ambicioso','Direto','Estratégico','Líder'] },
+    ENTP: { titulo: 'ENTP — O Provocador',        tags: ['Criativo','Debatedor','Ágil','Imprevisível','Curioso'] },
+    ENFJ: { titulo: 'ENFJ — O Magnetizador',      tags: ['Empático','Carismático','Inspirador','Inclusivo','Presente'] },
+    ENFP: { titulo: 'ENFP — A Faísca',            tags: ['Espontâneo','Entusiasmado','Criativo','Curioso','Adaptável'] },
+    ESTJ: { titulo: 'ESTJ — O Executor',          tags: ['Organizado','Confiável','Direto','Estruturado','Responsável'] },
+    ESTP: { titulo: 'ESTP — O Caçador',           tags: ['Ágil','Presente','Corajoso','Prático','Intenso'] },
+    ESFJ: { titulo: 'ESFJ — O Anfitrião',         tags: ['Atencioso','Social','Harmonioso','Leal','Prestativo'] },
+    ESFP: { titulo: 'ESFP — O Festeiro',          tags: ['Divertido','Energético','Presente','Espontâneo','Popular'] },
+    INTJ: { titulo: 'INTJ — O Estrategista',      tags: ['Analítico','Estratégico','Independente','Perfeccionista','Reservado'] },
+    INTP: { titulo: 'INTP — O Analista',          tags: ['Lógico','Curioso','Conceitual','Independente','Preciso'] },
+    INFJ: { titulo: 'INFJ — O Místico',           tags: ['Profundo','Empático','Visionário','Reservado','Intuitivo'] },
+    INFP: { titulo: 'INFP — O Sonhador',          tags: ['Autêntico','Sensível','Criativo','Idealista','Leal'] },
+    ISTJ: { titulo: 'ISTJ — A Rocha',             tags: ['Confiável','Disciplinado','Sólido','Honesto','Consistente'] },
+    ISTP: { titulo: 'ISTP — O Especialista',      tags: ['Competente','Silencioso','Prático','Intenso','Fascinante'] },
+    ISFJ: { titulo: 'ISFJ — O Protetor',          tags: ['Cuidadoso','Confiável','Atencioso','Paciente','Leal'] },
+    ISFP: { titulo: 'ISFP — O Artista',           tags: ['Sensorial','Espontâneo','Autêntico','Gentil','Presente'] },
+};
+
+// Mapa arquétipo (ADICAS dominante) → tipo dos 9
+// Baseado nos padrões de bloqueio naturais conforme VAULT-MBTI
+const ARQUETIPO_TIPO9 = {
+    niceguy:    '02', // Amigo Legal Demais — agradável, sem tensão
+    direto:     '03', // Cara da Conversa — inteligente mas não fecha
+    alfa:       '08', // Aventureiro Calibrado — ambicioso + confiável
+    provocador: '07', // Bad Boy Instável — atração sem consistência
+};
+
+// Nome de cada um dos 9 tipos (para o título dinâmico do diagnóstico)
+const TIPO9_NOME = {
+    '01':'O Invisível', '02':'O Amigo Legal Demais', '03':'O Cara da Conversa',
+    '04':'O Provider Ansioso', '05':'O Fantasma Digital', '06':'O Predatório Óbvio',
+    '07':'O Bad Boy Instável', '08':'O Aventureiro Calibrado', '09':'O Homem de Alto Valor',
+};
+
+/**
+ * preencherReportMBTI(scores)
+ * Atualiza: título MBTI, tags, barras ADICAS, destaque do tipo 9.
+ */
+function preencherReportMBTI(scores) {
+    const tipo   = scores.mbtiTipo || 'INTJ';
+    const adicas = scores.adicas   || {};
+    const rep    = MBTI_REP[tipo]  || MBTI_REP['INTJ'];
+
+    // 1. Título
+    const elTitulo = document.getElementById('rep-mbti-titulo');
+    if (elTitulo) elTitulo.textContent = rep.titulo;
+
+    // 2. Tags
+    const elTags = document.getElementById('rep-mbti-tags');
+    if (elTags) {
+        elTags.innerHTML = rep.tags
+            .map(t => `<span class="rep-tag">${t}</span>`)
+            .join('');
+    }
+
+    // 3. Barras ADICAS — normalização proporcional para faixa 20%–95%
+    const BARRAS = [
+        { traco: 'inteligente', fillId: 'bar-fill-inteligente', valId: 'bar-val-inteligente', corAlta: 'var(--r-primary)', corBaixa: 'var(--r-primary)' },
+        { traco: 'confiavel',   fillId: 'bar-fill-confiavel',   valId: 'bar-val-confiavel',   corAlta: 'var(--r-primary)', corBaixa: 'var(--r-primary)' },
+        { traco: 'ambicioso',   fillId: 'bar-fill-ambicioso',   valId: 'bar-val-ambicioso',   corAlta: 'var(--r-primary)', corBaixa: 'var(--r-purple)'  },
+        { traco: 'divertido',   fillId: 'bar-fill-divertido',   valId: 'bar-val-divertido',   corAlta: 'var(--r-primary)', corBaixa: 'var(--r-orange)'  },
+        { traco: 'sexual',      fillId: 'bar-fill-sexual',      valId: 'bar-val-sexual',      corAlta: 'var(--r-primary)', corBaixa: 'var(--r-red)'     },
+    ];
+    const rawScores = BARRAS.map(b => adicas[b.traco] || 0);
+    const maxRaw    = Math.max(...rawScores, 1); // evita divisão por zero
+
+    BARRAS.forEach((b, i) => {
+        const raw = rawScores[i];
+        const pct = Math.round(20 + (raw / maxRaw) * 75); // [20, 95]
+        const cor = pct >= 60 ? b.corAlta : b.corBaixa;
+        const fill = document.getElementById(b.fillId);
+        const val  = document.getElementById(b.valId);
+        if (fill) { fill.style.width = pct + '%'; fill.style.background = cor; }
+        if (val)  { val.textContent = pct + '%'; val.style.color = cor; }
+    });
+
+    // 4. Destaque no grid dos 9 tipos
+    const arch   = lastReportArch || 'direto';
+    const tipoId = ARQUETIPO_TIPO9[arch] || '03';
+    for (let n = 1; n <= 9; n++) {
+        const numStr = String(n).padStart(2, '0');
+        const card   = document.getElementById('rep-tipo-' + numStr);
+        if (!card) continue;
+        const isActive = numStr === tipoId;
+        card.classList.toggle('current', isActive);
+        const badgeExist = card.querySelector('.rep-type-badge');
+        if (isActive && !badgeExist) {
+            const badge = document.createElement('div');
+            badge.className   = 'rep-type-badge';
+            badge.textContent = 'SEU TIPO ATUAL';
+            card.insertBefore(badge, card.firstChild);
+        } else if (!isActive && badgeExist) {
+            badgeExist.remove();
+        }
+    }
+
+    // 5. Diagnóstico real da IA — título coerente com o tipo destacado no grid
+    const elDiagT = document.getElementById('rep-diag-titulo');
+    const elDiag  = document.getElementById('rep-diagnostico');
+    if (elDiagT) elDiagT.textContent = `Análise do seu tipo — ${TIPO9_NOME[tipoId] || ''} (Tipo ${tipoId})`;
+    if (elDiag)  elDiag.textContent  = lastReportDiagnostico
+        || 'Seu diagnóstico personalizado aparece aqui assim que a análise é gerada.';
+}
+
+function openReport() {
+    renderReportBios(); // injeta as 3 bios já geradas no fim do relatório
+    // Preenche elementos dinâmicos (MBTI + ADICAS) com os scores reais do avatar
+    const scores = QuizLogic.calcularScores(respostas);
+    preencherReportMBTI(scores);
+    startTimer('bio-timer', 9 * 60); // escassez no fim do relatório
+    show('s-report');
+    // Rola automaticamente até os botões de oferta
+    setTimeout(() => {
+        const offers = document.getElementById('rep-offers');
+        if (offers) offers.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 400);
+}
+
+// Placeholder das ofertas (sem integração ainda — só registra a escolha)
+function chooseOffer(type) {
+    soundClick();
+    userData.oferta = type; // 'whats' (grátis) ou 'paid' (R$9)
+    console.log('[oferta escolhida]', type);
 }
 </script>
 </body>
