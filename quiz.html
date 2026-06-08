@@ -1956,7 +1956,7 @@ function pick(btn, polo) {
 }
 
 function nextQ() {
-    if (curQ >= QS.length - 1) { soundAdvance(); doGenerate(); return; }
+    if (curQ >= QS.length - 1) {  doGenerate(); return; }
     curQ++;
     const phase = getPhase(curQ);
     if (curQ === phase.start && curQ > 0) {
@@ -2043,7 +2043,7 @@ async function doGenerate() {
 }
 
 // Guarda as bios + diagnóstico gerados e abre direto o relatório (tela final única)
-function showResult(arch, bios, diagnostico) {
+function showResult(arch, bios, relatorio) {
     soundSuccess(); // relatório pronto — arpejo de conquista (1x)
     lastReportBios = bios;
     lastReportArch = arch;
