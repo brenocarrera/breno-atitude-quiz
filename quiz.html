@@ -2005,7 +2005,7 @@ async function doGenerate() {
 
     userData.email    = email;
     userData.whatsapp = whatsapp;
-    userData.delivery = delivery;
+    userData.delivery = (typeof delivery !== 'undefined') ? delivery : '';
 
     const s        = QuizLogic.calcularScores(respostas);
     const dominant = archetypeFromAdicas(s.adicas, s.mbtiTipo);
