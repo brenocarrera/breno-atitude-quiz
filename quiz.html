@@ -2000,7 +2000,13 @@ function closeComment() {
 // ═══════════════════════════════════════
 
 async function doGenerate() {
-    // Calcula MBTI + ADICAS e deriva arquétipo para compatibilidade com ARCHETYPES
+    const email    = document.getElementById('f-email')?.value.trim() || '';
+    const whatsapp = document.getElementById('f-whatsapp')?.value.trim() || '';
+
+    userData.email    = email;
+    userData.whatsapp = whatsapp;
+    userData.delivery = delivery;
+
     const s        = QuizLogic.calcularScores(respostas);
     const dominant = archetypeFromAdicas(s.adicas, s.mbtiTipo);
     userData.arquetipo = dominant;
@@ -2012,31 +2018,33 @@ async function doGenerate() {
     );
 
     try {
-        const res  = await fetch('/api/generate-bio', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({
-                archetype: dominant,
-                mbtiTipo:  s.mbtiTipo,
-                adicas:    s.adicas,
-                userData,
-            }),
+        const resBio = await fetch('/api/generate-bio', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ archetype: dominant, mbtiTipo: s.mbtiTipo, adicas: s.adicas, userData }),
         });
-        const data = await res.json();
+        const dataBio = await resBio.json();
+
+        let relatorioTexto = '';
+        try {
+            const resRep = await fetch('/api/generate-report', {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ archetype: dominant, mbtiTipo: s.mbtiTipo, adicas: s.adicas, nome: userData.nome, userData }),
+            });
+            const dataRep = await resRep.json();
+            relatorioTexto = dataRep.relatorio || '';
+        } catch (e) { relatorioTexto = ''; }
 
         fetch('/api/save-lead', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
+            method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify(userData),
         }).catch(()=>{});
 
-        const perfilAdicas = data.perfil_adicas || 'CA';
+        const perfilAdicas = dataBio.perfil_adicas || 'CA';
         localStorage.setItem('perfil_adicas', perfilAdicas);
         localStorage.setItem('mbti_tipo', s.mbtiTipo);
 
-        showResult(dominant, data.bios, data.diagnostico);
+        showResult(dominant, dataBio.bios, relatorioTexto);
     } catch {
-        // Fallback neutro (sem despejar dados crus do usuário na bio)
         const fallback = { bio: 'Conversa real primeiro. O resto a gente descobre pessoalmente.', estrutura:'', motivo:'' };
         showResult(dominant, [fallback, fallback, fallback], '');
     }
