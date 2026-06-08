@@ -1020,7 +1020,7 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="p-pip active"></div>
             <div class="p-pip"></div>
         </div>
-        <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 2000, function(){ goQ(7); })">Continuar análise →</button>
+        <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 2000, function(){ goQ(8); })">Continuar análise →</button>
     </div>
 </div>
 
@@ -1038,7 +1038,7 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="p-pip done"></div>
             <div class="p-pip active"></div>
         </div>
-        <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 2000, function(){ goQ(14); })">Revelar meu arquétipo →</button>
+        <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 2000, function(){ goQ(16); })">Revelar meu arquétipo →</button>
     </div>
 </div>
 
@@ -1323,9 +1323,9 @@ body.presell-mode .expert-header { height: 300px; }
 // ═══════════════════════════════════════
 
 const PHASES = [
-    { label:'FASE 1 DE 3', name:'Como ela te vê hoje',    start:0,  end:6  },
-    { label:'FASE 2 DE 3', name:'O que está te travando', start:7,  end:13 },
-    { label:'FASE 3 DE 3', name:'Seu arquétipo real',     start:14, end:19 },
+    { label:'FASE 1 DE 3', name:'Como ela te vê hoje',    start:0,  end:7  },
+    { label:'FASE 2 DE 3', name:'O que está te travando', start:8,  end:15 },
+    { label:'FASE 3 DE 3', name:'Seu arquétipo real',     start:16, end:23 },
 ];
 
 // Preenchido dinamicamente em startQuiz() via QuizLogic.sortearPerguntas()
@@ -1479,19 +1479,19 @@ const COMMENTS = {
         headline: 'Esse padrão revelou algo que <span>9 em 10 homens nunca percebem</span> sobre si mesmos.',
         body: 'Continue. O que vem a seguir vai começar a fazer muito sentido quando você ver o diagnóstico final.'
     },
-    5: {
+    6: {
         headline: 'Identificamos o traço que separa os <span>8% de homens com resultados reais</span> dos outros 92%.',
         body: 'Seus padrões de resposta têm uma consistência rara. Isso vai influenciar diretamente a bio que vai funcionar pra você.'
     },
-    9: {
+    11: {
         headline: '<span>Ponto crítico detectado.</span> Esse comportamento explica uma parte importante dos seus resultados.',
         body: 'Poucos homens têm clareza disso. A fase 3 vai revelar exatamente como transformar isso a seu favor.'
     },
-    13: {
+    15: {
         headline: 'Sistema identificou um traço que aparece em <span>menos de 1 em 10 perfis</span> analisados.',
         body: 'Isso muda completamente o tipo de estratégia que vai funcionar pra você. Última fase — e a mais reveladora.'
     },
-    17: {
+    20: {
         headline: 'Quase lá. Seu arquétipo é <span>mais específico do que você imagina</span> — e mais valioso.',
         body: 'A última pergunta vai confirmar algo que provavelmente ninguém te disse ainda sobre seu perfil.'
     },
@@ -1841,7 +1841,7 @@ function startQuiz() {
     };
     // Sorteia 20 perguntas balanceadas (2 por eixo MBTI × 4 + 2 por traço ADICAS × 6)
     try {
-        QS = QuizLogic.sortearPerguntas(2, 2);
+        QS = QuizLogic.sortearPerguntas(3, 2);
     } catch (e) {
         QS = QS_FALLBACK; // fallback se banco não carregar
     }
@@ -1857,8 +1857,8 @@ function goQ(index) {
 
 function goBack() {
     if (curQ === 0)  { show('s-p1'); return; }
-    if (curQ === 7)  { show('s-p2'); return; }
-    if (curQ === 14) { show('s-p3'); return; }
+    if (curQ === 8)  { show('s-p2'); return; }
+    if (curQ === 16) { show('s-p3'); return; }
     curQ--;
     respostas.splice(curQ, 1); // desfaz resposta da pergunta anterior
     renderQ();
@@ -1961,8 +1961,8 @@ function nextQ() {
     const phase = getPhase(curQ);
     if (curQ === phase.start && curQ > 0) {
         soundPhase(); // completou uma fase
-        if (curQ === 7)  { resetPhaseBtn('btn-p2'); show('s-p2'); }
-        if (curQ === 14) { resetPhaseBtn('btn-p3'); show('s-p3'); }
+        if (curQ === 8)  { resetPhaseBtn('btn-p2'); show('s-p2'); }
+        if (curQ === 16) { resetPhaseBtn('btn-p3'); show('s-p3'); }
     } else {
         soundAdvance(); // avançar de tela
         renderQ();
