@@ -1195,6 +1195,16 @@ body.presell-mode .expert-header { height: 300px; }
                     <p class="rep-p">O homem que é ao mesmo tempo o mais interessante que ela conheceu E o que ela mais quer ver pessoalmente. Inteligência + tensão calibrada = obsessão genuína.</p>
                 </div>
             </div>
+            <div class="rep-card accent">
+                <div class="rep-card-title">O que suas mensagens irradiam agora</div>
+                <p class="rep-p" id="rep-irradia">Profundidade sem urgência. Interesse genuíno, mas sem polaridade. Ela te lê como "ótimo papo" — não como "preciso ver esse cara essa semana".</p>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-card accent">
+                    <div class="rep-card-title">O que ela sente ao ler suas mensagens</div>
+                    <p class="rep-p" id="rep-sente">Estimulada e respeitada — mas sem aquela leve ansiedade de "será que ele ainda está interessado?" que acende o desejo de encontro.</p>
+                </div>
+            </div>
             <span class="rep-lockchip">🔒 Desbloqueie a leitura completa das suas mensagens</span>
         </div>
 
@@ -2035,6 +2045,8 @@ async function doGenerate() {
         // Diagnostico vem do MESMO retorno do generate-bio (curto, limpo, sem markdown).
         // Nao chamamos mais /api/generate-report (gerava texto cru e longo em markdown).
         const relatorioTexto = dataBio.diagnostico || '';
+        // Campos analiticos personalizados (Secao 05 + fecho) — vem do MESMO retorno.
+        lastReportAnalise = dataBio.analise || {};
 
         fetch('/api/save-lead', {
             method:'POST', headers:{'Content-Type':'application/json'},
@@ -2068,6 +2080,7 @@ let repTimerId = null;
 let lastReportBios = []; // mesmas bios geradas em showResult (reuso no #s-report)
 let lastReportArch = '';
 let lastReportDiagnostico = ''; // diagnóstico real gerado pela IA
+let lastReportAnalise = {}; // campos analiticos personalizados (Secao 05 + fecho)
 
 // Renderiza as 3 bios já geradas dentro do #s-report (sem nova chamada de API)
 function renderReportBios() {
@@ -2252,12 +2265,27 @@ function renderRespostas() {
     box.innerHTML = visivel + (resto ? `<div class="rep-blur">${resto}</div>` : '');
 }
 
+// Injeta os campos analiticos personalizados (Secao 05 + fecho).
+// Fallback: campo vazio -> mantem o texto atual (nada quebra).
+function preencherAnalise(a) {
+    a = a || {};
+    const set = (id, val) => {
+        if (!val || !String(val).trim()) return;
+        const el = document.getElementById(id);
+        if (el) el.textContent = String(val).trim();
+    };
+    set('rep-irradia', a.ela_ve);
+    set('rep-sente',   a.ela_sente);
+    set('rep-fecho',   a.fecho);
+}
+
 function openReport() {
     renderReportBios(); // injeta as 3 bios já geradas no fim do relatório
     // Preenche elementos dinâmicos (MBTI + ADICAS) com os scores reais do avatar
     const scores = QuizLogic.calcularScores(respostas);
     preencherReportMBTI(scores);
     renderRespostas(); // Secao 01 com as perguntas/respostas reais do avatar
+    preencherAnalise(lastReportAnalise); // Secao 05 + fecho personalizados
     startTimer('bio-timer', 9 * 60); // escassez no fim do relatório
     show('s-report');
     // Rola automaticamente até os botões de oferta
