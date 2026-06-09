@@ -114,7 +114,7 @@ function parseBios(raw) {
 function parseDiagnostico(raw) {
     let txt = (raw || '').trim();
     // Pega tudo até o separador @@@ ou até o primeiro "BIO:"
-    const corte = txt.search(/@@@|BIO\s*\d*\s*:/i);
+    const corte = txt.search(/@@@|BIO\s*\d*\s*:|ELA_VE\s*:|ELA_SENTE\s*:|FECHO\s*:/i);
     let diag = corte > -1 ? txt.slice(0, corte) : '';
     diag = diag
         .replace(/^#+\s.*$/gm, '')               // remove títulos markdown
@@ -182,7 +182,7 @@ Apps que usa: ${appsTxt || 'n/d'}
 Signo: ${signo || 'n/d'}
 Tempo desde o último date: ${ultimoDate || 'n/d'}
 
-Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBTI (perfil ${mbtiTipo}) e nos traços ADICAS acima, gere TRÊS blocos: primeiro o DIAGNÓSTICO, depois as 3 BIOS, e por fim a ANÁLISE.
+Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBTI (perfil ${mbtiTipo}) e nos traços ADICAS acima, gere: PRIMEIRO um bloco com o DIAGNÓSTICO seguido das 3 linhas ELA_VE / ELA_SENTE / FECHO; depois a linha @@@; depois as 3 BIOS.
 
 1. DIAGNÓSTICO (máximo ~130 palavras, no tom do Breno do VAULT-CORE: direto, masculino, prático, sem rodeio):
    Baseado no tipo MBTI ${mbtiTipo}, nos traços fortes (${tracosFort}), no traço fraco (${tracosFraco}) e no arquétipo. Texto corrido em 3 partes encadeadas:
@@ -201,7 +201,7 @@ Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBT
 
 3. Para cada bio, indique em 1 linha curta: "Estrutura usada" e "Por que funciona"
 
-4. ANÁLISE personalizada (3 frases curtas, no tom do Breno, calibradas pelo MBTI ${mbtiTipo} + traços fortes (${tracosFort}) + traço fraco (${tracosFraco}) + arquétipo — NUNCA cite dados crus):
+4. ANÁLISE personalizada — as 3 linhas ELA_VE, ELA_SENTE e FECHO vêm LOGO APÓS o diagnóstico, no MESMO primeiro bloco, ANTES do @@@ (3 frases curtas, tom do Breno, calibradas pelo MBTI ${mbtiTipo} + traços fortes (${tracosFort}) + traço fraco (${tracosFraco}) + arquétipo — NUNCA cite dados crus):
    - ELA_VE: em 1 frase, o que as mensagens dele irradiam HOJE (como ela o percebe agora).
    - ELA_SENTE: em 1 frase, o que ela sente ao ler as mensagens dele hoje (por que falta urgência de encontro).
    - FECHO: 1 frase de virada, motivadora e específica do perfil dele (o que ele tem que 90% não têm, e o que falta é habilidade que se aprende).
@@ -212,18 +212,17 @@ REGRAS DE FORMATO (obrigatórias):
 - Separe o diagnóstico das bios com uma linha contendo apenas: @@@
 - Não numere as bios. Separe cada uma das 3 bios com uma linha contendo apenas: |||
 
-Use EXATAMENTE este formato:
+Use EXATAMENTE este formato (as linhas ELA_VE/ELA_SENTE/FECHO sao OBRIGATORIAS e vem ANTES do @@@):
 DIAGNOSTICO: [texto corrido de até ~130 palavras]
+ELA_VE: [1 frase]
+ELA_SENTE: [1 frase]
+FECHO: [1 frase]
 @@@
 BIO: [texto da bio]
 ESTRUTURA: [nome da estrutura do §2]
 MOTIVO: [1 frase curta]
 |||
-(repita o bloco BIO/ESTRUTURA/MOTIVO/||| exatamente 3 vezes)
-===ANALISE===
-ELA_VE: [1 frase]
-ELA_SENTE: [1 frase]
-FECHO: [1 frase]`;
+(repita o bloco BIO/ESTRUTURA/MOTIVO/||| exatamente 3 vezes)`;
 
     try {
         const message = await client.messages.create({
@@ -234,11 +233,15 @@ FECHO: [1 frase]`;
         });
 
         const raw = message.content[0].text || '';
-        // Separa a ANALISE do resto ANTES de parsear bios (evita poluir o parser das bios)
-        const [parteBios, parteAnalise = ''] = raw.split(/===\s*ANALISE\s*===/i);
-        const bios = parseBios(parteBios);
-        const diagnostico = parseDiagnostico(parteBios);
-        const analise = parseAnalise(parteAnalise);
+        // Estrutura: [DIAGNOSTICO + ELA_VE/ELA_SENTE/FECHO] @@@ [3 BIOS]
+        const partes = raw.split('@@@');
+        const primeiro = partes[0] || '';
+        const biosTxt  = partes.length > 1 ? partes.slice(1).join('@@@') : raw;
+        const bios = parseBios(biosTxt);
+        const diagnostico = parseDiagnostico(primeiro);
+        // analise vem do primeiro bloco; se falhar, varre o texto todo (robustez)
+        let analise = parseAnalise(primeiro);
+        if (!analise.ela_ve && !analise.ela_sente && !analise.fecho) analise = parseAnalise(raw);
 
         if (bios.length < 3) {
             console.error('parse incompleto: apenas', bios.length, 'bio(s) extraídas.');
