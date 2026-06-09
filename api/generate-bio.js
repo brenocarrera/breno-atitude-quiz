@@ -248,7 +248,7 @@ MOTIVO: [1 frase curta]
             return res.status(500).json({ error: 'incomplete_response', bios_found: bios.length });
         }
 
-        return res.status(200).json({ bios: bios.slice(0, 3), diagnostico, analise, perfil_adicas: mapping.perfil, _raw: raw });
+        return res.status(200).json({ bios: bios.slice(0, 3), diagnostico, analise, perfil_adicas: mapping.perfil });
     } catch (err) {
         console.error('API error:', err);
         return res.status(500).json({ error: err.message || 'api_error' });
