@@ -206,10 +206,10 @@ Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBT
 3. Para cada bio, indique em 1 linha curta: "Estrutura usada" e "Por que funciona"
 
 4. ANÁLISE personalizada — as 3 linhas ELA_VE, ELA_SENTE e FECHO vêm LOGO APÓS o diagnóstico, no MESMO primeiro bloco, ANTES do @@@ (3 frases curtas, tom do Breno, calibradas pelo MBTI ${mbtiTipo} + traços fortes (${tracosFort}) + traço fraco (${tracosFraco}) + arquétipo — NUNCA cite dados crus):
-   - ELA_VE: em 1 frase, o que as mensagens dele irradiam HOJE (como ela o percebe agora).
-   - ELA_SENTE: em 1 frase, o que ela sente ao ler as mensagens dele hoje (por que falta urgência de encontro).
+   - ELA_VE: em 1 parágrafo (~100 palavras), o que as mensagens dele irradiam HOJE (como ela o percebe agora).
+   - ELA_SENTE: em 1 parágrafo (~100 palavras), o que ela sente ao ler as mensagens dele hoje (por que falta urgência de encontro).
    - FECHO: 1 frase de virada, motivadora e específica do perfil dele (o que ele tem que 90% não têm, e o que falta é habilidade que se aprende).
-   - MELHOR: 1 frase sobre a MELHOR versão que ela poderia ver nele (o potencial desbloqueado do perfil ${mbtiTipo}).
+   - MELHOR: 1 parágrafo (~100 palavras) sobre a MELHOR versão que ela poderia ver nele (o potencial desbloqueado do perfil ${mbtiTipo}).
    - PONTO_A / PONTO_B / PONTO_C: 3 pontos de ajuste na comunicação, ESPECÍFICOS do perfil. Cada linha no formato "Título curto — o problema + o ajuste em 1 frase".
    - CIA_FUNCAO: 1 linha — a função/papel que a CIA daria a esse perfil (ex: Analista de Inteligência, Operações de Campo, Recrutador), coerente com o MBTI ${mbtiTipo}.
    - CIA_AVALIACAO: ~100 palavras, tom de dossiê — avaliação do perfil numa "operação de campo de sedução": pontos fortes + a limitação central.
@@ -225,10 +225,10 @@ REGRAS DE FORMATO (obrigatórias):
 
 Use EXATAMENTE este formato (as linhas ELA_VE/ELA_SENTE/FECHO sao OBRIGATORIAS e vem ANTES do @@@):
 DIAGNOSTICO: [texto corrido de até ~130 palavras]
-ELA_VE: [1 frase]
-ELA_SENTE: [1 frase]
+ELA_VE: [~100 palavras]
+ELA_SENTE: [~100 palavras]
 FECHO: [1 frase]
-MELHOR: [1 frase]
+MELHOR: [~100 palavras]
 PONTO_A: [Título curto — problema + ajuste]
 PONTO_B: [Título curto — problema + ajuste]
 PONTO_C: [Título curto — problema + ajuste]
