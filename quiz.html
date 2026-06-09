@@ -1107,24 +1107,7 @@ body.presell-mode .expert-header { height: 300px; }
         <div class="rep-section">
             <div class="rep-sec-label">Seção 01</div>
             <div class="rep-sec-title">Suas Respostas</div>
-            <div class="rep-card accent">
-                <div class="rep-q">Como você inicia conversa depois de um match?</div>
-                <div class="rep-a">"Faço uma observação inteligente sobre algo no perfil dela — diferente do 'oi linda' que todo mundo manda."</div>
-            </div>
-            <div class="rep-blur">
-                <div class="rep-card accent">
-                    <div class="rep-q">Quando ela demora a responder, você...</div>
-                    <div class="rep-a">"Fico elaborando mentalmente o que vou escrever. Às vezes reescrevo a mensagem inteira."</div>
-                </div>
-                <div class="rep-card accent">
-                    <div class="rep-q">Qual é seu principal objetivo na conversa?</div>
-                    <div class="rep-a">"Criar conexão genuína antes de qualquer coisa. Não gosto de marcar encontro com quem mal conheço."</div>
-                </div>
-                <div class="rep-card accent">
-                    <div class="rep-q">+ 6 respostas analisadas</div>
-                    <div class="rep-a">"..."</div>
-                </div>
-            </div>
+            <div id="rep-respostas"></div>
             <span class="rep-lockchip">🔒 Desbloqueie para ver suas 9 respostas analisadas</span>
         </div>
 
@@ -1944,7 +1927,7 @@ function pick(btn, polo) {
     if (btn.classList.contains('picked')) return;
     document.querySelectorAll('.option').forEach(o => { o.classList.remove('picked'); o.disabled = true; });
     btn.classList.add('picked');
-    respostas[curQ] = { a: polo };
+    respostas[curQ] = { a: polo, t: btn.textContent.trim() };
     soundClick(); // clique de seleção
 
     if (COMMENTS[curQ]) {
@@ -2222,11 +2205,34 @@ function preencherReportMBTI(scores) {
     }
 }
 
+// Escapa HTML para injecao segura de texto do usuario
+function escHtml(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Secao 01 — monta as perguntas + respostas REAIS do avatar (QS + respostas)
+function renderRespostas() {
+    const box = document.getElementById('rep-respostas');
+    if (!box || typeof QS === 'undefined' || !Array.isArray(QS)) return;
+    const itens = [];
+    QS.forEach((q, i) => {
+        const r = respostas[i];
+        if (q && r && r.t) itens.push({ q: q.q, a: r.t });
+    });
+    if (!itens.length) return;
+    const card = it => `<div class="rep-card accent"><div class="rep-q">${escHtml(it.q)}</div><div class="rep-a">"${escHtml(it.a)}"</div></div>`;
+    const visivel = itens.slice(0, 1).map(card).join('');   // 1a resposta visivel
+    const resto   = itens.slice(1).map(card).join('');       // resto com blur (mantem o funil)
+    box.innerHTML = visivel + (resto ? `<div class="rep-blur">${resto}</div>` : '');
+}
+
 function openReport() {
     renderReportBios(); // injeta as 3 bios já geradas no fim do relatório
     // Preenche elementos dinâmicos (MBTI + ADICAS) com os scores reais do avatar
     const scores = QuizLogic.calcularScores(respostas);
     preencherReportMBTI(scores);
+    renderRespostas(); // Secao 01 com as perguntas/respostas reais do avatar
     startTimer('bio-timer', 9 * 60); // escassez no fim do relatório
     show('s-report');
     // Rola automaticamente até os botões de oferta
