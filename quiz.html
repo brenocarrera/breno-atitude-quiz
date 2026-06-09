@@ -1213,8 +1213,8 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="rep-sec-label">Seção 06</div>
             <div class="rep-sec-title">O Melhor que Ela Conseguiria Ver em Você</div>
             <div class="rep-card green">
-                <div class="rep-card-title green">O Arquiteto Sedutor — INTJ Desbloqueado</div>
-                <p class="rep-p">O INTJ que aprende a usar sua inteligência estratégica a favor da sedução se torna o tipo mais poderoso do espectro.<span class="rep-blur"> Enquanto o Bad Boy é excitante mas imprevisível, e o Provider é estável mas sem tensão — o INTJ calibrado entrega os dois ao mesmo tempo: intelectualmente dominante E estrategicamente imprevisível. Ele cria o "momento" não por acaso, mas por design.</span></p>
+                <div class="rep-card-title green" id="rep-melhor-titulo">O Arquiteto Sedutor — INTJ Desbloqueado</div>
+                <p class="rep-p"><span id="rep-melhor">O INTJ que aprende a usar sua inteligência estratégica a favor da sedução se torna o tipo mais poderoso do espectro.</span><span class="rep-blur"> Enquanto o Bad Boy é excitante mas imprevisível, e o Provider é estável mas sem tensão — o INTJ calibrado entrega os dois ao mesmo tempo: intelectualmente dominante E estrategicamente imprevisível. Ele cria o "momento" não por acaso, mas por design.</span></p>
             </div>
             <span class="rep-lockchip">🔒 Desbloqueie sua projeção completa</span>
         </div>
@@ -1224,12 +1224,12 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="rep-sec-label">Seção 07</div>
             <div class="rep-sec-title">5 Pontos de Ajuste na Comunicação</div>
             <div class="rep-point">
-                <div><span class="rep-point-n">1</span><b style="color:var(--r-text)">Profundidade sem leveza — o peso da primeira impressão</b></div>
-                <p class="rep-p" style="margin-top:8px">Você vai fundo cedo demais. A primeira conversa parece uma entrevista filosófica.<span class="rep-blur"> Ela sente o esforço mental necessário e associa você à palavra "pesado" antes de sentir qualquer atração. O conteúdo é bom — o timing é errado. ▶ Ajuste: leveza nos primeiros 5 minutos.</span></p>
+                <div><span class="rep-point-n">1</span><b style="color:var(--r-text)" id="rep-ponto1-t">Profundidade sem leveza — o peso da primeira impressão</b></div>
+                <p class="rep-p" style="margin-top:8px"><span id="rep-ponto1-d">Você vai fundo cedo demais. A primeira conversa parece uma entrevista filosófica.</span><span class="rep-blur"> Ela sente o esforço mental necessário e associa você à palavra "pesado" antes de sentir qualquer atração. O conteúdo é bom — o timing é errado. ▶ Ajuste: leveza nos primeiros 5 minutos.</span></p>
             </div>
             <div class="rep-blur">
-                <div class="rep-point"><div><span class="rep-point-n">2</span><b style="color:var(--r-text)">Lógica nos testes — a resposta que mata a tensão</b></div><p class="rep-p" style="margin-top:8px">Quando ela te testa, você explica seu ponto logicamente. Um homem de alto valor não explica — reage com calma, humor ou inverte o jogo.</p></div>
-                <div class="rep-point"><div><span class="rep-point-n">3</span><b style="color:var(--r-text)">Pipeline de 1 — a ansiedade que ela sente</b></div><p class="rep-p" style="margin-top:8px">Quando você foca só nela, sua energia muda de forma sutil mas detectável. Você perde o frame de escassez que cria atração.</p></div>
+                <div class="rep-point"><div><span class="rep-point-n">2</span><b style="color:var(--r-text)" id="rep-ponto2-t">Lógica nos testes — a resposta que mata a tensão</b></div><p class="rep-p" style="margin-top:8px" id="rep-ponto2-d">Quando ela te testa, você explica seu ponto logicamente. Um homem de alto valor não explica — reage com calma, humor ou inverte o jogo.</p></div>
+                <div class="rep-point"><div><span class="rep-point-n">3</span><b style="color:var(--r-text)" id="rep-ponto3-t">Pipeline de 1 — a ansiedade que ela sente</b></div><p class="rep-p" style="margin-top:8px" id="rep-ponto3-d">Quando você foca só nela, sua energia muda de forma sutil mas detectável. Você perde o frame de escassez que cria atração.</p></div>
                 <div class="rep-point" style="opacity:0.6"><div><span class="rep-point-n">4</span><b style="color:var(--r-text)">+ 2 pontos críticos identificados</b></div></div>
             </div>
             <span class="rep-lockchip">🔒 Desbloqueie os 5 ajustes com o passo a passo</span>
@@ -2241,6 +2241,9 @@ function preencherReportMBTI(scores) {
         ].filter(Boolean);
         if (partes.length) elMeta.textContent = partes.join(' · ');
     }
+    // 7. Titulo da Secao 06 com o MBTI real
+    const elMelhorT = document.getElementById('rep-melhor-titulo');
+    if (elMelhorT) elMelhorT.textContent = `Sua melhor versão — ${tipo} Desbloqueado`;
 }
 
 // Escapa HTML para injecao segura de texto do usuario
@@ -2277,6 +2280,20 @@ function preencherAnalise(a) {
     set('rep-irradia', a.ela_ve);
     set('rep-sente',   a.ela_sente);
     set('rep-fecho',   a.fecho);
+    set('rep-melhor',  a.melhor_versao);
+    // pontos: "Titulo — descricao" -> titulo (negrito) + descricao
+    const setPonto = (n, val) => {
+        if (!val || !String(val).trim()) return;
+        const v = String(val).trim();
+        const mt = v.match(/^(.+?)\s*—\s*(.+)$/) || v.match(/^(.+?)\s+[-–]\s+(.+)$/);
+        const titulo = mt ? mt[1].trim() : v;
+        const desc   = mt ? mt[2].trim() : '';
+        set('rep-ponto'+n+'-t', titulo);
+        set('rep-ponto'+n+'-d', desc || v);
+    };
+    setPonto(1, a.ponto1);
+    setPonto(2, a.ponto2);
+    setPonto(3, a.ponto3);
 }
 
 function openReport() {

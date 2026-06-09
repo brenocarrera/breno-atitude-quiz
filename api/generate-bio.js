@@ -131,8 +131,9 @@ function parseDiagnostico(raw) {
 function parseAnalise(txt) {
     const t = (txt || '').trim();
     if (!t) return {};
-    const out = { ela_ve: '', ela_sente: '', fecho: '' };
-    const mapa = { ELA_VE: 'ela_ve', ELA_SENTE: 'ela_sente', FECHO: 'fecho' };
+    const out = { ela_ve: '', ela_sente: '', fecho: '', melhor_versao: '', ponto1: '', ponto2: '', ponto3: '' };
+    const mapa = { ELA_VE: 'ela_ve', ELA_SENTE: 'ela_sente', FECHO: 'fecho',
+                   MELHOR: 'melhor_versao', PONTO_A: 'ponto1', PONTO_B: 'ponto2', PONTO_C: 'ponto3' };
     let atual = null;
     for (const linha of t.split('\n')) {
         const m = linha.match(/^\s*([A-Z_]{3,})\s*:\s*(.*)$/);
@@ -205,6 +206,8 @@ Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBT
    - ELA_VE: em 1 frase, o que as mensagens dele irradiam HOJE (como ela o percebe agora).
    - ELA_SENTE: em 1 frase, o que ela sente ao ler as mensagens dele hoje (por que falta urgência de encontro).
    - FECHO: 1 frase de virada, motivadora e específica do perfil dele (o que ele tem que 90% não têm, e o que falta é habilidade que se aprende).
+   - MELHOR: 1 frase sobre a MELHOR versão que ela poderia ver nele (o potencial desbloqueado do perfil ${mbtiTipo}).
+   - PONTO_A / PONTO_B / PONTO_C: 3 pontos de ajuste na comunicação, ESPECÍFICOS do perfil. Cada linha no formato "Título curto — o problema + o ajuste em 1 frase".
 
 REGRAS DE FORMATO (obrigatórias):
 - NÃO escreva título, cabeçalho ou markdown (nada de "#", "---").
@@ -217,6 +220,10 @@ DIAGNOSTICO: [texto corrido de até ~130 palavras]
 ELA_VE: [1 frase]
 ELA_SENTE: [1 frase]
 FECHO: [1 frase]
+MELHOR: [1 frase]
+PONTO_A: [Título curto — problema + ajuste]
+PONTO_B: [Título curto — problema + ajuste]
+PONTO_C: [Título curto — problema + ajuste]
 @@@
 BIO: [texto da bio]
 ESTRUTURA: [nome da estrutura do §2]
