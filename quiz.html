@@ -1125,12 +1125,21 @@ body.presell-mode .expert-header { height: 300px; }
                     </div>
                 </div>
             </div>
+            <div class="rep-card-title" id="rep-dim-titulo" style="margin-top:4px;font-size:clamp(1rem,3.8vw,1.15rem)">Pontuação por Dimensão — INTJ no Contexto de Sedução</div>
             <div class="rep-blur">
-                <div class="rep-bar-row"><span class="rep-bar-label">Gerar interesse intelectual</span><span class="rep-bar"><span id="bar-fill-inteligente" class="rep-bar-fill" style="width:94%;background:var(--r-primary)"></span></span><span id="bar-val-inteligente" class="rep-bar-val" style="color:var(--r-primary)">94%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Capacidade de gerar interesse intelectual</span><span class="rep-bar"><span id="bar-fill-inteligente" class="rep-bar-fill" style="width:94%;background:var(--r-primary)"></span></span><span id="bar-val-inteligente" class="rep-bar-val" style="color:var(--r-primary)">94%</span></div>
                 <div class="rep-bar-row"><span class="rep-bar-label">Frame de confiança e alto valor</span><span class="rep-bar"><span id="bar-fill-confiavel" class="rep-bar-fill" style="width:78%;background:var(--r-primary)"></span></span><span id="bar-val-confiavel" class="rep-bar-val" style="color:var(--r-primary)">78%</span></div>
                 <div class="rep-bar-row"><span class="rep-bar-label">Resistência a testes femininos</span><span class="rep-bar"><span id="bar-fill-ambicioso" class="rep-bar-fill" style="width:61%;background:var(--r-purple)"></span></span><span id="bar-val-ambicioso" class="rep-bar-val" style="color:var(--r-purple)">61%</span></div>
-                <div class="rep-bar-row"><span class="rep-bar-label">Leveza e humor nas mensagens</span><span class="rep-bar"><span id="bar-fill-divertido" class="rep-bar-fill" style="width:32%;background:var(--r-orange)"></span></span><span id="bar-val-divertido" class="rep-bar-val" style="color:var(--r-orange)">32%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Leveza e humor espontâneo nas mensagens</span><span class="rep-bar"><span id="bar-fill-divertido" class="rep-bar-fill" style="width:32%;background:var(--r-orange)"></span></span><span id="bar-val-divertido" class="rep-bar-val" style="color:var(--r-orange)">32%</span></div>
                 <div class="rep-bar-row"><span class="rep-bar-label">Criação de tensão sexual via texto</span><span class="rep-bar"><span id="bar-fill-sexual" class="rep-bar-fill" style="width:21%;background:var(--r-red)"></span></span><span id="bar-val-sexual" class="rep-bar-val" style="color:var(--r-red)">21%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Velocidade de indução para encontro</span><span class="rep-bar"><span id="bar-fill-velocidade" class="rep-bar-fill" style="width:29%;background:var(--r-red)"></span></span><span id="bar-val-velocidade" class="rep-bar-val" style="color:var(--r-red)">29%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Volume de pipeline (múltiplas conversas)</span><span class="rep-bar"><span id="bar-fill-pipeline" class="rep-bar-fill" style="width:17%;background:var(--r-red)"></span></span><span id="bar-val-pipeline" class="rep-bar-val" style="color:var(--r-red)">17%</span></div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:12px;font-size:clamp(0.8rem,2.9vw,0.9rem);color:var(--r-muted)">
+                <span>Ponto forte: <b id="rep-forte" style="color:var(--r-green)">inteligência estratégica</b></span>
+                <span>Desenvolver: <b id="rep-desenvolver" style="color:var(--r-orange)">leveza calibrada</b></span>
+                <span>Crítico: <b id="rep-critico1" style="color:var(--r-red)">indução de encontro</b></span>
+                <span>Crítico: <b id="rep-critico2" style="color:var(--r-red)">tensão sexual</b></span>
             </div>
             <span class="rep-lockchip">🔒 Desbloqueie sua pontuação completa por dimensão</span>
         </div>
@@ -1217,6 +1226,7 @@ body.presell-mode .expert-header { height: 300px; }
                 <div class="rep-card-title green" id="rep-melhor-titulo">O Arquiteto Sedutor — INTJ Desbloqueado</div>
                 <p class="rep-p"><span id="rep-melhor">O INTJ que aprende a usar sua inteligência estratégica a favor da sedução se torna o tipo mais poderoso do espectro.</span><span class="rep-blur"> Enquanto o Bad Boy é excitante mas imprevisível, e o Provider é estável mas sem tensão — o INTJ calibrado entrega os dois ao mesmo tempo: intelectualmente dominante E estrategicamente imprevisível. Ele cria o "momento" não por acaso, mas por design.</span></p>
             </div>
+            <p class="rep-p" style="font-size:clamp(0.8rem,2.8vw,0.9rem);opacity:0.75;margin-top:4px">Base: DeAngelo (Lover calibrado vs Provider) · Female Mind PT2 (cérebro primitivo ativado por imprevisibilidade controlada) · FBI Like Switch (intensidade como alavanca de conversão) · Jogo do Texto Módulo 5 (indução de encontro + conversa sexual calibrada).</p>
             <span class="rep-lockchip">🔒 Desbloqueie sua projeção completa</span>
         </div>
 
@@ -2181,25 +2191,37 @@ function preencherReportMBTI(scores) {
     }
 
     // 3. Barras ADICAS — normalização proporcional para faixa 20%–95%
-    const BARRAS = [
-        { traco: 'inteligente', fillId: 'bar-fill-inteligente', valId: 'bar-val-inteligente', corAlta: 'var(--r-primary)', corBaixa: 'var(--r-primary)' },
-        { traco: 'confiavel',   fillId: 'bar-fill-confiavel',   valId: 'bar-val-confiavel',   corAlta: 'var(--r-primary)', corBaixa: 'var(--r-primary)' },
-        { traco: 'ambicioso',   fillId: 'bar-fill-ambicioso',   valId: 'bar-val-ambicioso',   corAlta: 'var(--r-primary)', corBaixa: 'var(--r-purple)'  },
-        { traco: 'divertido',   fillId: 'bar-fill-divertido',   valId: 'bar-val-divertido',   corAlta: 'var(--r-primary)', corBaixa: 'var(--r-orange)'  },
-        { traco: 'sexual',      fillId: 'bar-fill-sexual',      valId: 'bar-val-sexual',      corAlta: 'var(--r-primary)', corBaixa: 'var(--r-red)'     },
+    // 7 dimensoes: 5 ADICAS diretas + 2 derivadas (velocidade, pipeline)
+    const av = adicas;
+    const DIMS = [
+        { fillId: 'bar-fill-inteligente', valId: 'bar-val-inteligente', foot: 'inteligência estratégica', raw: av.inteligente || 0 },
+        { fillId: 'bar-fill-confiavel',   valId: 'bar-val-confiavel',   foot: 'frame de confiança',       raw: av.confiavel   || 0 },
+        { fillId: 'bar-fill-ambicioso',   valId: 'bar-val-ambicioso',   foot: 'resistência a testes',     raw: av.ambicioso   || 0 },
+        { fillId: 'bar-fill-divertido',   valId: 'bar-val-divertido',   foot: 'leveza calibrada',         raw: av.divertido   || 0 },
+        { fillId: 'bar-fill-sexual',      valId: 'bar-val-sexual',      foot: 'tensão sexual',            raw: av.sexual      || 0 },
+        { fillId: 'bar-fill-velocidade',  valId: 'bar-val-velocidade',  foot: 'indução de encontro',      raw: ((av.sexual||0) + (av.divertido||0)) / 2 },
+        { fillId: 'bar-fill-pipeline',    valId: 'bar-val-pipeline',    foot: 'volume de pipeline',       raw: ((av.divertido||0) + (av.ambicioso||0)) / 2 },
     ];
-    const rawScores = BARRAS.map(b => adicas[b.traco] || 0);
-    const maxRaw    = Math.max(...rawScores, 1); // evita divisão por zero
-
-    BARRAS.forEach((b, i) => {
-        const raw = rawScores[i];
-        const pct = Math.round(20 + (raw / maxRaw) * 75); // [20, 95]
-        const cor = pct >= 60 ? b.corAlta : b.corBaixa;
-        const fill = document.getElementById(b.fillId);
-        const val  = document.getElementById(b.valId);
+    const maxRaw = Math.max(...DIMS.map(d => d.raw), 1);
+    const corDe  = pct => pct >= 70 ? 'var(--r-primary)' : pct >= 45 ? 'var(--r-orange)' : 'var(--r-red)';
+    const comPct = DIMS.map(d => {
+        const pct = Math.round(20 + (d.raw / maxRaw) * 75); // [20, 95]
+        const cor = corDe(pct);
+        const fill = document.getElementById(d.fillId);
+        const val  = document.getElementById(d.valId);
         if (fill) { fill.style.width = pct + '%'; fill.style.background = cor; }
         if (val)  { val.textContent = pct + '%'; val.style.color = cor; }
+        return { foot: d.foot, pct };
     });
+    // Rodape: forte (maior), desenvolver (mediano), 2 criticos (menores)
+    const ord = [...comPct].sort((x, y) => y.pct - x.pct);
+    const setFoot = (id, label) => { const el = document.getElementById(id); if (el && label) el.textContent = label; };
+    if (ord.length >= 4) {
+        setFoot('rep-forte',       ord[0].foot);
+        setFoot('rep-desenvolver', ord[Math.floor(ord.length / 2)].foot);
+        setFoot('rep-critico1',    ord[ord.length - 2].foot);
+        setFoot('rep-critico2',    ord[ord.length - 1].foot);
+    }
 
     // 4. Destaque no grid dos 9 tipos
     const arch   = lastReportArch || 'direto';
@@ -2245,6 +2267,8 @@ function preencherReportMBTI(scores) {
     // 7. Titulo da Secao 06 com o MBTI real
     const elMelhorT = document.getElementById('rep-melhor-titulo');
     if (elMelhorT) elMelhorT.textContent = `Sua melhor versão — ${tipo} Desbloqueado`;
+    const elDimT = document.getElementById('rep-dim-titulo');
+    if (elDimT) elDimT.textContent = `Pontuação por Dimensão — ${tipo} no Contexto de Sedução`;
 
     // 8. Cabecalhos dos dossies CIA/FBI com o MBTI real
     const elCiaH = document.getElementById('rep-cia-head');
