@@ -886,6 +886,30 @@ body.presell-mode .expert-header { height: 300px; }
 .rep-offer-btn .rep-offer-tag { font-size: 0.78rem; opacity: 0.9; }
 .rep-offer-btn.free { background: linear-gradient(135deg, var(--r-green), #059669); box-shadow: 0 6px 20px rgba(16,185,129,0.35); }
 .rep-offer-btn.paid { background: linear-gradient(135deg, var(--r-primary), var(--r-purple)); box-shadow: 0 6px 20px rgba(139,92,246,0.35); }
+
+/* ===== BLOCO VISUAL 03-jun — refino de layout (NAO muda conteudo) ===== */
+/* Secao 1 — respostas numeradas, fonte -15% */
+.rep-resp .rep-q { font-size: clamp(0.70rem, 2.5vw, 0.78rem); }
+.rep-resp .rep-a { font-size: clamp(0.81rem, 3vw, 0.89rem); }
+.rep-resp-num { display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:22px; padding:0 7px; margin-bottom:9px; border-radius:7px; background:rgba(139,92,246,0.16); border:1px solid rgba(139,92,246,0.45); color:var(--r-purple); font-weight:800; font-size:0.72rem; letter-spacing:1.5px; }
+/* Secao 2 — perfil premium + rodape em bloco */
+.rep-premium { background: linear-gradient(135deg, rgba(139,92,246,0.16), rgba(139,92,246,0.04)) !important; border:1px solid rgba(139,92,246,0.40) !important; }
+.rep-dim-footer { display:flex; flex-wrap:wrap; gap:10px 18px; margin-top:14px; padding:14px 16px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid var(--r-border); font-size:clamp(0.8rem,2.9vw,0.9rem); color:var(--r-muted); }
+/* Secao 3 — tipo atual + analise com mais destaque */
+.rep-type.current { border-color: var(--r-primary); background: linear-gradient(135deg, rgba(139,92,246,0.26), rgba(139,92,246,0.07)); box-shadow: 0 8px 26px rgba(139,92,246,0.32); }
+.rep-type.current .rep-type-name { color:#c4b5fd; }
+.rep-diag-premium { background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(139,92,246,0.03)) !important; border:1px solid rgba(139,92,246,0.38) !important; border-left:3px solid var(--r-primary) !important; }
+/* Secao 4 — dossie mais legivel: rotulos destacados */
+.rep-dossier .rep-mono b { color: var(--r-blue); font-weight:700; letter-spacing:0.3px; }
+.rep-dk { color: var(--r-blue); font-weight:700; }
+.rep-dossier .rep-mono span[id] { color:#eaf0f8; }
+/* Secao 8 — bios por plataforma com mais respiro */
+.rep-bio .rep-card-title { margin-bottom:10px; }
+.rep-bio .rep-p { line-height:1.85; }
+/* Bonus — bios geradas mais limpas */
+.rep-bonus-card { border-left:3px solid var(--r-primary) !important; }
+.rep-bonus-ver { font-size:clamp(0.78rem,2.8vw,0.86rem); letter-spacing:1px; text-transform:uppercase; color:var(--r-purple); font-weight:700; margin-bottom:9px; }
+.rep-bonus-text { background:rgba(0,0,0,0.28); border-radius:10px; padding:14px 16px; border-left:2px solid var(--r-primary); line-height:1.75; color:var(--r-text); }
 </style>
 </head>
 <body>
@@ -1115,7 +1139,7 @@ body.presell-mode .expert-header { height: 300px; }
         <div class="rep-section">
             <div class="rep-sec-label">Seção 02</div>
             <div class="rep-sec-title">Seu Perfil Myers-Briggs Conectado à Sedução</div>
-            <div class="rep-card accent">
+            <div class="rep-card accent rep-premium">
                 <div class="rep-card-title" id="rep-mbti-titulo">INTJ — O Estrategista que Analisa em Vez de Sentir</div>
                 <p class="rep-p">Você é um dos perfis mais raros e analiticamente poderosos do Myers-Briggs — menos de 2% da população. Quando você gosta de alguém, vai fundo de verdade.</p>
                 <div class="rep-blur">
@@ -1135,7 +1159,7 @@ body.presell-mode .expert-header { height: 300px; }
                 <div class="rep-bar-row"><span class="rep-bar-label">Velocidade de indução para encontro</span><span class="rep-bar"><span id="bar-fill-velocidade" class="rep-bar-fill" style="width:29%;background:var(--r-red)"></span></span><span id="bar-val-velocidade" class="rep-bar-val" style="color:var(--r-red)">29%</span></div>
                 <div class="rep-bar-row"><span class="rep-bar-label">Volume de pipeline (múltiplas conversas)</span><span class="rep-bar"><span id="bar-fill-pipeline" class="rep-bar-fill" style="width:17%;background:var(--r-red)"></span></span><span id="bar-val-pipeline" class="rep-bar-val" style="color:var(--r-red)">17%</span></div>
             </div>
-            <div style="display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:12px;font-size:clamp(0.8rem,2.9vw,0.9rem);color:var(--r-muted)">
+            <div class="rep-dim-footer">
                 <span>Ponto forte: <b id="rep-forte" style="color:var(--r-green)">inteligência estratégica</b></span>
                 <span>Desenvolver: <b id="rep-desenvolver" style="color:var(--r-orange)">leveza calibrada</b></span>
                 <span>Crítico: <b id="rep-critico1" style="color:var(--r-red)">indução de encontro</b></span>
@@ -1160,7 +1184,7 @@ body.presell-mode .expert-header { height: 300px; }
                 <div id="rep-tipo-08" class="rep-type"><div class="rep-type-num">Tipo 08</div><div class="rep-type-ico">🧭</div><div class="rep-type-name">O Aventureiro Calibrado</div></div>
                 <div id="rep-tipo-09" class="rep-type"><div class="rep-type-num">Tipo 09</div><div class="rep-type-ico">♟️</div><div class="rep-type-name">O Homem de Alto Valor</div></div>
             </div>
-            <div class="rep-card accent" style="margin-top:12px">
+            <div class="rep-card accent rep-diag-premium" style="margin-top:12px">
                 <div class="rep-card-title" id="rep-diag-titulo">Análise do seu tipo</div>
                 <p class="rep-p" id="rep-diagnostico"></p>
             </div>
@@ -1176,7 +1200,7 @@ body.presell-mode .expert-header { height: 300px; }
                     <div class="rep-seal">CIA</div>
                     <div class="rep-dossier-meta" id="rep-cia-head">CENTRAL INTELLIGENCE AGENCY · DIRECTORATE OF ANALYSIS<br>TOP SECRET/SCI · Behavioral Profile Assessment</div>
                 </div>
-                <div class="rep-mono">FUNÇÃO PRIMÁRIA: <span id="rep-cia-funcao">Analista de Inteligência Estratégica</span><br>SETOR DE ALOCAÇÃO: Directorate of Analysis (DA)<br>FUNÇÃO SECUNDÁRIA: Profiler Psicológico de Alvos<br>STATUS OPERACIONAL: Analítico Ativo · Campo: Limitado</div>
+                <div class="rep-mono"><b class="rep-dk">FUNÇÃO PRIMÁRIA:</b> <span id="rep-cia-funcao">Analista de Inteligência Estratégica</span><br><b class="rep-dk">SETOR DE ALOCAÇÃO:</b> Directorate of Analysis (DA)<br><b class="rep-dk">FUNÇÃO SECUNDÁRIA:</b> Profiler Psicológico de Alvos<br><b class="rep-dk">STATUS OPERACIONAL:</b> Analítico Ativo · Campo: Limitado</div>
                 <div class="rep-mono" style="margin-top:10px"><b>AVALIAÇÃO DE PERFIL —</b> <span id="rep-cia-avaliacao">Sujeito demonstra capacidade analítica excepcional. Identifica padrões comportamentais em alvos com precisão acima da média operacional. Excelente para briefings estratégicos e operações de longo prazo. Limitação: dificuldade em operações de aproximação emocional de curto prazo — opera em modo analítico em situações que exigem resposta emocional imediata.</span></div>
                 <div class="rep-mono" style="margin-top:10px"><b>DIAGNÓSTICO OPERACIONAL —</b> <span id="rep-cia-diagnostico">Melhor função seria Chief of Station: excelente em construir redes de influência de longo prazo, necessita treinamento em aproximação emocional imediata. O tipo que lê 300 páginas de inteligência sobre o alvo mas hesita no momento da abordagem real.</span></div>
             </div>
@@ -1185,7 +1209,7 @@ body.presell-mode .expert-header { height: 300px; }
                     <div class="rep-seal fbi">FBI</div>
                     <div class="rep-dossier-meta" id="rep-fbi-head">FBI · LIKE SWITCH (Shafer)<br>FRIENDSHIP FORMULA · Proximidade · Frequência · Duração · Intensidade</div>
                 </div>
-                <div class="rep-mono">PROXIMIDADE: adequada · FREQUÊNCIA: alerta (foco em 1 alvo) · DURAÇÃO: excesso (conversa longa sem indução) · INTENSIDADE: déficit crítico</div>
+                <div class="rep-mono"><b class="rep-dk">PROXIMIDADE:</b> adequada · <b class="rep-dk">FREQUÊNCIA:</b> alerta (foco em 1 alvo) · <b class="rep-dk">DURAÇÃO:</b> excesso (conversa longa sem indução) · <b class="rep-dk">INTENSIDADE:</b> déficit crítico</div>
                 <div class="rep-mono" style="margin-top:10px"><b>DIAGNÓSTICO FBI —</b> <span id="rep-fbi-diagnostico">Sujeito constrói alta DURAÇÃO + baixa INTENSIDADE. Fórmula resultante produz familiaridade profunda sem desejo. Resultado: ela o trata como confidente, não como interesse romântico. O vínculo é real — mas do tipo errado para o objetivo.</span></div>
                 <div class="rep-mono" style="margin-top:10px"><b>RECOMENDAÇÃO DE TREINAMENTO —</b> <span id="rep-fbi-recomendacao">Módulo "Intensidade Emocional Controlada" + "Matching de Estado Emocional" antes de qualquer nova operação de campo com alvo de alto valor.</span></div>
             </div>
@@ -1251,13 +1275,13 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="rep-sec-label">Seção 08</div>
             <div class="rep-sec-title">Bios Estratégicas por Plataforma</div>
             <p class="rep-sec-intro">Baseado em Atividade-10 (5 tipos de bio de impacto) + jogo de texto.pdf + How the Female Mind Works PT2.</p>
-            <div class="rep-card accent">
+            <div class="rep-card accent rep-bio">
                 <div class="rep-card-title">🔥 Tinder — Gerador de Curiosidade</div>
                 <p class="rep-p">Arquiteto de dia. Investigador de comportamento humano por hobby.<span class="rep-blur"> Minhas ex namoram melhor depois de mim — pelo menos é o que elas dizem. Especialista em fazer café perfeito e em não responder mensagem de voz. Se você também acha que conversa de madrugada revela mais do que qualquer perfil de app — talvez a gente se dê bem.</span></p>
             </div>
             <div class="rep-blur">
-                <div class="rep-card accent"><div class="rep-card-title">📷 Instagram — Eu Sou o Prêmio</div><p class="rep-p">Leio pessoas mais rápido do que leio livros. E leio muito livro. As fotos são 80% ângulo estratégico. Os textos são 100% o que eu realmente penso.</p></div>
-                <div class="rep-card green"><div class="rep-card-title green">💬 WhatsApp — Frame de Alto Valor</div><p class="rep-p">Respondo quando quero conversar de verdade. Isso acontece com frequência menor do que você espera e com qualidade maior do que você está acostumada.</p></div>
+                <div class="rep-card accent rep-bio"><div class="rep-card-title">📷 Instagram — Eu Sou o Prêmio</div><p class="rep-p">Leio pessoas mais rápido do que leio livros. E leio muito livro. As fotos são 80% ângulo estratégico. Os textos são 100% o que eu realmente penso.</p></div>
+                <div class="rep-card green rep-bio"><div class="rep-card-title green">💬 WhatsApp — Frame de Alto Valor</div><p class="rep-p">Respondo quando quero conversar de verdade. Isso acontece com frequência menor do que você espera e com qualidade maior do que você está acostumada.</p></div>
             </div>
             <span class="rep-lockchip">🔒 Desbloqueie suas 3 bios prontas para copiar</span>
         </div>
@@ -2108,11 +2132,10 @@ function renderReportBios() {
         const bioTexto = (typeof item === 'string') ? item : (item.bio || '');
         const meta = (a.bios && a.bios[i]) || { version:`Versão ${i+1}`, style:'' };
         const card = document.createElement('div');
-        card.className = 'rep-card accent';
-        // Bio 1 legível; Bios 2 e 3 com blur médio
-        const textCls = (i >= 1) ? 'rep-a rep-blur' : 'rep-a';
+        card.className = 'rep-card rep-bonus-card';
+        const textCls = (i >= 1) ? 'rep-bonus-text rep-blur' : 'rep-bonus-text';
         card.innerHTML = `
-            <div class="rep-card-title">${meta.version}${meta.style ? ' · <span style="font-weight:400;color:var(--r-muted)">'+meta.style+'</span>' : ''}</div>
+            <div class="rep-bonus-ver">${meta.version}${meta.style ? ' · <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--r-muted)">'+meta.style+'</span>' : ''}</div>
             <p class="${textCls}" id="rbio-${i}">${bioTexto}</p>`;
         list.appendChild(card);
     });
@@ -2208,7 +2231,7 @@ function preencherReportMBTI(scores) {
         { fillId: 'bar-fill-pipeline',    valId: 'bar-val-pipeline',    foot: 'volume de pipeline',       raw: ((av.divertido||0) + (av.ambicioso||0)) / 2 },
     ];
     const maxRaw = Math.max(...DIMS.map(d => d.raw), 1);
-    const corDe  = pct => pct >= 70 ? 'var(--r-primary)' : pct >= 45 ? 'var(--r-orange)' : 'var(--r-red)';
+    const corDe  = pct => pct >= 80 ? '#22c55e' : pct >= 60 ? '#0e9f6e' : pct >= 45 ? '#2563eb' : pct >= 30 ? '#f59e0b' : '#ef4444';
     const comPct = DIMS.map(d => {
         const pct = Math.round(20 + (d.raw / maxRaw) * 75); // [20, 95]
         const cor = corDe(pct);
@@ -2298,9 +2321,9 @@ function renderRespostas() {
         if (q && r && r.t) itens.push({ q: q.q, a: r.t });
     });
     if (!itens.length) return;
-    const card = it => `<div class="rep-card accent"><div class="rep-q">${escHtml(it.q)}</div><div class="rep-a">"${escHtml(it.a)}"</div></div>`;
-    const visivel = itens.slice(0, 1).map(card).join('');   // 1a resposta visivel
-    const resto   = itens.slice(1).map(card).join('');       // resto com blur (mantem o funil)
+    const card = (it, n) => `<div class="rep-card accent rep-resp"><span class="rep-resp-num">${String(n).padStart(2,'0')}</span><div class="rep-q">${escHtml(it.q)}</div><div class="rep-a">"${escHtml(it.a)}"</div></div>`;
+    const visivel = itens.slice(0, 1).map((it, i) => card(it, i + 1)).join('');   // 1a resposta visivel
+    const resto   = itens.slice(1).map((it, i) => card(it, i + 2)).join('');       // resto (blur recolocado depois)
     box.innerHTML = visivel + (resto ? `<div class="rep-blur">${resto}</div>` : '');
 }
 
