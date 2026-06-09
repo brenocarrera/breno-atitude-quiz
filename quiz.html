@@ -863,7 +863,7 @@ body.presell-mode .expert-header { height: 300px; }
 
 /* Blur desativado — relatório completo legível */
 /* Blur médio: ilegível, mas percebe-se que há conteúdo embaixo */
-.rep-blur { filter: blur(4px); opacity: 0.9; user-select: none; pointer-events: none; }
+.rep-blur { filter: none; opacity: 1; } /* blur desligado p/ revisao — recolocar em pontos especificos depois */
 .rep-lockchip { display: none; }
 
 /* Escassez / timer */
@@ -1157,7 +1157,7 @@ body.presell-mode .expert-header { height: 300px; }
             </div>
         </div>
 
-        <!-- SEÇÃO 04 — CIA/FBI (intro aberta, dossiê com teaser+blur) -->
+        <!-- SEÇÃO 04 — CIA/FBI (personalizado por perfil) -->
         <div class="rep-section">
             <div class="rep-sec-label">Seção 04</div>
             <div class="rep-sec-title">Classificação CIA / FBI</div>
@@ -1165,20 +1165,21 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="rep-dossier">
                 <div class="rep-dossier-head">
                     <div class="rep-seal">CIA</div>
-                    <div class="rep-dossier-meta">CENTRAL INTELLIGENCE AGENCY · DIRECTORATE OF ANALYSIS<br>TOP SECRET · Behavioral Profile Assessment</div>
+                    <div class="rep-dossier-meta" id="rep-cia-head">CENTRAL INTELLIGENCE AGENCY · DIRECTORATE OF ANALYSIS<br>TOP SECRET/SCI · Behavioral Profile Assessment</div>
                 </div>
-                <div class="rep-mono">FUNÇÃO PRIMÁRIA: Analista de Inteligência Estratégica<br>FUNÇÃO SECUNDÁRIA: Profiler Psicológico de Alvos</div>
-                <div class="rep-mono rep-blur" style="margin-top:8px">AVALIAÇÃO: Sujeito demonstra capacidade analítica excepcional. LIMITAÇÃO CRÍTICA: dificuldade em operações de aproximação emocional de curto prazo. DIAGNÓSTICO: o tipo que lê 300 páginas de inteligência sobre o alvo mas hesita no momento da abordagem real.</div>
+                <div class="rep-mono">FUNÇÃO PRIMÁRIA: <span id="rep-cia-funcao">Analista de Inteligência Estratégica</span><br>SETOR DE ALOCAÇÃO: Directorate of Analysis (DA)<br>FUNÇÃO SECUNDÁRIA: Profiler Psicológico de Alvos<br>STATUS OPERACIONAL: Analítico Ativo · Campo: Limitado</div>
+                <div class="rep-mono" style="margin-top:10px"><b>AVALIAÇÃO DE PERFIL —</b> <span id="rep-cia-avaliacao">Sujeito demonstra capacidade analítica excepcional. Identifica padrões comportamentais em alvos com precisão acima da média operacional. Excelente para briefings estratégicos e operações de longo prazo. Limitação: dificuldade em operações de aproximação emocional de curto prazo — opera em modo analítico em situações que exigem resposta emocional imediata.</span></div>
+                <div class="rep-mono" style="margin-top:10px"><b>DIAGNÓSTICO OPERACIONAL —</b> <span id="rep-cia-diagnostico">Melhor função seria Chief of Station: excelente em construir redes de influência de longo prazo, necessita treinamento em aproximação emocional imediata. O tipo que lê 300 páginas de inteligência sobre o alvo mas hesita no momento da abordagem real.</span></div>
             </div>
             <div class="rep-dossier">
                 <div class="rep-dossier-head">
                     <div class="rep-seal fbi">FBI</div>
-                    <div class="rep-dossier-meta">FBI · LIKE SWITCH (Jack Shafer)<br>FRIENDSHIP FORMULA · Proximidade · Frequência · Duração · Intensidade</div>
+                    <div class="rep-dossier-meta" id="rep-fbi-head">FBI · LIKE SWITCH (Shafer)<br>FRIENDSHIP FORMULA · Proximidade · Frequência · Duração · Intensidade</div>
                 </div>
                 <div class="rep-mono">PROXIMIDADE: adequada · FREQUÊNCIA: alerta (foco em 1 alvo) · DURAÇÃO: excesso (conversa longa sem indução) · INTENSIDADE: déficit crítico</div>
-                <div class="rep-mono rep-blur" style="margin-top:8px">DIAGNÓSTICO FBI: alta DURAÇÃO + baixa INTENSIDADE = familiaridade profunda sem desejo. Ela te trata como confidente, não como interesse romântico. RECOMENDAÇÃO: módulo "Intensidade Emocional Controlada" antes da próxima operação de campo.</div>
+                <div class="rep-mono" style="margin-top:10px"><b>DIAGNÓSTICO FBI —</b> <span id="rep-fbi-diagnostico">Sujeito constrói alta DURAÇÃO + baixa INTENSIDADE. Fórmula resultante produz familiaridade profunda sem desejo. Resultado: ela o trata como confidente, não como interesse romântico. O vínculo é real — mas do tipo errado para o objetivo.</span></div>
+                <div class="rep-mono" style="margin-top:10px"><b>RECOMENDAÇÃO DE TREINAMENTO —</b> <span id="rep-fbi-recomendacao">Módulo "Intensidade Emocional Controlada" + "Matching de Estado Emocional" antes de qualquer nova operação de campo com alvo de alto valor.</span></div>
             </div>
-            <span class="rep-lockchip">🔒 Desbloqueie o dossiê CIA + FBI completo</span>
         </div>
 
         <!-- SEÇÃO 05 — O Homem que Ela Vê (PESSOAL) -->
@@ -2244,6 +2245,12 @@ function preencherReportMBTI(scores) {
     // 7. Titulo da Secao 06 com o MBTI real
     const elMelhorT = document.getElementById('rep-melhor-titulo');
     if (elMelhorT) elMelhorT.textContent = `Sua melhor versão — ${tipo} Desbloqueado`;
+
+    // 8. Cabecalhos dos dossies CIA/FBI com o MBTI real
+    const elCiaH = document.getElementById('rep-cia-head');
+    if (elCiaH) elCiaH.innerHTML = `CENTRAL INTELLIGENCE AGENCY · DIRECTORATE OF ANALYSIS<br>TOP SECRET/SCI · ${tipo} Behavioral Profile Assessment`;
+    const elFbiH = document.getElementById('rep-fbi-head');
+    if (elFbiH) elFbiH.innerHTML = `FBI · ${tipo} ASSESSMENT · LIKE SWITCH (Shafer)<br>FRIENDSHIP FORMULA · Proximidade · Frequência · Duração · Intensidade`;
 }
 
 // Escapa HTML para injecao segura de texto do usuario
@@ -2294,6 +2301,12 @@ function preencherAnalise(a) {
     setPonto(1, a.ponto1);
     setPonto(2, a.ponto2);
     setPonto(3, a.ponto3);
+    // Secao 04 — CIA/FBI personalizados
+    set('rep-cia-funcao',       a.cia_funcao);
+    set('rep-cia-avaliacao',    a.cia_avaliacao);
+    set('rep-cia-diagnostico',  a.cia_diagnostico);
+    set('rep-fbi-diagnostico',  a.fbi_diagnostico);
+    set('rep-fbi-recomendacao', a.fbi_recomendacao);
 }
 
 function openReport() {
