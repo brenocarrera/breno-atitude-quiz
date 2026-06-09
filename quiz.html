@@ -1267,6 +1267,11 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="rep-sec-label">Seção 09</div>
             <div class="rep-sec-title">Primeira Mensagem Pós-Match Matadora</div>
             <p class="rep-sec-intro">Baseado em Atividade-33 (10 estruturas de abridor) + jogo de texto.pdf (leitura fria via NLP + frame do convencido) + Texting Blueprint.</p>
+            <div class="rep-card green">
+                <div class="rep-card-title green">Sua abertura calibrada — pronta pra usar</div>
+                <p class="rep-a" id="rep-abertura">Repare em algo específico do perfil dela (não a aparência) e já assuma uma leitura sobre ela. Ex.: "Tenho quase certeza que você diz 'topo qualquer coisa' mas no fim escolhe sempre o mesmo lugar. Tô certo ou errado?"</p>
+            </div>
+            <div style="font-size:clamp(0.8rem,2.8vw,0.9rem);color:var(--r-muted);margin:14px 0 8px">Exemplo aplicado (quando ela tem foto em Amsterdã):</div>
             <div class="rep-msg her">Ela tem foto em Amsterdã no perfil</div>
             <div class="rep-msg him">Amsterdã fica melhor na foto ou pessoalmente? Pergunto porque quem foi costuma ter opinião bem forte sobre isso.</div>
             <div class="rep-blur">
@@ -2331,6 +2336,7 @@ function preencherAnalise(a) {
     set('rep-cia-diagnostico',  a.cia_diagnostico);
     set('rep-fbi-diagnostico',  a.fbi_diagnostico);
     set('rep-fbi-recomendacao', a.fbi_recomendacao);
+    set('rep-abertura',         a.abertura);
 }
 
 function openReport() {

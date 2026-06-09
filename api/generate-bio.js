@@ -132,11 +132,11 @@ function parseAnalise(txt) {
     const t = (txt || '').trim();
     if (!t) return {};
     const out = { ela_ve: '', ela_sente: '', fecho: '', melhor_versao: '', ponto1: '', ponto2: '', ponto3: '',
-                  cia_funcao: '', cia_avaliacao: '', cia_diagnostico: '', fbi_diagnostico: '', fbi_recomendacao: '' };
+                  cia_funcao: '', cia_avaliacao: '', cia_diagnostico: '', fbi_diagnostico: '', fbi_recomendacao: '', abertura: '' };
     const mapa = { ELA_VE: 'ela_ve', ELA_SENTE: 'ela_sente', FECHO: 'fecho',
                    MELHOR: 'melhor_versao', PONTO_A: 'ponto1', PONTO_B: 'ponto2', PONTO_C: 'ponto3',
                    CIA_FUNCAO: 'cia_funcao', CIA_AVALIACAO: 'cia_avaliacao', CIA_DIAGNOSTICO: 'cia_diagnostico',
-                   FBI_DIAGNOSTICO: 'fbi_diagnostico', FBI_RECOMENDACAO: 'fbi_recomendacao' };
+                   FBI_DIAGNOSTICO: 'fbi_diagnostico', FBI_RECOMENDACAO: 'fbi_recomendacao', ABERTURA: 'abertura' };
     let atual = null;
     for (const linha of t.split('\n')) {
         const m = linha.match(/^\s*([A-Z_]{3,})\s*:\s*(.*)$/);
@@ -216,6 +216,7 @@ Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBT
    - CIA_DIAGNOSTICO: ~80 palavras — diagnóstico operacional + a melhor função/treinamento que faltaria.
    - FBI_DIAGNOSTICO: ~100 palavras — leitura da Friendship Formula (Proximidade/Frequência/Duração/Intensidade) PARA esse perfil: o que ele constrói demais, o que falta, e o resultado com ela.
    - FBI_RECOMENDACAO: ~60 palavras — módulo de treinamento recomendado pro perfil.
+   - ABERTURA: 1 primeira mensagem (abridor) pronta pra ele copiar e colar num match novo, calibrada pro perfil — leitura fria + pressuposição, sem elogio à aparência, sem "oi". 1 a 2 frases.
 
 REGRAS DE FORMATO (obrigatórias):
 - NÃO escreva título, cabeçalho ou markdown (nada de "#", "---").
@@ -237,6 +238,7 @@ CIA_AVALIACAO: [~100 palavras]
 CIA_DIAGNOSTICO: [~80 palavras]
 FBI_DIAGNOSTICO: [~100 palavras]
 FBI_RECOMENDACAO: [~60 palavras]
+ABERTURA: [1-2 frases, abridor pronto]
 @@@
 BIO: [texto da bio]
 ESTRUTURA: [nome da estrutura do §2]
