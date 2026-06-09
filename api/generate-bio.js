@@ -131,15 +131,21 @@ function parseDiagnostico(raw) {
 function parseAnalise(txt) {
     const t = (txt || '').trim();
     if (!t) return {};
-    const grab = (label) => {
-        const m = t.match(new RegExp(label + '\\s*:\\s*([\\s\\S]+?)(?=\\n[A-Z_]{3,}\\s*:|$)', 'i'));
-        return m ? m[1].replace(/^#+\s.*$/gm, '').replace(/\*+/g, '').trim() : '';
-    };
-    return {
-        ela_ve:    grab('ELA_VE'),
-        ela_sente: grab('ELA_SENTE'),
-        fecho:     grab('FECHO'),
-    };
+    const out = { ela_ve: '', ela_sente: '', fecho: '' };
+    const mapa = { ELA_VE: 'ela_ve', ELA_SENTE: 'ela_sente', FECHO: 'fecho' };
+    let atual = null;
+    for (const linha of t.split('\n')) {
+        const m = linha.match(/^\s*([A-Z_]{3,})\s*:\s*(.*)$/);
+        if (m && mapa[m[1].toUpperCase()]) {
+            atual = mapa[m[1].toUpperCase()];
+            out[atual] = m[2].trim();
+        } else if (atual) {
+            // continuacao do campo anterior (texto multi-linha)
+            out[atual] += (out[atual] ? ' ' : '') + linha.trim();
+        }
+    }
+    for (const k in out) out[k] = out[k].replace(/[#*]/g, '').trim();
+    return out;
 }
 
 module.exports = async function handler(req, res) {
