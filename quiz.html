@@ -1097,9 +1097,9 @@ body.presell-mode .expert-header { height: 300px; }
         <div class="rep-hero">
             <div class="rep-kicker">Jogo do Texto · Análise de Perfil Completa</div>
             <div class="rep-kicker t2">Resultado da sua análise</div>
-            <div class="rep-pill">O Cara da Conversa</div>
+            <div class="rep-pill" id="rep-pill">O Cara da Conversa</div>
             <p class="rep-hero-sub rep-blur">Ela acha você fascinante para trocar ideia. Mas não sente urgência de te ver pessoalmente. Você está a 3 calibrações de mudar completamente isso.</p>
-            <div class="rep-meta rep-blur">Rafael M. · 31 anos · São Paulo · Perfil INTJ</div>
+            <div class="rep-meta" id="rep-meta">Rafael M. · 31 anos · São Paulo · Perfil INTJ</div>
         </div>
 
         <!-- SEÇÃO 01 — Suas Respostas -->
@@ -2205,6 +2205,21 @@ function preencherReportMBTI(scores) {
     if (elDiagT) elDiagT.textContent = `Análise do seu tipo — ${TIPO9_NOME[tipoId] || ''} (Tipo ${tipoId})`;
     if (elDiag)  elDiag.textContent  = lastReportDiagnostico
         || 'Seu diagnóstico personalizado aparece aqui assim que a análise é gerada.';
+
+    // 6. Cabecalho (hero) — dados reais do avatar + MBTI real + nome do tipo destacado
+    const elPill = document.getElementById('rep-pill');
+    if (elPill && TIPO9_NOME[tipoId]) elPill.textContent = TIPO9_NOME[tipoId];
+    const elMeta = document.getElementById('rep-meta');
+    if (elMeta) {
+        const u = (typeof userData !== 'undefined') ? userData : {};
+        const partes = [
+            u.nome,
+            u.idade ? `${u.idade} anos` : '',
+            u.cidade,
+            tipo ? `Perfil ${tipo}` : '',
+        ].filter(Boolean);
+        if (partes.length) elMeta.textContent = partes.join(' · ');
+    }
 }
 
 function openReport() {
