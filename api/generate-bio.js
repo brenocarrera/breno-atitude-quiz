@@ -124,6 +124,24 @@ function parseDiagnostico(raw) {
     return diag;
 }
 
+/**
+ * Extrai os campos da ANALISE (ELA_VE / ELA_SENTE / FECHO).
+ * Tolera ausencia: retorna {} e o front-end mantem o texto padrao.
+ */
+function parseAnalise(txt) {
+    const t = (txt || '').trim();
+    if (!t) return {};
+    const grab = (label) => {
+        const m = t.match(new RegExp(label + '\\s*:\\s*([\\s\\S]+?)(?=\\n[A-Z_]{3,}\\s*:|$)', 'i'));
+        return m ? m[1].replace(/^#+\s.*$/gm, '').replace(/\*+/g, '').trim() : '';
+    };
+    return {
+        ela_ve:    grab('ELA_VE'),
+        ela_sente: grab('ELA_SENTE'),
+        fecho:     grab('FECHO'),
+    };
+}
+
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -158,7 +176,7 @@ Apps que usa: ${appsTxt || 'n/d'}
 Signo: ${signo || 'n/d'}
 Tempo desde o último date: ${ultimoDate || 'n/d'}
 
-Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBTI (perfil ${mbtiTipo}) e nos traços ADICAS acima, gere DOIS blocos: primeiro o DIAGNÓSTICO, depois as 3 BIOS.
+Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBTI (perfil ${mbtiTipo}) e nos traços ADICAS acima, gere TRÊS blocos: primeiro o DIAGNÓSTICO, depois as 3 BIOS, e por fim a ANÁLISE.
 
 1. DIAGNÓSTICO (máximo ~130 palavras, no tom do Breno do VAULT-CORE: direto, masculino, prático, sem rodeio):
    Baseado no tipo MBTI ${mbtiTipo}, nos traços fortes (${tracosFort}), no traço fraco (${tracosFraco}) e no arquétipo. Texto corrido em 3 partes encadeadas:
@@ -177,6 +195,11 @@ Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBT
 
 3. Para cada bio, indique em 1 linha curta: "Estrutura usada" e "Por que funciona"
 
+4. ANÁLISE personalizada (3 frases curtas, no tom do Breno, calibradas pelo MBTI ${mbtiTipo} + traços fortes (${tracosFort}) + traço fraco (${tracosFraco}) + arquétipo — NUNCA cite dados crus):
+   - ELA_VE: em 1 frase, o que as mensagens dele irradiam HOJE (como ela o percebe agora).
+   - ELA_SENTE: em 1 frase, o que ela sente ao ler as mensagens dele hoje (por que falta urgência de encontro).
+   - FECHO: 1 frase de virada, motivadora e específica do perfil dele (o que ele tem que 90% não têm, e o que falta é habilidade que se aprende).
+
 REGRAS DE FORMATO (obrigatórias):
 - NÃO escreva título, cabeçalho ou markdown (nada de "#", "---").
 - Comece a resposta DIRETO em "DIAGNOSTICO:".
@@ -190,19 +213,26 @@ BIO: [texto da bio]
 ESTRUTURA: [nome da estrutura do §2]
 MOTIVO: [1 frase curta]
 |||
-(repita o bloco BIO/ESTRUTURA/MOTIVO/||| exatamente 3 vezes)`;
+(repita o bloco BIO/ESTRUTURA/MOTIVO/||| exatamente 3 vezes)
+===ANALISE===
+ELA_VE: [1 frase]
+ELA_SENTE: [1 frase]
+FECHO: [1 frase]`;
 
     try {
         const message = await client.messages.create({
             model: 'claude-haiku-4-5-20251001',
-            max_tokens: 1800,
+            max_tokens: 2400,
             system: systemPrompt,
             messages: [{ role: 'user', content: userMsg }],
         });
 
         const raw = message.content[0].text || '';
-        const bios = parseBios(raw);
-        const diagnostico = parseDiagnostico(raw);
+        // Separa a ANALISE do resto ANTES de parsear bios (evita poluir o parser das bios)
+        const [parteBios, parteAnalise = ''] = raw.split(/===\s*ANALISE\s*===/i);
+        const bios = parseBios(parteBios);
+        const diagnostico = parseDiagnostico(parteBios);
+        const analise = parseAnalise(parteAnalise);
 
         if (bios.length < 3) {
             console.error('parse incompleto: apenas', bios.length, 'bio(s) extraídas.');
