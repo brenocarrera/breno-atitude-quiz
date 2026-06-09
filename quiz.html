@@ -2024,15 +2024,9 @@ async function doGenerate() {
         });
         const dataBio = await resBio.json();
 
-        let relatorioTexto = '';
-        try {
-            const resRep = await fetch('/api/generate-report', {
-                method:'POST', headers:{'Content-Type':'application/json'},
-                body: JSON.stringify({ archetype: dominant, mbtiTipo: s.mbtiTipo, adicas: s.adicas, nome: userData.nome, userData }),
-            });
-            const dataRep = await resRep.json();
-            relatorioTexto = dataRep.relatorio || '';
-        } catch (e) { relatorioTexto = ''; }
+        // Diagnostico vem do MESMO retorno do generate-bio (curto, limpo, sem markdown).
+        // Nao chamamos mais /api/generate-report (gerava texto cru e longo em markdown).
+        const relatorioTexto = dataBio.diagnostico || '';
 
         fetch('/api/save-lead', {
             method:'POST', headers:{'Content-Type':'application/json'},
