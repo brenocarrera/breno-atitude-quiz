@@ -2225,6 +2225,22 @@ const TIPO9_NOME = {
  * preencherReportMBTI(scores)
  * Atualiza: título MBTI, tags, barras ADICAS, destaque do tipo 9.
  */
+// Perfil caracteristico das 7 dimensoes por tipo MBTI (varia por tipo; valores-base ajustaveis)
+function dimensoesPorMBTI(tipo) {
+    const t = (tipo && tipo.length === 4) ? tipo.toUpperCase() : 'INTJ';
+    const E = t[0] === 'E', N = t[1] === 'N', T = t[2] === 'T', J = t[3] === 'J';
+    const S = !N, F = !T, P = !J;
+    return [
+        45 + (N?30:0) + (T?20:5),            // Capacidade de gerar interesse intelectual
+        40 + (T?22:0) + (J?16:0) + (E?6:0),  // Frame de confianca e alto valor
+        30 + (T?25:0) + (J?6:0),             // Resistencia a testes femininos
+        32 + (E?28:0) + (P?20:0) + (F?8:0),  // Leveza e humor espontaneo
+        21 + (E?22:0) + (S?20:0) + (P?16:0), // Criacao de tensao sexual via texto
+        25 + (E?25:0) + (S?20:0) + (P?12:0), // Velocidade de inducao para encontro
+        20 + (E?32:0) + (P?22:0) - (N?3:0),  // Volume de pipeline
+    ];
+}
+
 function preencherReportMBTI(scores) {
     const tipo   = scores.mbtiTipo || 'INTJ';
     const adicas = scores.adicas   || {};
@@ -2249,22 +2265,20 @@ function preencherReportMBTI(scores) {
             .join('');
     }
 
-    // 3. Barras ADICAS — normalização proporcional para faixa 20%–95%
-    // 7 dimensoes: 5 ADICAS diretas + 2 derivadas (velocidade, pipeline)
-    const av = adicas;
+    // 3. Barras — perfil caracteristico do MBTI (varia por tipo, como o modelo)
+    const dimVals = dimensoesPorMBTI(tipo);
     const DIMS = [
-        { fillId: 'bar-fill-inteligente', valId: 'bar-val-inteligente', foot: 'inteligência estratégica', raw: av.inteligente || 0 },
-        { fillId: 'bar-fill-confiavel',   valId: 'bar-val-confiavel',   foot: 'frame de confiança',       raw: av.confiavel   || 0 },
-        { fillId: 'bar-fill-ambicioso',   valId: 'bar-val-ambicioso',   foot: 'resistência a testes',     raw: av.ambicioso   || 0 },
-        { fillId: 'bar-fill-divertido',   valId: 'bar-val-divertido',   foot: 'leveza calibrada',         raw: av.divertido   || 0 },
-        { fillId: 'bar-fill-sexual',      valId: 'bar-val-sexual',      foot: 'tensão sexual',            raw: av.sexual      || 0 },
-        { fillId: 'bar-fill-velocidade',  valId: 'bar-val-velocidade',  foot: 'indução de encontro',      raw: ((av.sexual||0) + (av.divertido||0)) / 2 },
-        { fillId: 'bar-fill-pipeline',    valId: 'bar-val-pipeline',    foot: 'volume de pipeline',       raw: ((av.divertido||0) + (av.ambicioso||0)) / 2 },
+        { fillId: 'bar-fill-inteligente', valId: 'bar-val-inteligente', foot: 'inteligência estratégica' },
+        { fillId: 'bar-fill-confiavel',   valId: 'bar-val-confiavel',   foot: 'frame de confiança' },
+        { fillId: 'bar-fill-ambicioso',   valId: 'bar-val-ambicioso',   foot: 'resistência a testes' },
+        { fillId: 'bar-fill-divertido',   valId: 'bar-val-divertido',   foot: 'leveza calibrada' },
+        { fillId: 'bar-fill-sexual',      valId: 'bar-val-sexual',      foot: 'tensão sexual' },
+        { fillId: 'bar-fill-velocidade',  valId: 'bar-val-velocidade',  foot: 'indução de encontro' },
+        { fillId: 'bar-fill-pipeline',    valId: 'bar-val-pipeline',    foot: 'volume de pipeline' },
     ];
-    const maxRaw = Math.max(...DIMS.map(d => d.raw), 1);
     const corDe  = pct => pct >= 80 ? '#22c55e' : pct >= 60 ? '#0e9f6e' : pct >= 45 ? '#2563eb' : pct >= 30 ? '#f59e0b' : '#ef4444';
-    const comPct = DIMS.map(d => {
-        const pct = Math.round(20 + (d.raw / maxRaw) * 75); // [20, 95]
+    const comPct = DIMS.map((d, i) => {
+        const pct = Math.max(15, Math.min(96, Math.round(dimVals[i] || 0)));
         const cor = corDe(pct);
         const fill = document.getElementById(d.fillId);
         const val  = document.getElementById(d.valId);
