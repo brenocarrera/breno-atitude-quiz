@@ -131,10 +131,10 @@ function parseDiagnostico(raw) {
 function parseAnalise(txt) {
     const t = (txt || '').trim();
     if (!t) return {};
-    const out = { ela_ve: '', ela_sente: '', fecho: '', melhor_versao: '', ponto1: '', ponto2: '', ponto3: '',
+    const out = { ela_ve: '', ela_sente: '', fecho: '', melhor_versao: '', ponto1: '', ponto2: '', ponto3: '', ponto4: '', ponto5: '',
                   cia_funcao: '', cia_avaliacao: '', cia_diagnostico: '', fbi_diagnostico: '', fbi_recomendacao: '', abertura: '' };
     const mapa = { ELA_VE: 'ela_ve', ELA_SENTE: 'ela_sente', FECHO: 'fecho',
-                   MELHOR: 'melhor_versao', PONTO_A: 'ponto1', PONTO_B: 'ponto2', PONTO_C: 'ponto3',
+                   MELHOR: 'melhor_versao', PONTO_A: 'ponto1', PONTO_B: 'ponto2', PONTO_C: 'ponto3', PONTO_D: 'ponto4', PONTO_E: 'ponto5',
                    CIA_FUNCAO: 'cia_funcao', CIA_AVALIACAO: 'cia_avaliacao', CIA_DIAGNOSTICO: 'cia_diagnostico',
                    FBI_DIAGNOSTICO: 'fbi_diagnostico', FBI_RECOMENDACAO: 'fbi_recomendacao', ABERTURA: 'abertura' };
     let atual = null;
@@ -210,7 +210,7 @@ Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBT
    - ELA_SENTE: em 1 parágrafo (~100 palavras), o que ela sente ao ler as mensagens dele hoje (por que falta urgência de encontro).
    - FECHO: 1 frase de virada, motivadora e específica do perfil dele (o que ele tem que 90% não têm, e o que falta é habilidade que se aprende).
    - MELHOR: 1 parágrafo (~100 palavras) sobre a MELHOR versão que ela poderia ver nele (o potencial desbloqueado do perfil ${mbtiTipo}).
-   - PONTO_A / PONTO_B / PONTO_C: 3 pontos de ajuste na comunicação, ESPECÍFICOS do perfil. Cada linha no formato "Título curto — o problema + o ajuste em 1 frase".
+   - PONTO_A a PONTO_E: 5 pontos de ajuste na comunicação, ESPECÍFICOS do perfil. Cada linha no formato exato "Título curto || o problema em 1 frase || o ajuste prático em 1 frase" — use || como separador das 3 partes.
    - CIA_FUNCAO: 1 linha — a função/papel que a CIA daria a esse perfil (ex: Analista de Inteligência, Operações de Campo, Recrutador), coerente com o MBTI ${mbtiTipo}.
    - CIA_AVALIACAO: ~100 palavras, tom de dossiê — avaliação do perfil numa "operação de campo de sedução": pontos fortes + a limitação central.
    - CIA_DIAGNOSTICO: ~80 palavras — diagnóstico operacional + a melhor função/treinamento que faltaria.
@@ -230,9 +230,11 @@ ELA_VE: [~100 palavras]
 ELA_SENTE: [~100 palavras]
 FECHO: [1 frase]
 MELHOR: [~100 palavras]
-PONTO_A: [Título curto — problema + ajuste]
-PONTO_B: [Título curto — problema + ajuste]
-PONTO_C: [Título curto — problema + ajuste]
+PONTO_A: [Título || problema || ajuste]
+PONTO_B: [Título || problema || ajuste]
+PONTO_C: [Título || problema || ajuste]
+PONTO_D: [Título || problema || ajuste]
+PONTO_E: [Título || problema || ajuste]
 CIA_FUNCAO: [1 linha]
 CIA_AVALIACAO: [~100 palavras]
 CIA_DIAGNOSTICO: [~80 palavras]

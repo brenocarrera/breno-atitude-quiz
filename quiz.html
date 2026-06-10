@@ -910,6 +910,8 @@ body.presell-mode .expert-header { height: 300px; }
 .rep-bonus-card { border-left:3px solid var(--r-primary) !important; }
 .rep-bonus-ver { font-size:clamp(0.78rem,2.8vw,0.86rem); letter-spacing:1px; text-transform:uppercase; color:var(--r-purple); font-weight:700; margin-bottom:9px; }
 .rep-bonus-text { background:rgba(0,0,0,0.28); border-radius:10px; padding:14px 16px; border-left:2px solid var(--r-primary); line-height:1.75; color:var(--r-text); }
+.rep-ptaj{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.26);border-radius:8px;padding:11px 14px;margin-top:10px;font-size:clamp(0.9rem,3.3vw,1rem);color:#a7f3d0;line-height:1.55;}
+.rep-ptaj b{color:var(--r-green);}
 </style>
 </head>
 <body>
@@ -1260,16 +1262,12 @@ body.presell-mode .expert-header { height: 300px; }
         <div class="rep-section">
             <div class="rep-sec-label">Seção 07</div>
             <div class="rep-sec-title">5 Pontos de Ajuste na Comunicação</div>
-            <div class="rep-point">
-                <div><span class="rep-point-n">1</span><b style="color:var(--r-text)" id="rep-ponto1-t">Profundidade sem leveza — o peso da primeira impressão</b></div>
-                <p class="rep-p" style="margin-top:8px"><span id="rep-ponto1-d">Você vai fundo cedo demais. A primeira conversa parece uma entrevista filosófica.</span><span class="rep-blur"> Ela sente o esforço mental necessário e associa você à palavra "pesado" antes de sentir qualquer atração. O conteúdo é bom — o timing é errado. ▶ Ajuste: leveza nos primeiros 5 minutos.</span></p>
-            </div>
-            <div class="rep-blur">
-                <div class="rep-point"><div><span class="rep-point-n">2</span><b style="color:var(--r-text)" id="rep-ponto2-t">Lógica nos testes — a resposta que mata a tensão</b></div><p class="rep-p" style="margin-top:8px" id="rep-ponto2-d">Quando ela te testa, você explica seu ponto logicamente. Um homem de alto valor não explica — reage com calma, humor ou inverte o jogo.</p></div>
-                <div class="rep-point"><div><span class="rep-point-n">3</span><b style="color:var(--r-text)" id="rep-ponto3-t">Pipeline de 1 — a ansiedade que ela sente</b></div><p class="rep-p" style="margin-top:8px" id="rep-ponto3-d">Quando você foca só nela, sua energia muda de forma sutil mas detectável. Você perde o frame de escassez que cria atração.</p></div>
-                <div class="rep-point" style="opacity:0.6"><div><span class="rep-point-n">4</span><b style="color:var(--r-text)">+ 2 pontos críticos identificados</b></div></div>
-            </div>
-            <span class="rep-lockchip">🔒 Desbloqueie os 5 ajustes com o passo a passo</span>
+            <p class="rep-sec-intro">Os 5 pontos específicos onde sua comunicação atual deixa ela com a impressão errada — cada um com o ajuste exato.</p>
+            <div class="rep-point"><div><span class="rep-point-n">1</span><b style="color:var(--r-text)" id="rep-ponto1-t">Profundidade sem leveza — o peso da primeira impressão</b></div><p class="rep-p" style="margin-top:8px" id="rep-ponto1-d">Você vai fundo cedo demais. A primeira conversa parece uma entrevista filosófica e ela associa você à palavra "pesado" antes de sentir atração.</p><div class="rep-ptaj" id="rep-ponto1-aj"><b>▶ Ajuste:</b> Leveza nos primeiros 5 minutos (Atividade-33 + frame Cocky&amp;Funny). Ela precisa rir primeiro — depois fica curiosa sobre a profundidade.</div></div>
+            <div class="rep-point"><div><span class="rep-point-n">2</span><b style="color:var(--r-text)" id="rep-ponto2-t">Lógica nos testes — a resposta que mata a tensão</b></div><p class="rep-p" style="margin-top:8px" id="rep-ponto2-d">Quando ela te testa, você explica logicamente. Para ela soa como "ele precisa me convencer". Homem de alto valor não explica — reage com calma, humor ou inverte o jogo.</p><div class="rep-ptaj" id="rep-ponto2-aj"><b>▶ Ajuste:</b> Atividade-37 (Saindo de Testes) — calma + humor + inversão. Resposta curta e bem-humorada vale 10x mais que a lógica perfeita.</div></div>
+            <div class="rep-point"><div><span class="rep-point-n">3</span><b style="color:var(--r-text)" id="rep-ponto3-t">Pipeline de 1 — a ansiedade que ela sente antes de você</b></div><p class="rep-p" style="margin-top:8px" id="rep-ponto3-d">Quando você foca só nela, sua energia fica detectavelmente mais ansiosa. Você perde o frame de escassez que naturalmente criaria atração.</p><div class="rep-ptaj" id="rep-ponto3-aj"><b>▶ Ajuste:</b> Cialdini (Escassez) + pipeline real de 3-4 conversas paralelas ativas. Abundância genuína gera comportamento que ela percebe.</div></div>
+            <div class="rep-point"><div><span class="rep-point-n">4</span><b style="color:var(--r-text)" id="rep-ponto4-t">Ausência de tensão sexual — a conversa eternamente segura</b></div><p class="rep-p" style="margin-top:8px" id="rep-ponto4-d">Você nunca cria o "momento". A conversa é estimulante mas nunca carregada. Ela te lê como "amigo intelectual" pelo silêncio sexual.</p><div class="rep-ptaj" id="rep-ponto4-aj"><b>▶ Ajuste:</b> Atividade-36 (Conversa Sexual) — duplo sentido suave, erro proposital, negativa divertida. Um "quase momento" muda toda a dinâmica.</div></div>
+            <div class="rep-point"><div><span class="rep-point-n">5</span><b style="color:var(--r-text)" id="rep-ponto5-t">Nunca fecha para encontro — a conversa como fim em si mesma</b></div><p class="rep-p" style="margin-top:8px" id="rep-ponto5-d">Você quer a conexão "grande o suficiente" antes de marcar. Mas seu único objetivo é o encontro. Cada conversa sem indução te trava no Tipo 03.</p><div class="rep-ptaj" id="rep-ponto5-aj"><b>▶ Ajuste:</b> Atividade-35 (Comprometimento Invisível) + Atividade-44 (5 Fechamentos). Induzir encontro na 3ª conversa, não na 10ª.</div></div>
         </div>
 
         <!-- SEÇÃO 08 — Bios (PESSOAL) -->
@@ -2346,19 +2344,23 @@ function preencherAnalise(a) {
     set('rep-sente',   a.ela_sente);
     set('rep-fecho',   a.fecho);
     set('rep-melhor',  a.melhor_versao);
-    // pontos: "Titulo — descricao" -> titulo (negrito) + descricao
+    // pontos: "Titulo || problema || ajuste" -> titulo (negrito) + problema + caixa Ajuste
     const setPonto = (n, val) => {
         if (!val || !String(val).trim()) return;
-        const v = String(val).trim();
-        const mt = v.match(/^(.+?)\s*—\s*(.+)$/) || v.match(/^(.+?)\s+[-–]\s+(.+)$/);
-        const titulo = mt ? mt[1].trim() : v;
-        const desc   = mt ? mt[2].trim() : '';
-        set('rep-ponto'+n+'-t', titulo);
-        set('rep-ponto'+n+'-d', desc || v);
+        const parts = String(val).split('||').map(s => s.trim()).filter(Boolean);
+        if (parts[0]) set('rep-ponto'+n+'-t', parts[0]);
+        if (parts[1]) set('rep-ponto'+n+'-d', parts[1]);
+        if (parts[2]) {
+            const el = document.getElementById('rep-ponto'+n+'-aj');
+            const aj = parts[2].replace(/^[▶\s]*ajuste\s*:?\s*/i, '').replace(/[<>]/g, '');
+            if (el) el.innerHTML = '<b>▶ Ajuste:</b> ' + aj;
+        }
     };
     setPonto(1, a.ponto1);
     setPonto(2, a.ponto2);
     setPonto(3, a.ponto3);
+    setPonto(4, a.ponto4);
+    setPonto(5, a.ponto5);
     // Secao 04 — CIA/FBI personalizados
     set('rep-cia-funcao',       a.cia_funcao);
     set('rep-cia-avaliacao',    a.cia_avaliacao);
