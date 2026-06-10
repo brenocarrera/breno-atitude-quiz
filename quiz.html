@@ -912,6 +912,18 @@ body.presell-mode .expert-header { height: 300px; }
 .rep-bonus-text { background:rgba(0,0,0,0.28); border-radius:10px; padding:14px 16px; border-left:2px solid var(--r-primary); line-height:1.75; color:var(--r-text); }
 .rep-ptaj{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.26);border-radius:8px;padding:11px 14px;margin-top:10px;font-size:clamp(0.9rem,3.3vw,1rem);color:#a7f3d0;line-height:1.55;}
 .rep-ptaj b{color:var(--r-green);}
+/* Cabecalho — meta em 5 colunas (so layout) */
+.rep-meta-grid{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;}
+.rep-meta-grid .it{display:flex;flex-direction:column;align-items:center;}
+.rep-meta-grid .ml{font-size:clamp(0.6rem,2.3vw,0.68rem);letter-spacing:2.5px;text-transform:uppercase;color:var(--r-muted);margin-bottom:5px;}
+.rep-meta-grid .mv{font-weight:700;font-size:clamp(0.95rem,3.4vw,1.08rem);color:#fff;}
+.rep-meta-grid .mv.g{color:var(--r-purple);}
+/* Secao 02 — bloco do MBTI (quadrado) (so layout) */
+.rep-mbti-row{display:flex;gap:18px;align-items:flex-start;}
+.rep-mbti-sq{width:112px;min-width:112px;height:112px;border-radius:14px;background:linear-gradient(135deg,var(--r-primary),#6d28d9);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(139,92,246,.3);}
+.rep-mbti-sig{font-size:clamp(1.5rem,6vw,2rem);font-weight:800;letter-spacing:1px;color:#fff;line-height:1;}
+.rep-mbti-ape{font-size:clamp(0.55rem,2.2vw,0.62rem);letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.82);margin-top:8px;text-align:center;padding:0 4px;}
+@media(max-width:520px){.rep-mbti-sq{width:88px;min-width:88px;height:88px;}.rep-meta-grid{gap:14px;}}
 </style>
 </head>
 <body>
@@ -1125,7 +1137,13 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="rep-kicker t2">Resultado da sua análise</div>
             <div class="rep-pill" id="rep-pill">O Cara da Conversa</div>
             <p class="rep-hero-sub rep-blur">Ela acha você fascinante para trocar ideia. Mas não sente urgência de te ver pessoalmente. Você está a 3 calibrações de mudar completamente isso.</p>
-            <div class="rep-meta" id="rep-meta">Rafael M. · 31 anos · São Paulo · Perfil INTJ</div>
+            <div class="rep-meta-grid" id="rep-meta">
+                <div class="it"><div class="ml">Nome</div><div class="mv" id="rep-m-nome">—</div></div>
+                <div class="it"><div class="ml">Idade</div><div class="mv" id="rep-m-idade">—</div></div>
+                <div class="it"><div class="ml">Cidade</div><div class="mv" id="rep-m-cidade">—</div></div>
+                <div class="it"><div class="ml">Perfil</div><div class="mv g" id="rep-m-perfil">—</div></div>
+                <div class="it"><div class="ml">Gerado em</div><div class="mv" id="rep-m-data">—</div></div>
+            </div>
         </div>
 
         <!-- SEÇÃO 01 — Suas Respostas -->
@@ -1142,8 +1160,13 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="rep-sec-label">Seção 02</div>
             <div class="rep-sec-title">Seu Perfil Myers-Briggs Conectado à Sedução</div>
             <div class="rep-card accent rep-premium">
-                <div class="rep-card-title" id="rep-mbti-titulo">INTJ — O Estrategista que Analisa em Vez de Sentir</div>
-                <p class="rep-p">Você é um dos perfis mais raros e analiticamente poderosos do Myers-Briggs — menos de 2% da população. Quando você gosta de alguém, vai fundo de verdade.</p>
+                <div class="rep-mbti-row">
+                    <div class="rep-mbti-sq"><div class="rep-mbti-sig" id="rep-mbti-sigla">INTJ</div><div class="rep-mbti-ape" id="rep-mbti-apelido">O Estrategista</div></div>
+                    <div class="rep-mbti-txt">
+                        <div class="rep-card-title" id="rep-mbti-titulo">O Estrategista que Analisa em Vez de Sentir</div>
+                        <p class="rep-p">Você é um dos perfis mais raros e analiticamente poderosos do Myers-Briggs — menos de 2% da população. Quando você gosta de alguém, vai fundo de verdade.</p>
+                    </div>
+                </div>
                 <div class="rep-blur">
                     <p class="rep-p">O problema no contexto de sedução: sua maior força é seu maior obstáculo. Você otimiza a comunicação como se fosse um problema lógico — quando ela decide te encontrar com o cérebro primitivo, não com o racional. Lógica não gera desejo. Tensão calibrada gera.</p>
                     <div class="rep-tags" id="rep-mbti-tags">
@@ -2209,7 +2232,14 @@ function preencherReportMBTI(scores) {
 
     // 1. Título
     const elTitulo = document.getElementById('rep-mbti-titulo');
-    if (elTitulo) elTitulo.textContent = rep.titulo;
+    const _mp = (rep.titulo || '').split('—');
+    const _sig = (_mp[0] || tipo).trim();
+    const _ape = (_mp[1] || '').trim();
+    if (elTitulo) elTitulo.textContent = _ape || rep.titulo;
+    const elSig = document.getElementById('rep-mbti-sigla');
+    if (elSig) elSig.textContent = _sig;
+    const elApe = document.getElementById('rep-mbti-apelido');
+    if (elApe) elApe.textContent = _ape;
 
     // 2. Tags
     const elTags = document.getElementById('rep-mbti-tags');
@@ -2285,13 +2315,13 @@ function preencherReportMBTI(scores) {
     const elMeta = document.getElementById('rep-meta');
     if (elMeta) {
         const u = (typeof userData !== 'undefined') ? userData : {};
-        const partes = [
-            u.nome,
-            u.idade ? `${u.idade} anos` : '',
-            u.cidade,
-            tipo ? `Perfil ${tipo}` : '',
-        ].filter(Boolean);
-        if (partes.length) elMeta.textContent = partes.join(' · ');
+        const setm = (id, v) => { const e = document.getElementById(id); if (e && v) e.textContent = v; };
+        setm('rep-m-nome', u.nome);
+        setm('rep-m-idade', u.idade ? `${u.idade} anos` : '');
+        setm('rep-m-cidade', u.cidade);
+        setm('rep-m-perfil', tipo);
+        const _d = new Date();
+        setm('rep-m-data', `${String(_d.getDate()).padStart(2,'0')}.${String(_d.getMonth()+1).padStart(2,'0')}.${_d.getFullYear()}`);
     }
     // 7. Titulo da Secao 06 com o MBTI real
     const elMelhorT = document.getElementById('rep-melhor-titulo');
