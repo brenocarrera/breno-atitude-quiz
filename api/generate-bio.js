@@ -216,7 +216,7 @@ Com base no VAULT-CORE (especialmente §2 — 5 Estruturas de Bio), no VAULT-MBT
    - CIA_DIAGNOSTICO: ~80 palavras — diagnóstico operacional + a melhor função/treinamento que faltaria.
    - FBI_DIAGNOSTICO: ~100 palavras — leitura da Friendship Formula (Proximidade/Frequência/Duração/Intensidade) PARA esse perfil: o que ele constrói demais, o que falta, e o resultado com ela.
    - FBI_RECOMENDACAO: ~60 palavras — módulo de treinamento recomendado pro perfil.
-   - ABERTURA: 1 primeira mensagem (abridor) pronta pra ele copiar e colar num match novo, calibrada pro perfil — leitura fria + pressuposição, sem elogio à aparência, sem "oi". 1 a 2 frases.
+   - ABERTURA: 1 primeira mensagem (abridor) pronta pra copiar e colar num match novo, calibrada pro perfil dele. Estilo: leitura fria pelo perfil/fotos dela + uma suposição engraçada e levemente provocante que a faça querer responder. Sem elogio à aparência, sem "oi". 1 a 2 frases, terminando com uma pergunta tipo "tô certo?" que a convide a entrar na brincadeira.
 
 REGRAS DE FORMATO (obrigatórias):
 - NÃO escreva título, cabeçalho ou markdown (nada de "#", "---").
