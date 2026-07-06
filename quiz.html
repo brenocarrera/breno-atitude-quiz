@@ -1717,7 +1717,8 @@ window.onload = () => {
     if (p.get('adjust') === '1') initAdjustMode();
 
     // Já viu o resultado antes e nunca converteu (nem WhatsApp nem Greenn) → pede email antes de liberar o quiz
-    if (localStorage.getItem('oxyquiz_result_seen') === 'true' && !localStorage.getItem('oxyquiz_converted')) {
+    // ?preview_recover=1 força a visualização da tela (só para demonstração, sem precisar mexer no localStorage)
+    if (p.get('preview_recover') === '1' || (localStorage.getItem('oxyquiz_result_seen') === 'true' && !localStorage.getItem('oxyquiz_converted'))) {
         show('s-recover');
     }
 };
