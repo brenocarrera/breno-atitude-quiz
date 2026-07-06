@@ -914,6 +914,18 @@ body.presell-mode .expert-header { height: 300px; }
     </div>
 </div>
 
+<!-- ── RECUPERAÇÃO (viu o resultado antes e não converteu) ── -->
+<div id="s-recover" class="screen">
+    <div class="presell-wrap">
+        <h1 class="presell-headline">Que bom que você voltou! 🎉</h1>
+        <p class="presell-sub">Coloque seu email aqui para refazer o Quiz</p>
+        <div class="form-group">
+            <input type="email" id="f-recover-email" class="form-input" placeholder="Seu email" required>
+        </div>
+        <button class="btn" onclick="submitRecoverEmail()">Refazer o quiz agora</button>
+    </div>
+</div>
+
 <!-- ── WELCOME ── -->
 <div id="s-welcome" class="screen">
     <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
@@ -1703,7 +1715,29 @@ window.onload = () => {
         if (fn) fn.value = userName; // pré-preenche o campo Nome
     }
     if (p.get('adjust') === '1') initAdjustMode();
+
+    // Já viu o resultado antes e nunca converteu (nem WhatsApp nem Greenn) → pede email antes de liberar o quiz
+    if (localStorage.getItem('oxyquiz_result_seen') === 'true' && !localStorage.getItem('oxyquiz_converted')) {
+        show('s-recover');
+    }
 };
+
+function submitRecoverEmail() {
+    const email = document.getElementById('f-recover-email').value.trim();
+    if (!email) { soundError(); alert('Preencha o email para continuar.'); return; }
+
+    fetch('/api/save-recovered-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email,
+            device_flag: /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+        }),
+    }).catch(() => {});
+
+    localStorage.setItem('oxyquiz_converted', 'true');
+    show('s-presell');
+}
 
 // Apps selecionados (múltipla escolha em caixa única)
 let selectedApps = [];
@@ -1820,7 +1854,7 @@ function initAdjustMode() {
 function show(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    document.body.classList.toggle('presell-mode', id === 's-presell');
+    document.body.classList.toggle('presell-mode', id === 's-presell' || id === 's-recover');
     document.querySelector('.main').scrollTo(0,0);
 }
 
@@ -2206,6 +2240,7 @@ function preencherReportMBTI(scores) {
 }
 
 function openReport() {
+    localStorage.setItem('oxyquiz_result_seen', 'true');
     renderReportBios(); // injeta as 3 bios já geradas no fim do relatório
     // Preenche elementos dinâmicos (MBTI + ADICAS) com os scores reais do avatar
     const scores = QuizLogic.calcularScores(respostas);
@@ -2223,6 +2258,7 @@ function openReport() {
 function chooseOffer(type) {
     soundClick();
     userData.oferta = type; // 'whats' (grátis) ou 'paid' (R$9)
+    localStorage.setItem('oxyquiz_converted', 'true');
     console.log('[oferta escolhida]', type);
 }
 </script>
