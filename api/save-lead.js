@@ -48,7 +48,10 @@ module.exports = async function handler(req, res) {
 
 async function ativarTrialOxy(url, email, nome) {
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!url || !serviceKey || !email) return;
+    if (!url || !serviceKey || !email) {
+        console.error('[ativarTrialOxy] abortado - faltando:', { url: !!url, serviceKey: !!serviceKey, email: !!email });
+        return;
+    }
 
     const emailNorm = email.toLowerCase().trim();
     const headers = {
@@ -61,6 +64,11 @@ async function ativarTrialOxy(url, email, nome) {
         `${url}/rest/v1/usuarios?email=eq.${encodeURIComponent(emailNorm)}&select=plano,plano_expira_em,trial_usado_em`,
         { headers }
     );
+    if (!selectRes.ok) {
+        const errBody = await selectRes.text();
+        console.error('[ativarTrialOxy] SELECT falhou:', selectRes.status, errBody);
+        return;
+    }
     const existing = await selectRes.json();
     const row = Array.isArray(existing) ? existing[0] : null;
 
@@ -78,7 +86,7 @@ async function ativarTrialOxy(url, email, nome) {
     const agora = new Date().toISOString();
     const planoExpira = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
 
-    await fetch(`${url}/rest/v1/usuarios?on_conflict=email`, {
+    const upsertRes = await fetch(`${url}/rest/v1/usuarios?on_conflict=email`, {
         method: 'POST',
         headers: { ...headers, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
         body: JSON.stringify({
@@ -90,4 +98,8 @@ async function ativarTrialOxy(url, email, nome) {
             trial_usado_em: agora,
         }),
     });
+    if (!upsertRes.ok) {
+        const errBody = await upsertRes.text();
+        console.error('[ativarTrialOxy] UPSERT falhou:', upsertRes.status, errBody);
+    }
 }
