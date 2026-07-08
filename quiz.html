@@ -2294,6 +2294,12 @@ function chooseOffer(type) {
     userData.oferta = type; // 'whats' (grátis) ou 'paid' (R$9)
     localStorage.setItem('oxyquiz_converted', 'true');
     console.log('[oferta escolhida]', type);
+
+    if (type === 'whats') {
+        const numero  = '5521992670127';
+        const mensagem = 'Olá! Acabei de fazer o quiz e quero minha análise 🙂';
+        window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`, '_blank');
+    }
 }
 </script>
 </body>
