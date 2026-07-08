@@ -2300,6 +2300,11 @@ function chooseOffer(type) {
         const mensagem = 'Olá! Acabei de fazer o quiz e quero minha análise 🙂';
         window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`, '_blank');
     }
+
+    if (type === 'paid') {
+        const emailParam = window.leadEmail ? `?email=${encodeURIComponent(window.leadEmail)}` : '';
+        window.open(`https://payfast.greenn.com.br/e8kjnav${emailParam}`, '_blank');
+    }
 }
 </script>
 </body>
