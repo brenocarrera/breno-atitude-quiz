@@ -1289,16 +1289,28 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="rep-timer" id="bio-timer">09:00</div>
         </div>
 
+        <!-- Captura de email (antes de liberar as opções de recebimento) -->
+        <div class="rep-card accent" id="rep-email-capture" style="margin-top:18px;">
+            <div class="rep-card-title">Deixe seu email para receber sua análise</div>
+            <div class="form-group" style="margin-top:10px;margin-bottom:0;">
+                <input type="email" id="f-report-email" class="form-input" placeholder="Seu melhor email">
+            </div>
+            <button class="btn" id="btn-confirm-email" style="margin-top:10px;" onclick="confirmReportEmail()">Continuar</button>
+        </div>
+
         <!-- Botões de oferta (placeholder — sem integração ainda) -->
-        <div class="rep-offers" id="rep-offers">
-            <button class="rep-offer-btn free" onclick="chooseOffer('whats')">
-                <span class="rep-offer-main">Receber via WhatsApp</span>
-                <span class="rep-offer-tag">grátis</span>
-            </button>
-            <button class="rep-offer-btn paid" onclick="chooseOffer('paid')">
-                <span class="rep-offer-main">Baixar — R$9</span>
-                <span class="rep-offer-tag">na hora, sem espera</span>
-            </button>
+        <div id="rep-offers-section" style="display:none;margin-top:18px;">
+            <div class="rep-sec-title" style="font-size:1.1rem;margin-bottom:10px;">Escolha a melhor opção para receber sua análise</div>
+            <div class="rep-offers" id="rep-offers">
+                <button class="rep-offer-btn free" id="btn-whatsapp" onclick="chooseOffer('whats')">
+                    <span class="rep-offer-main">Receber via WhatsApp</span>
+                    <span class="rep-offer-tag">grátis</span>
+                </button>
+                <button class="rep-offer-btn paid" id="btn-oxyreport" onclick="chooseOffer('paid')">
+                    <span class="rep-offer-main">Baixar — R$9</span>
+                    <span class="rep-offer-tag">na hora, sem espera</span>
+                </button>
+            </div>
         </div>
 
         <a href="/mensagens" style="display:block;width:100%;margin-top:14px;padding:16px;border-radius:14px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.35);color:#a855f7;font-size:15px;font-weight:600;text-align:center;text-decoration:none;">
@@ -2059,12 +2071,6 @@ async function doGenerate() {
         });
         const data = await res.json();
 
-        fetch('/api/save-lead', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify(userData),
-        }).catch(()=>{});
-
         const perfilAdicas = data.perfil_adicas || 'CA';
         localStorage.setItem('perfil_adicas', perfilAdicas);
         localStorage.setItem('mbti_tipo', s.mbtiTipo);
@@ -2093,6 +2099,33 @@ let repTimerId = null;
 let lastReportBios = []; // mesmas bios geradas em showResult (reuso no #s-report)
 let lastReportArch = '';
 let lastReportDiagnostico = ''; // diagnóstico real gerado pela IA
+
+// Email capturado no relatório (usado no save-lead e, futuramente, nas entregas)
+window.leadEmail = null;
+
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// Valida o email, libera as opções de recebimento e envia o lead com o email
+function confirmReportEmail() {
+    const input = document.getElementById('f-report-email');
+    const email = input.value.trim();
+    if (!isValidEmail(email)) { soundError(); alert('Digite um email válido.'); return; }
+
+    window.leadEmail = email;
+
+    fetch('/api/save-lead', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ ...userData, email: window.leadEmail }),
+    }).catch(()=>{});
+
+    document.getElementById('rep-email-capture').style.display = 'none';
+    const offersSection = document.getElementById('rep-offers-section');
+    offersSection.style.display = 'block';
+    setTimeout(() => offersSection.scrollIntoView({ behavior:'smooth', block:'center' }), 100);
+}
 
 // Renderiza as 3 bios já geradas dentro do #s-report (sem nova chamada de API)
 function renderReportBios() {
@@ -2248,10 +2281,10 @@ function openReport() {
     preencherReportMBTI(scores);
     startTimer('bio-timer', 9 * 60); // escassez no fim do relatório
     show('s-report');
-    // Rola automaticamente até os botões de oferta
+    // Rola automaticamente até a captura de email
     setTimeout(() => {
-        const offers = document.getElementById('rep-offers');
-        if (offers) offers.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const emailBox = document.getElementById('rep-email-capture');
+        if (emailBox) emailBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 400);
 }
 
