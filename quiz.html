@@ -239,6 +239,200 @@ select.form-input option { background: var(--card); color: var(--text); }
 .form-input::placeholder { color: var(--muted2); }
 
 /* ══════════════════════════════════════
+   PROGRESS BAR (welcome steps)
+══════════════════════════════════════ */
+.progress-title {
+    color: var(--text);
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 10px;
+}
+.wtrack {
+    width: 100%;
+    height: 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 18px;
+}
+.wfill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--blue) 100%);
+    transition: width 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+.wfill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    width: 40%;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
+    animation: wshine 1.6s ease-in-out infinite;
+}
+@keyframes wshine {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(250%); }
+}
+
+.wsteps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+.wstep {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+}
+.wstep-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted2);
+    transition: all 0.25s ease;
+}
+.wstep-label {
+    font-size: 10px;
+    color: var(--muted2);
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+}
+.wstep.done .wstep-circle {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #06101e;
+}
+.wstep.done .wstep-label { color: var(--primary); }
+.wstep.active .wstep-circle {
+    background: linear-gradient(135deg, var(--primary), var(--blue));
+    border-color: var(--primary);
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(0,200,160,0.18);
+    transform: scale(1.08);
+}
+.wstep.active .wstep-label { color: var(--text); }
+
+/* ══════════════════════════════════════
+   CHIPS (low-friction select)
+══════════════════════════════════════ */
+.chip-group { display:flex; flex-wrap:wrap; gap:8px; }
+.chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 9px 16px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+.chip.selected {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #06101e;
+    font-weight: 700;
+}
+.chip:active { transform: scale(0.97); }
+
+.form-required { color: var(--danger); margin-left: 3px; }
+
+/* ══════════════════════════════════════
+   AGE SLIDER
+══════════════════════════════════════ */
+.age-value {
+    color: var(--primary);
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+}
+.age-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--border);
+    outline: none;
+    margin: 10px 0 4px;
+}
+.age-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--primary);
+    cursor: pointer;
+}
+.age-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid var(--bg);
+    cursor: pointer;
+}
+
+/* ══════════════════════════════════════
+   HEIGHT STEPPER
+══════════════════════════════════════ */
+.stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+}
+.stepper-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--primary);
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+}
+.stepper-btn:active { transform: scale(0.94); }
+.stepper-value {
+    color: var(--text);
+    font-size: 24px;
+    font-weight: 700;
+    min-width: 90px;
+    text-align: center;
+}
+.stepper-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--border);
+    font-family: inherit;
+    outline: none;
+    padding: 2px 0;
+}
+.stepper-input:focus { border-bottom-color: var(--primary); }
+
+/* ══════════════════════════════════════
    BUTTONS
 ══════════════════════════════════════ */
 .btn {
@@ -259,6 +453,27 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.presell-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    text-align: left;
+    font-size: 13px;
+    color: var(--text-dim, #a0a8c0);
+    margin: 16px 0;
+    line-height: 1.4;
+    cursor: pointer;
+}
+.presell-consent input[type="checkbox"] {
+    margin-top: 2px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+    flex-shrink: 0;
+    cursor: pointer;
+}
 
 /* Scanning/processing state */
 .btn.scanning {
@@ -475,8 +690,9 @@ select.form-input option { background: var(--card); color: var(--text); }
     content: counter(option-num);
     position: absolute;
     left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+    /* Ancorado perto da 1a linha (não centralizado no bloco) — evita
+       sobrepor o texto quando a opção quebra em 3+ linhas em telas estreitas */
+    top: 15px;
     width: 22px; height: 22px;
     display: flex; align-items: center; justify-content: center;
     border-radius: 6px;
@@ -485,7 +701,7 @@ select.form-input option { background: var(--card); color: var(--text); }
     border: 1px solid var(--accent, var(--primary));
     background: rgba(255,255,255,0.02);
 }
-.options.grid2 .option::before { left: 8px; width: 20px; height: 20px; }
+.options.grid2 .option::before { left: 8px; top: 12px; width: 20px; height: 20px; }
 
 /* Negrito automático nas 1as palavras (via JS) */
 .option .opt-head { color: var(--text); font-weight: 700; }
@@ -678,7 +894,9 @@ select.form-input option { background: var(--card); color: var(--text); }
 
 @media (max-width: 380px) {
     .question-text { font-size: 17px; }
-    .option { font-size: 14px; padding: 11px 13px; }
+    /* padding-left mantém espaço pro badge numérico (10px + 22px de largura) — não pode cair pra 13px */
+    .option { font-size: 14px; padding: 11px 13px 11px 36px; }
+    .option::before { top: 13px; }
 }
 
 /* ══════════════════════════════════════
@@ -907,10 +1125,13 @@ body.presell-mode .expert-header { height: 300px; }
 <div id="s-presell" class="screen active">
     <div class="presell-wrap">
         <h1 class="presell-headline">
-            Seu Perfil Determina a <span class="accent">Quantidade e Qualidade</span> dos Seus Matches
+            COMECE SEU RAIO-X
         </h1>
-        <p class="presell-sub">Em 8 minutos, descubra o que o seu perfil comunica hoje.</p>
-        <button class="btn" onclick="show('s-welcome')">COMEÇAR →</button>
+        <label class="presell-consent">
+            <input type="checkbox" id="lgpd-consent" onchange="document.getElementById('btn-presell').disabled = !this.checked">
+            Concordo em seguir nos termos de privacidade da Lei LGPD e termos próprios.
+        </label>
+        <button class="btn" id="btn-presell" onclick="show('s-welcome-1')" disabled>Começar Meu RAIO-X</button>
     </div>
 </div>
 
@@ -926,86 +1147,115 @@ body.presell-mode .expert-header { height: 300px; }
     </div>
 </div>
 
-<!-- ── WELCOME ── -->
-<div id="s-welcome" class="screen">
+<!-- ── WELCOME PARTE 1 (Nome, Apps, Cidade, Último Date) ── -->
+<div id="s-welcome-1" class="screen">
     <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
         <div class="badge">Análise de Arquétipo</div>
-        <h1 class="screen-title" id="welcome-title">Vamos descobrir quem você realmente é.</h1>
-        <p class="screen-sub">Em 8 minutos você entende como as mulheres te percebem.</p>
-        <div class="form-row">
-            <div class="form-group">
-                <label class="form-label">Nome</label>
-                <input type="text" id="f-nome" class="form-input" placeholder="Seu nome">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Idade</label>
-                <input type="number" id="f-idade" class="form-input" placeholder="Ex: 32" min="18" max="70" inputmode="numeric">
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label class="form-label">Profissão</label>
-                <input type="text" id="f-profissao" class="form-input" placeholder="Ex: Engenheiro">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Signo</label>
-                <select id="f-signo" class="form-input">
-                    <option value="">Selecione</option>
-                    <option>Áries</option><option>Touro</option><option>Gêmeos</option>
-                    <option>Câncer</option><option>Leão</option><option>Virgem</option>
-                    <option>Libra</option><option>Escorpião</option><option>Sagitário</option>
-                    <option>Capricórnio</option><option>Aquário</option><option>Peixes</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label class="form-label">Cidade</label>
-                <input type="text" id="f-cidade" class="form-input" placeholder="Ex: São Paulo">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Altura</label>
-                <input type="text" id="f-altura" class="form-input" placeholder="Ex: 1,78m">
-            </div>
-        </div>
+
+        <div id="funnel-progress-1"></div>
+
         <div class="form-group">
-            <label class="form-label">Apps que usa</label>
-            <div class="ms" id="ms-apps">
-                <button type="button" class="form-input ms-box" onclick="toggleAppsPanel(event)">
-                    <span class="ms-label placeholder" id="ms-apps-label">Selecione</span>
+            <label class="form-label">Nome<span class="form-required">*</span></label>
+            <input type="text" id="f-nome" class="form-input" placeholder="Seu nome">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Apps que usa<span class="form-required">*</span></label>
+            <div class="chip-group" id="chips-apps">
+                <button type="button" class="chip" data-value="Tinder" onclick="toggleChipMulti(this,'apps')">Tinder</button>
+                <button type="button" class="chip" data-value="Bumble" onclick="toggleChipMulti(this,'apps')">Bumble</button>
+                <button type="button" class="chip" data-value="Badoo" onclick="toggleChipMulti(this,'apps')">Badoo</button>
+                <button type="button" class="chip" data-value="Inner Circle" onclick="toggleChipMulti(this,'apps')">Inner Circle</button>
+                <button type="button" class="chip" data-value="Happn" onclick="toggleChipMulti(this,'apps')">Happn</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Cidade</label>
+            <input type="text" id="f-cidade" class="form-input" placeholder="Ex: São Paulo">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Último date<span class="form-required">*</span></label>
+            <div class="chip-group" id="chips-ultimo-date">
+                <button type="button" class="chip" data-value="menos de 1 mês" onclick="toggleChipSingle(this,'ultimoDate')">Menos de 1 mês</button>
+                <button type="button" class="chip" data-value="1 a 6 meses" onclick="toggleChipSingle(this,'ultimoDate')">1 a 6 meses</button>
+                <button type="button" class="chip" data-value="6 meses a 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">6 meses a 1 ano</button>
+                <button type="button" class="chip" data-value="mais de 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">Mais de 1 ano</button>
+                <button type="button" class="chip" data-value="nunca tive" onclick="toggleChipSingle(this,'ultimoDate')">Nunca tive</button>
+            </div>
+        </div>
+
+        <button class="btn" id="btn-welcome-1" onclick="goToWelcome2()">Continuar</button>
+    </div>
+</div>
+
+<!-- ── WELCOME PARTE 2 (Idade, Signo, Altura, Profissão) ── -->
+<div id="s-welcome-2" class="screen">
+    <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
+        <div class="badge">Análise de Arquétipo</div>
+
+        <div id="funnel-progress-2"></div>
+
+        <div class="form-group">
+            <label class="form-label">Idade<span class="form-required">*</span></label>
+            <div class="age-value" id="age-value-label">32 anos</div>
+            <input type="range" id="f-idade" class="age-slider" min="18" max="70" value="32" oninput="onAgeSlide(this.value)">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Signo<span class="form-required">*</span></label>
+            <div class="ms" id="ms-signo">
+                <button type="button" class="form-input ms-box" onclick="toggleSignoPanel(event)">
+                    <span class="ms-label placeholder" id="ms-signo-label">Selecione</span>
                     <span class="ms-caret">▾</span>
                 </button>
-                <div class="ms-panel" id="ms-apps-panel">
-                    <label class="ms-option"><input type="checkbox" value="Tinder" onchange="onAppToggle()"> Tinder</label>
-                    <label class="ms-option"><input type="checkbox" value="Bumble" onchange="onAppToggle()"> Bumble</label>
-                    <label class="ms-option"><input type="checkbox" value="Badoo" onchange="onAppToggle()"> Badoo</label>
-                    <label class="ms-option"><input type="checkbox" value="Inner Circle" onchange="onAppToggle()"> Inner Circle</label>
-                    <label class="ms-option"><input type="checkbox" value="Happn" onchange="onAppToggle()"> Happn</label>
+                <div class="ms-panel" id="ms-signo-panel">
+                    <div class="ms-option" onclick="selectSigno('Áries','♈')">♈ Áries</div>
+                    <div class="ms-option" onclick="selectSigno('Touro','♉')">♉ Touro</div>
+                    <div class="ms-option" onclick="selectSigno('Gêmeos','♊')">♊ Gêmeos</div>
+                    <div class="ms-option" onclick="selectSigno('Câncer','♋')">♋ Câncer</div>
+                    <div class="ms-option" onclick="selectSigno('Leão','♌')">♌ Leão</div>
+                    <div class="ms-option" onclick="selectSigno('Virgem','♍')">♍ Virgem</div>
+                    <div class="ms-option" onclick="selectSigno('Libra','♎')">♎ Libra</div>
+                    <div class="ms-option" onclick="selectSigno('Escorpião','♏')">♏ Escorpião</div>
+                    <div class="ms-option" onclick="selectSigno('Sagitário','♐')">♐ Sagitário</div>
+                    <div class="ms-option" onclick="selectSigno('Capricórnio','♑')">♑ Capricórnio</div>
+                    <div class="ms-option" onclick="selectSigno('Aquário','♒')">♒ Aquário</div>
+                    <div class="ms-option" onclick="selectSigno('Peixes','♓')">♓ Peixes</div>
                 </div>
             </div>
         </div>
+
         <div class="form-group">
-            <label class="form-label">Último date</label>
-            <select id="f-ultimo-date" class="form-input">
-                <option value="">Selecione</option>
-                <option>menos de 1 mês</option>
-                <option>1 a 6 meses</option>
-                <option>6 meses a 1 ano</option>
-                <option>mais de 1 ano</option>
-                <option>nunca tive</option>
-            </select>
+            <label class="form-label">Altura<span class="form-required">*</span></label>
+            <div class="stepper">
+                <button type="button" class="stepper-btn" onclick="onHeightStep(-1)">−</button>
+                <input type="text" class="stepper-value stepper-input" id="height-value-label"
+                       value="1,70m" inputmode="numeric"
+                       onfocus="this.value = String(selectedAlturaCm)"
+                       onblur="onHeightType(this.value)">
+                <button type="button" class="stepper-btn" onclick="onHeightStep(1)">+</button>
+            </div>
         </div>
-        <button class="btn" id="btn-start" onclick="startQuiz()">Iniciar minha análise →</button>
+
+        <div class="form-group">
+            <label class="form-label">Profissão</label>
+            <input type="text" id="f-profissao" class="form-input" placeholder="Ex: Engenheiro">
+        </div>
+
+        <button class="btn" id="btn-start" onclick="startQuiz()">Continuar</button>
     </div>
 </div>
 
 <!-- ── PHASE 1 INTRO ── -->
 <div id="s-p1" class="screen">
-    <button class="back-btn" onclick="show('s-welcome')">
+    <button class="back-btn" onclick="show('s-welcome-2')">
         <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         Voltar
     </button>
     <div class="phase-intro">
+        <div id="funnel-progress-p1"></div>
         <div class="phase-number">Fase 1 de 3</div>
         <h2 class="phase-title">Como ela te vê hoje</h2>
         <p class="phase-sub">A primeira fase mapeia como você aparece para as mulheres — sua presença, postura e os sinais que transmite sem perceber.</p>
@@ -1021,6 +1271,7 @@ body.presell-mode .expert-header { height: 300px; }
 <!-- ── PHASE 2 INTRO ── -->
 <div id="s-p2" class="screen">
     <div class="phase-intro">
+        <div id="funnel-progress-p2"></div>
         <div class="analyzing-row">
             <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
@@ -1039,6 +1290,7 @@ body.presell-mode .expert-header { height: 300px; }
 <!-- ── PHASE 3 INTRO ── -->
 <div id="s-p3" class="screen">
     <div class="phase-intro">
+        <div id="funnel-progress-p3"></div>
         <div class="analyzing-row">
             <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
@@ -1062,15 +1314,7 @@ body.presell-mode .expert-header { height: 300px; }
     </button>
     <div class="phase-label" id="q-phase-label">FASE 1 DE 3</div>
     <div class="phase-name-sm" id="q-phase-name">Como ela te vê hoje</div>
-    <div class="progress-wrap">
-        <div class="progress-meta">
-            <span class="p-counter" id="q-counter">PERGUNTA 1 DE 7</span>
-            <span class="p-pct" id="q-pct">0%</span>
-        </div>
-        <div class="progress-bar">
-            <div class="progress-fill" id="q-bar" style="width:0%"></div>
-        </div>
-    </div>
+    <div id="funnel-progress-quiz"></div>
     <div class="question-text" id="q-text"></div>
     <div class="options" id="q-opts"></div>
 </div>
@@ -1721,8 +1965,6 @@ window.onload = () => {
     const p = new URLSearchParams(window.location.search);
     userName = p.get('nome') || p.get('name') || p.get('first_name') || '';
     if (userName) {
-        document.getElementById('welcome-title').textContent =
-            `Olá, ${userName}! Vamos descobrir quem você realmente é.`;
         const fn = document.getElementById('f-nome');
         if (fn) fn.value = userName; // pré-preenche o campo Nome
     }
@@ -1753,33 +1995,145 @@ function submitRecoverEmail() {
 }
 
 // Apps selecionados (múltipla escolha em caixa única)
-let selectedApps = [];
+// ═══════════════════════════════════════
+// FUNNEL PROGRESS (barra + 5 etapas)
+// ═══════════════════════════════════════
+const FUNNEL_STEPS = [
+    { key:'perfil', label:'Perfil',      icon:'👤' },
+    { key:'fase1',  label:'Fase 1',      icon:'①'  },
+    { key:'fase2',  label:'Fase 2',      icon:'②'  },
+    { key:'fase3',  label:'Fase 3',      icon:'③'  },
+    { key:'raiox',  label:'Seu Raio-X',  icon:'✨' },
+];
 
-function toggleAppsPanel(e) {
-    if (e) e.stopPropagation();
-    document.getElementById('ms-apps-panel').classList.toggle('open');
+// Mapa tela → { step: índice 0-4, pct: progresso dentro da barra (0-100) }
+const FUNNEL_SCREEN_MAP = {
+    's-welcome-1': { step: 0, pct: 20 },
+    's-welcome-2': { step: 0, pct: 60 },
+    's-p1':        { step: 1, pct: 10 },
+    's-p2':        { step: 2, pct: 10 },
+    's-p3':        { step: 3, pct: 10 },
+};
+
+function renderFunnelSteps(slotId, activeStep, fillPct) {
+    const slot = document.getElementById(slotId);
+    if (!slot) return;
+
+    const stepsHtml = FUNNEL_STEPS.map((s, i) => {
+        let cls = 'wstep';
+        if (i < activeStep) cls += ' done';
+        else if (i === activeStep) cls += ' active';
+        return `<div class="${cls}">
+            <div class="wstep-circle">${i < activeStep ? '✓' : s.icon}</div>
+            <div class="wstep-label">${s.label}</div>
+        </div>`;
+    }).join('');
+
+    slot.innerHTML = `
+        <div class="wtrack"><div class="wfill" style="width:${fillPct}%"></div></div>
+        <div class="wsteps">${stepsHtml}</div>
+    `;
 }
 
-function onAppToggle() {
-    const checks = document.querySelectorAll('#ms-apps-panel input[type=checkbox]');
-    selectedApps = Array.from(checks).filter(c => c.checked).map(c => c.value);
-    const label = document.getElementById('ms-apps-label');
-    if (selectedApps.length) {
-        label.textContent = selectedApps.join(', ');
-        label.classList.remove('placeholder');
-    } else {
-        label.textContent = 'Selecione';
-        label.classList.add('placeholder');
+// Progresso geral (0-100) considerando a etapa ativa + sub-progresso dentro dela
+function overallFunnelPct(step, subPct) {
+    return Math.round(((step + subPct / 100) / FUNNEL_STEPS.length) * 100);
+}
+
+function updateFunnelProgress(screenId) {
+    const map = FUNNEL_SCREEN_MAP[screenId];
+    if (!map) return;
+    const overall = overallFunnelPct(map.step, map.pct);
+
+    const slotByScreen = {
+        's-welcome-1': 'funnel-progress-1',
+        's-welcome-2': 'funnel-progress-2',
+        's-p1': 'funnel-progress-p1',
+        's-p2': 'funnel-progress-p2',
+        's-p3': 'funnel-progress-p3',
+    };
+    const slotId = slotByScreen[screenId];
+    if (slotId) renderFunnelSteps(slotId, map.step, overall);
+}
+
+// Chamada de dentro de renderQ() — sincroniza a barra durante as perguntas
+function updateFunnelProgressQuiz(phaseIdx, subPct) {
+    const step = phaseIdx + 1; // fase 1 = step 1, fase 2 = step 2, fase 3 = step 3
+    const overall = overallFunnelPct(step, subPct);
+    renderFunnelSteps('funnel-progress-quiz', step, overall);
+}
+
+let selectedApps = [];
+let selectedSigno = '';
+let selectedUltimoDate = '';
+let selectedIdade = 32;
+let selectedAlturaCm = 170;
+
+function toggleChipMulti(btn, group) {
+    btn.classList.toggle('selected');
+    if (group === 'apps') {
+        const active = document.querySelectorAll('#chips-apps .chip.selected');
+        selectedApps = Array.from(active).map(c => c.dataset.value);
     }
 }
 
-// Fecha o painel ao tocar fora dele
+function toggleChipSingle(btn, group) {
+    const container = btn.parentElement;
+    container.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    btn.classList.add('selected');
+    if (group === 'ultimoDate') selectedUltimoDate = btn.dataset.value;
+}
+
+function toggleSignoPanel(e) {
+    if (e) e.stopPropagation();
+    document.getElementById('ms-signo-panel').classList.toggle('open');
+}
+
+function selectSigno(nome, emoji) {
+    selectedSigno = nome;
+    const label = document.getElementById('ms-signo-label');
+    label.textContent = emoji + ' ' + nome;
+    label.classList.remove('placeholder');
+    document.getElementById('ms-signo-panel').classList.remove('open');
+}
+
 document.addEventListener('click', (e) => {
-    const ms = document.getElementById('ms-apps');
+    const ms = document.getElementById('ms-signo');
     if (ms && !ms.contains(e.target)) {
-        document.getElementById('ms-apps-panel').classList.remove('open');
+        document.getElementById('ms-signo-panel').classList.remove('open');
     }
 });
+
+function onAgeSlide(value) {
+    selectedIdade = parseInt(value, 10);
+    document.getElementById('age-value-label').textContent = selectedIdade + ' anos';
+}
+
+function formatAltura(cm) {
+    const m = (cm / 100).toFixed(2).replace('.', ',');
+    return m + 'm';
+}
+
+function onHeightStep(delta) {
+    selectedAlturaCm = Math.min(220, Math.max(140, selectedAlturaCm + delta));
+    document.getElementById('height-value-label').value = formatAltura(selectedAlturaCm);
+}
+
+function onHeightType(rawValue) {
+    const n = parseInt(rawValue.replace(/[^\d]/g, ''), 10);
+    if (!isNaN(n)) {
+        selectedAlturaCm = Math.min(220, Math.max(140, n));
+    }
+    document.getElementById('height-value-label').value = formatAltura(selectedAlturaCm);
+}
+
+function goToWelcome2() {
+    const nome = document.getElementById('f-nome').value.trim();
+    if (!nome) { soundError(); alert('Preencha seu nome para continuar.'); return; }
+    if (!selectedApps.length) { soundError(); alert('Selecione ao menos um app que você usa.'); return; }
+    if (!selectedUltimoDate) { soundError(); alert('Selecione a opção de último date.'); return; }
+    show('s-welcome-2');
+}
 
 // ═══════════════════════════════════════
 // ADJUST MODE (URL: ?adjust=1)
@@ -1869,22 +2223,23 @@ function show(id) {
     document.getElementById(id).classList.add('active');
     document.body.classList.toggle('presell-mode', id === 's-presell' || id === 's-recover');
     document.querySelector('.main').scrollTo(0,0);
+    updateFunnelProgress(id);
 }
 
 function startQuiz() {
-    const nome  = document.getElementById('f-nome').value.trim();
-    const idade = document.getElementById('f-idade').value;
-    if (!nome || !idade) { soundError(); alert('Preencha nome e idade para continuar.'); return; }
+    const nome = document.getElementById('f-nome').value.trim();
+    if (!nome) { soundError(); alert('Preencha seu nome para continuar.'); return; }
+    if (!selectedSigno) { soundError(); alert('Selecione seu signo para continuar.'); return; }
     userName = nome;
     userData = {
         nome,
-        idade,
+        idade:      selectedIdade,
         profissao:  document.getElementById('f-profissao').value.trim(),
         cidade:     document.getElementById('f-cidade').value.trim(),
-        altura:     document.getElementById('f-altura').value.trim(),
+        altura:     formatAltura(selectedAlturaCm),
         apps:       selectedApps.slice(),
-        signo:      document.getElementById('f-signo').value,
-        ultimoDate: document.getElementById('f-ultimo-date').value,
+        signo:      selectedSigno,
+        ultimoDate: selectedUltimoDate,
     };
     // Sorteia 20 perguntas balanceadas (2 por eixo MBTI × 4 + 2 por traço ADICAS × 6)
     try {
@@ -1951,11 +2306,6 @@ function renderQ() {
 
     document.getElementById('q-phase-label').textContent = phase.label;
     document.getElementById('q-phase-name').textContent  = phase.name;
-    document.getElementById('q-counter').textContent = `PERGUNTA ${pos+1} DE ${len}`;
-    document.getElementById('q-pct').textContent     = `${pct}%`;
-    const bar = document.getElementById('q-bar');
-    bar.style.width = `${pct}%`;
-    bar.classList.toggle('hot', pct >= 70); // barra "esquenta" no fim
     document.getElementById('q-text').textContent    = q.q;
 
     // Sotaque por fase (verde / azul / âmbar) — só muda a cor de destaque
@@ -1963,6 +2313,7 @@ function renderQ() {
     const quizScreen = document.getElementById('s-quiz');
     quizScreen.classList.remove('accent-1', 'accent-2', 'accent-3');
     quizScreen.classList.add('accent-' + (phaseIdx + 1));
+    updateFunnelProgressQuiz(phaseIdx, pct); // sincroniza barra de 5 etapas
 
     const c = document.getElementById('q-opts');
     c.innerHTML = '';
