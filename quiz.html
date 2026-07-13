@@ -326,6 +326,13 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 .wstep.active .wstep-label { color: var(--text); }
 
+/* Anel de progresso do passo ativo (substitui o círculo cheio) */
+.wstep-ring circle:last-child { transition: stroke-dashoffset 0.4s ease; }
+.wstep.active .wstep-ring {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 3px rgba(0,200,160,0.5));
+}
+
 /* ══════════════════════════════════════
    CHIPS (low-friction select)
 ══════════════════════════════════════ */
@@ -2010,21 +2017,44 @@ const FUNNEL_STEPS = [
 const FUNNEL_SCREEN_MAP = {
     's-welcome-1': { step: 0, pct: 20 },
     's-welcome-2': { step: 0, pct: 60 },
-    's-p1':        { step: 1, pct: 10 },
-    's-p2':        { step: 2, pct: 10 },
-    's-p3':        { step: 3, pct: 10 },
+    // pct:0 nas telas de aviso de fase — a bolinha começa vazia e só enche
+    // a partir da 1a pergunta de verdade, senão dá a impressão de "reset"
+    's-p1':        { step: 1, pct: 0 },
+    's-p2':        { step: 2, pct: 0 },
+    's-p3':        { step: 3, pct: 0 },
 };
+
+const WSTEP_RING_R = 15;
+const WSTEP_RING_C = 2 * Math.PI * WSTEP_RING_R; // circunferência do anel (~94.2)
 
 function renderFunnelSteps(slotId, activeStep, fillPct) {
     const slot = document.getElementById(slotId);
     if (!slot) return;
 
+    // % de progresso só dentro do passo ativo, derivado do mesmo fillPct que
+    // já alimenta a barra de cima (.wfill) — não é uma segunda fonte de verdade.
+    const segSize = 100 / FUNNEL_STEPS.length;
+    const localPct = Math.max(0, Math.min(100, (fillPct - activeStep * segSize) / segSize * 100));
+    const ringOffset = WSTEP_RING_C - (WSTEP_RING_C * localPct / 100);
+
     const stepsHtml = FUNNEL_STEPS.map((s, i) => {
         let cls = 'wstep';
         if (i < activeStep) cls += ' done';
         else if (i === activeStep) cls += ' active';
+
+        const circleHtml = i === activeStep
+            ? `<svg class="wstep-ring" width="34" height="34" viewBox="0 0 34 34">
+                <circle cx="17" cy="17" r="${WSTEP_RING_R}" fill="none" stroke="var(--border)" stroke-width="3"></circle>
+                <circle cx="17" cy="17" r="${WSTEP_RING_R}" fill="none" stroke="var(--primary)" stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-dasharray="${WSTEP_RING_C.toFixed(2)}"
+                    stroke-dashoffset="${ringOffset.toFixed(2)}"
+                    transform="rotate(-90 17 17)"></circle>
+            </svg>`
+            : `<div class="wstep-circle">${i < activeStep ? '✓' : s.icon}</div>`;
+
         return `<div class="${cls}">
-            <div class="wstep-circle">${i < activeStep ? '✓' : s.icon}</div>
+            ${circleHtml}
             <div class="wstep-label">${s.label}</div>
         </div>`;
     }).join('');
