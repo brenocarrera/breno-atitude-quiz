@@ -531,6 +531,14 @@ select.form-input option { background: var(--card); color: var(--text); }
     margin-bottom: 10px;
 }
 
+.phase-number-top {
+    display: block;
+    color: var(--muted2);
+    font-size: 0.7em;
+    letter-spacing: 4px;
+    margin-bottom: 4px;
+}
+
 .phase-title {
     font-size: clamp(1.8rem, 6vw, 2.6rem);
     font-weight: 800;
@@ -545,23 +553,6 @@ select.form-input option { background: var(--card); color: var(--text); }
     line-height: 1.6;
     margin-bottom: 22px;
 }
-
-.phase-track {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 22px;
-}
-
-.p-pip {
-    width: 34px; height: 5px;
-    border-radius: 4px;
-    background: var(--border);
-    transition: background 0.4s;
-}
-
-.p-pip.done   { background: var(--primary); opacity: 0.5; }
-.p-pip.active { background: linear-gradient(90deg, var(--primary), var(--blue)); }
 
 .analyzing-row {
     display: flex;
@@ -1263,15 +1254,13 @@ body.presell-mode .expert-header { height: 300px; }
     </button>
     <div class="phase-intro">
         <div id="funnel-progress-p1"></div>
-        <div class="phase-number">Fase 1 de 3</div>
-        <h2 class="phase-title">Como ela te vê hoje</h2>
-        <p class="phase-sub">A primeira fase mapeia como você aparece para as mulheres — sua presença, postura e os sinais que transmite sem perceber.</p>
-        <div class="phase-track">
-            <div class="p-pip active"></div>
-            <div class="p-pip"></div>
-            <div class="p-pip"></div>
+        <div class="phase-number"><span class="phase-number-top">Raio X</span>Fase 1 de 3</div>
+        <h2 class="phase-title">O Jeito Que Você Passa Sem Perceber</h2>
+        <p class="phase-sub">E Faz Ela Te Por na Gaveta Errada: "Provedor Torcendo Por Um SIM Dela..."</p>
+        <div class="analyzing-row">
+            <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
-        <button class="btn" id="btn-p1" onclick="goQ(0)">Começar análise →</button>
+        <button class="btn" id="btn-p1" onclick="goQ(0)">Prosseguir Meu Raio-X →</button>
     </div>
 </div>
 
@@ -1279,18 +1268,13 @@ body.presell-mode .expert-header { height: 300px; }
 <div id="s-p2" class="screen">
     <div class="phase-intro">
         <div id="funnel-progress-p2"></div>
+        <div class="phase-number"><span class="phase-number-top">Raio X</span>Fase 2 de 3</div>
+        <h2 class="phase-title">O que está te travando</h2>
+        <p class="phase-sub">Fase 1 concluída. Já identificamos padrões muito específicos no seu perfil. Agora vamos ao que está entre você e os resultados que merece.</p>
         <div class="analyzing-row">
             <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
-        <div class="phase-number">Fase 2 de 3</div>
-        <h2 class="phase-title">O que está te travando</h2>
-        <p class="phase-sub">Fase 1 concluída. Já identificamos padrões muito específicos no seu perfil. Agora vamos ao que está entre você e os resultados que merece.</p>
-        <div class="phase-track">
-            <div class="p-pip done"></div>
-            <div class="p-pip active"></div>
-            <div class="p-pip"></div>
-        </div>
-        <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 2000, function(){ goQ(8); })">Continuar análise →</button>
+        <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 2000, function(){ goQ(8); })">Prosseguir Meu Raio-X →</button>
     </div>
 </div>
 
@@ -1298,18 +1282,13 @@ body.presell-mode .expert-header { height: 300px; }
 <div id="s-p3" class="screen">
     <div class="phase-intro">
         <div id="funnel-progress-p3"></div>
+        <div class="phase-number"><span class="phase-number-top">Raio X</span>Fase 3 de 3</div>
+        <h2 class="phase-title">Seu arquétipo real</h2>
+        <p class="phase-sub">Ponto crítico identificado. Seu perfil tem uma característica específica que a maioria dos homens nunca descobre. A fase final confirma tudo.</p>
         <div class="analyzing-row">
             <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
-        <div class="phase-number">Fase 3 de 3 — Final</div>
-        <h2 class="phase-title">Seu arquétipo real</h2>
-        <p class="phase-sub">Ponto crítico identificado. Seu perfil tem uma característica específica que a maioria dos homens nunca descobre. A fase final confirma tudo.</p>
-        <div class="phase-track">
-            <div class="p-pip done"></div>
-            <div class="p-pip done"></div>
-            <div class="p-pip active"></div>
-        </div>
-        <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 2000, function(){ goQ(16); })">Revelar meu arquétipo →</button>
+        <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 2000, function(){ goQ(16); })">Prosseguir Meu Raio-X →</button>
     </div>
 </div>
 
@@ -2248,12 +2227,27 @@ function initAdjustMode() {
 // NAVIGATION
 // ═══════════════════════════════════════
 
+// Auto-avanço por inatividade nas telas de intro de fase (s-p1/s-p2/s-p3)
+let phaseAutoTimer = null;
+const PHASE_AUTO_ADVANCE_MS = 10000;
+const PHASE_AUTO_BTN = { 's-p1': 'btn-p1', 's-p2': 'btn-p2', 's-p3': 'btn-p3' };
+
 function show(id) {
+    if (phaseAutoTimer) { clearTimeout(phaseAutoTimer); phaseAutoTimer = null; }
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.body.classList.toggle('presell-mode', id === 's-presell' || id === 's-recover');
     document.querySelector('.main').scrollTo(0,0);
     updateFunnelProgress(id);
+
+    const autoBtnId = PHASE_AUTO_BTN[id];
+    if (autoBtnId) {
+        phaseAutoTimer = setTimeout(() => {
+            const btn = document.getElementById(autoBtnId);
+            // não dispara de novo se já estiver em animação de processamento (evita clique duplo)
+            if (btn && !btn.classList.contains('scanning') && !btn.classList.contains('ready')) btn.click();
+        }, PHASE_AUTO_ADVANCE_MS);
+    }
 }
 
 function startQuiz() {
