@@ -1078,9 +1078,8 @@ body.presell-mode .expert-header { height: 300px; }
 .rep-point { background: var(--r-card); border: 1px solid var(--r-border); border-left: 3px solid var(--r-red); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; font-size: clamp(0.95rem, 3.6vw, 1.08rem); }
 .rep-point-n { display: inline-flex; width: 24px; height: 24px; border-radius: 6px; background: var(--r-red); color: #fff; font-size: 0.85rem; font-weight: 800; align-items: center; justify-content: center; margin-right: 9px; }
 
-/* Blur desativado — relatório completo legível */
-/* Blur médio: ilegível, mas percebe-se que há conteúdo embaixo */
-.rep-blur { filter: blur(4px); opacity: 0.9; user-select: none; pointer-events: none; }
+/* Blur removido — relatório 100% legível (classe mantida, sem efeito) */
+.rep-blur { }
 .rep-lockchip { display: none; }
 
 /* Escassez / timer */
@@ -1337,6 +1336,12 @@ body.presell-mode .expert-header { height: 300px; }
 <div id="s-report" class="screen">
     <div class="rep-scroll">
 
+        <!-- Aviso de escassez + timer (topo — 1ª coisa que a pessoa lê) -->
+        <div class="rep-scarcity">
+            <div class="rep-scarcity-text">Geramos seu relatório agora. Por privacidade, ele fica disponível por <b>9 minutos</b> antes de ser apagado dos nossos servidores.</div>
+            <div class="rep-timer" id="bio-timer">09:00</div>
+        </div>
+
         <!-- HERO -->
         <div class="rep-hero">
             <div class="rep-kicker">Jogo do Texto · Análise de Perfil Completa</div>
@@ -1513,12 +1518,6 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="rep-sec-label">Bônus</div>
             <div class="rep-sec-title">Suas 3 Bios — Calibradas para Você</div>
             <div id="rep-bios-list"></div>
-        </div>
-
-        <!-- Aviso de escassez + timer -->
-        <div class="rep-scarcity">
-            <div class="rep-scarcity-text">Geramos seu relatório agora. Por privacidade, ele fica disponível por <b>9 minutos</b> antes de ser apagado dos nossos servidores.</div>
-            <div class="rep-timer" id="bio-timer">09:00</div>
         </div>
 
         <!-- Captura de email (antes de liberar as opções de recebimento) -->
@@ -2656,13 +2655,9 @@ function openReport() {
     // Preenche elementos dinâmicos (MBTI + ADICAS) com os scores reais do avatar
     const scores = QuizLogic.calcularScores(respostas);
     preencherReportMBTI(scores);
-    startTimer('bio-timer', 9 * 60); // escassez no fim do relatório
+    startTimer('bio-timer', 9 * 60); // escassez no topo do relatório
     show('s-report');
-    // Rola automaticamente até a captura de email
-    setTimeout(() => {
-        const emailBox = document.getElementById('rep-email-capture');
-        if (emailBox) emailBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 400);
+    // Sem auto-scroll: a pessoa entra e lê o aviso de escassez no topo primeiro
 }
 
 // Placeholder das ofertas (sem integração ainda — só registra a escolha)
