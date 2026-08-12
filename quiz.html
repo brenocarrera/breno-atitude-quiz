@@ -1665,6 +1665,12 @@ function trackFunilStep(nome) {
     if (typeof fbq === 'function') fbq('trackCustom', nome);
 }
 
+// Recebe o session_id da land via URL (domínios diferentes não compartilham localStorage) e guarda localmente
+(function capturarSessionIdDaLand() {
+    const sid = new URLSearchParams(window.location.search).get('sid');
+    if (sid) localStorage.setItem('oxy_session_id', sid);
+})();
+
 // ═══════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════
