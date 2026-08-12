@@ -4,6 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Análise de Arquétipo — Breno Carrera</title>
+<link rel="preconnect" href="https://connect.facebook.net">
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '2027250401407462');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=2027250401407462&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
@@ -1159,7 +1177,7 @@ body.presell-mode .expert-header { height: 300px; }
             <input type="checkbox" id="lgpd-consent" onchange="document.getElementById('btn-presell').disabled = !this.checked">
             Concordo em seguir nos termos de privacidade da Lei LGPD e termos próprios.
         </label>
-        <button class="btn" id="btn-presell" onclick="show('s-welcome-1')" disabled>Começar Meu RAIO-X</button>
+        <button class="btn" id="btn-presell" onclick="trackFunilStep('RaioX_IniciouIdentificacao'); show('s-welcome-1')" disabled>Começar Meu RAIO-X</button>
     </div>
 </div>
 
@@ -1642,6 +1660,11 @@ body.presell-mode .expert-header { height: 300px; }
 <script src="/banco-perguntas.js"></script>
 <script src="/quiz-logic.js"></script>
 <script>
+// Dispara evento customizado de etapa do funil pro Meta Pixel (não bloqueia se o pixel não carregar)
+function trackFunilStep(nome) {
+    if (typeof fbq === 'function') fbq('trackCustom', nome);
+}
+
 // ═══════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════
@@ -2336,6 +2359,7 @@ function startQuiz() {
         ultimoDate: selectedUltimoDate,
         sessionId:  localStorage.getItem('oxy_session_id'),
     };
+    trackFunilStep('RaioX_ComecouPerguntas');
     // Sorteia 20 perguntas balanceadas (2 por eixo MBTI × 4 + 2 por traço ADICAS × 6)
     try {
         QS = QuizLogic.sortearPerguntas(3, 2);
@@ -2493,6 +2517,7 @@ function closeComment() {
 // ═══════════════════════════════════════
 
 async function doGenerate() {
+    trackFunilStep('RaioX_TerminouPerguntas');
     // Calcula MBTI + ADICAS e deriva arquétipo para compatibilidade com ARCHETYPES
     const s        = QuizLogic.calcularScores(respostas);
     const dominant = archetypeFromAdicas(s.adicas, s.mbtiTipo);
@@ -2560,6 +2585,7 @@ function confirmReportEmail() {
     if (!isValidEmail(email)) { soundError(); alert('Digite um email válido.'); return; }
 
     window.leadEmail = email;
+    if (typeof fbq === 'function') fbq('track', 'Lead');
 
     // Dados do relatório já estão prontos em memória neste ponto (bios + diagnóstico + scores)
     let adicasScores = null;
@@ -2788,6 +2814,11 @@ function chooseOffer(type) {
     userData.oferta = type; // 'whats' (grátis) ou 'paid' (R$9)
     localStorage.setItem('oxyquiz_converted', 'true');
     console.log('[oferta escolhida]', type);
+
+    if (typeof fbq === 'function') {
+        if (type === 'paid') fbq('track', 'InitiateCheckout');
+        if (type === 'whats') fbq('trackCustom', 'RaioX_EscolheuGratis');
+    }
 
     if (type === 'whats') {
         // Salva o telefone no lead (server-side) antes de abrir o WhatsApp
