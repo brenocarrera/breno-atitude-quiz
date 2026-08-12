@@ -193,17 +193,26 @@ async function ativarTrialOxy(url, email, nome, sessionId) {
                 `${url}/rest/v1/usuarios?email=eq.${encodeURIComponent(emailNorm)}&select=id`,
                 { headers }
             );
-            const usuarioRows = await selectIdRes.json();
-            const usuarioId = Array.isArray(usuarioRows) ? usuarioRows[0]?.id : null;
-            if (usuarioId) {
-                await fetch(
-                    `${url}/rest/v1/respostas_lands?session_id=eq.${encodeURIComponent(sessionId)}&usuario_id=is.null`,
-                    {
-                        method: 'PATCH',
-                        headers: { ...headers, 'Prefer': 'return=minimal' },
-                        body: JSON.stringify({ usuario_id: usuarioId }),
+            if (!selectIdRes.ok) {
+                console.error('[ativarTrialOxy] SELECT usuarios (vinculo) falhou:', selectIdRes.status, await selectIdRes.text());
+            } else {
+                const usuarioRows = await selectIdRes.json();
+                const usuarioId = Array.isArray(usuarioRows) ? usuarioRows[0]?.id : null;
+                if (usuarioId) {
+                    const linkRes = await fetch(
+                        `${url}/rest/v1/respostas_lands?session_id=eq.${encodeURIComponent(sessionId)}&usuario_id=is.null`,
+                        {
+                            method: 'PATCH',
+                            headers: { ...headers, 'Prefer': 'return=minimal' },
+                            body: JSON.stringify({ usuario_id: usuarioId }),
+                        }
+                    );
+                    if (!linkRes.ok) {
+                        console.error('[ativarTrialOxy] UPDATE respostas_lands falhou:', linkRes.status, await linkRes.text());
                     }
-                );
+                } else {
+                    console.error('[ativarTrialOxy] vinculo abortado - usuario nao encontrado por email:', emailNorm);
+                }
             }
         } catch (err) {
             console.error('[ativarTrialOxy] Falha ao vincular respostas_lands:', err);
