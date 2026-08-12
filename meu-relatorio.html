@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Meu Relatório — Breno Carrera</title>
+<style>
+/* ==========================================================
+   Página de recuperação do relatório por telefone.
+   CSS/markup/funções copiados do #s-report do quiz.html
+   (Opção B — reuso fiel). Se editar o relatório no quiz,
+   replique aqui.
+========================================================== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #05070a; color: #fff; font-family: 'Inter','Segoe UI',sans-serif; min-height: 100vh; }
+
+/* ----- Tela de busca ----- */
+.lookup-wrap { max-width: 440px; margin: 0 auto; padding: 48px clamp(16px,5vw,40px); text-align: center; }
+.lookup-logo { max-width: 120px; margin: 0 auto 28px; display: block; }
+.lookup-title { font-size: clamp(1.4rem,6vw,1.9rem); font-weight: 800; margin-bottom: 8px; }
+.lookup-sub { color: #94a3b8; font-size: clamp(0.95rem,3.4vw,1.05rem); line-height: 1.6; margin-bottom: 24px; }
+.lookup-field { text-align: left; margin-bottom: 14px; }
+.lookup-label { display: block; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px; }
+.lookup-input {
+    width: 100%; padding: 14px 16px; border-radius: 12px;
+    background: #12151f; border: 1px solid #262b3a; color: #fff;
+    font-size: 1.05rem; font-family: inherit;
+}
+.lookup-input:focus { outline: none; border-color: #8b5cf6; }
+.lookup-btn {
+    width: 100%; padding: 16px; border-radius: 14px; cursor: pointer; border: none;
+    color: #fff; font-family: inherit; font-size: 1.05rem; font-weight: 800; margin-top: 4px;
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    box-shadow: 0 6px 20px rgba(139,92,246,0.35);
+}
+.lookup-btn:disabled { opacity: 0.6; cursor: default; }
+.lookup-msg { margin-top: 16px; font-size: 0.95rem; line-height: 1.5; color: #f59e0b; min-height: 1.2em; }
+
+/* ==========================================================
+   RELATÓRIO FINAL — copiado de quiz.html (namespaced rep-)
+========================================================== */
+#s-report {
+    --r-bg:      #05070a;
+    --r-card:    #12151f;
+    --r-border:  #262b3a;
+    --r-primary: #8b5cf6;
+    --r-purple:  #a855f7;
+    --r-text:    #ffffff;
+    --r-muted:   #94a3b8;
+    --r-green:   #10b981;
+    --r-blue:    #3b82f6;
+    --r-orange:  #f59e0b;
+    --r-red:     #ef4444;
+    --r-pink:    #ec4899;
+}
+#s-report { background: var(--r-bg); display: none; }
+.rep-scroll { width: 100%; max-width: 680px; margin: 0 auto; padding: 24px clamp(16px, 5vw, 40px) 48px; font-family: 'Inter','Segoe UI',sans-serif; }
+
+.rep-hero { text-align: center; padding: 16px 0 24px; border-bottom: 1px solid var(--r-border); margin-bottom: 24px; }
+.rep-kicker { font-size: clamp(0.72rem, 2.6vw, 0.82rem); letter-spacing: 3px; text-transform: uppercase; color: var(--r-muted); margin-bottom: 5px; }
+.rep-kicker.t2 { color: var(--r-primary); opacity: 0.8; margin-bottom: 16px; }
+.rep-pill {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--r-primary), var(--r-purple));
+    color: #fff; font-weight: 800; font-size: clamp(1.4rem, 6vw, 2rem);
+    padding: 12px 28px; border-radius: 40px;
+    box-shadow: 0 8px 30px rgba(139,92,246,0.35); margin-bottom: 14px;
+}
+.rep-hero-sub { color: var(--r-muted); font-size: clamp(1rem, 3.6vw, 1.12rem); line-height: 1.7; max-width: 400px; margin: 0 auto 12px; }
+.rep-meta { font-size: clamp(0.72rem, 2.6vw, 0.82rem); letter-spacing: 1px; color: var(--r-muted); text-transform: uppercase; opacity: 0.7; }
+
+.rep-section { margin-bottom: 32px; }
+.rep-sec-label { font-size: clamp(0.7rem, 2.6vw, 0.8rem); letter-spacing: 3px; text-transform: uppercase; color: var(--r-primary); opacity: 0.7; margin-bottom: 6px; }
+.rep-sec-title { font-size: clamp(1.25rem, 5vw, 1.6rem); font-weight: 800; color: var(--r-text); margin-bottom: 12px; line-height: 1.25; }
+.rep-sec-intro { font-size: clamp(0.95rem, 3.4vw, 1.05rem); line-height: 1.7; color: var(--r-muted); margin-bottom: 18px; }
+
+.rep-card { background: var(--r-card); border: 1px solid var(--r-border); border-radius: 14px; padding: 16px 18px; margin-bottom: 14px; }
+.rep-card.accent { border-left: 3px solid var(--r-primary); }
+.rep-card.green  { border-left: 3px solid var(--r-green); background: rgba(16,185,129,0.06); }
+.rep-card-title { font-weight: 700; font-size: clamp(1rem, 3.8vw, 1.15rem); color: var(--r-text); margin-bottom: 8px; line-height: 1.35; }
+.rep-card-title.green { color: var(--r-green); }
+.rep-q { font-size: clamp(0.82rem, 3vw, 0.92rem); color: var(--r-muted); margin-bottom: 5px; }
+.rep-a { font-size: clamp(0.95rem, 3.5vw, 1.05rem); color: var(--r-text); line-height: 1.55; font-weight: 600; }
+.rep-p { font-size: clamp(0.92rem, 3.4vw, 1.02rem); color: var(--r-muted); line-height: 1.7; margin-bottom: 10px; }
+
+.rep-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.rep-tag { background: rgba(139,92,246,0.15); color: var(--r-purple); border: 1px solid rgba(139,92,246,0.3); padding: 4px 11px; border-radius: 12px; font-size: clamp(0.78rem, 2.8vw, 0.85rem); }
+
+.rep-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.rep-bar-label { flex: 0 0 46%; font-size: clamp(0.8rem, 3vw, 0.92rem); color: var(--r-muted); line-height: 1.35; }
+.rep-bar { flex: 1; height: 9px; background: #1e2330; border-radius: 5px; overflow: hidden; }
+.rep-bar-fill { display: block; height: 100%; border-radius: 5px; transition: width 0.6s ease; }
+.rep-bar-val { flex: 0 0 40px; text-align: right; font-size: clamp(0.8rem, 3vw, 0.92rem); font-weight: 700; }
+
+.rep-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.rep-type { background: var(--r-card); border: 1px solid var(--r-border); border-radius: 12px; padding: 14px 10px; text-align: center; }
+.rep-type.current { border-color: var(--r-primary); background: rgba(139,92,246,0.1); position: relative; }
+.rep-type-badge { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: var(--r-primary); color: #fff; font-size: 0.58rem; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+.rep-type-num { font-size: 0.62rem; letter-spacing: 1px; color: var(--r-muted); }
+.rep-type-ico { font-size: 1.5rem; margin: 6px 0; }
+.rep-type-name { font-size: clamp(0.8rem, 3vw, 0.92rem); font-weight: 700; color: var(--r-text); line-height: 1.3; }
+
+.rep-dossier { font-family: 'Courier New', monospace; background: #0a0d14; border: 1px solid var(--r-border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+.rep-dossier-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.rep-seal { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--r-green); color: var(--r-green); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; flex-shrink: 0; }
+.rep-seal.fbi { border-color: var(--r-blue); color: var(--r-blue); }
+.rep-dossier-meta { font-size: clamp(0.62rem, 2.4vw, 0.72rem); color: var(--r-muted); letter-spacing: 1px; line-height: 1.5; }
+.rep-mono { font-size: clamp(0.8rem, 3vw, 0.9rem); color: #c7d2e0; line-height: 1.75; }
+
+.rep-msg { padding: 11px 14px; border-radius: 12px; margin-bottom: 10px; font-size: clamp(0.9rem, 3.4vw, 1rem); line-height: 1.5; max-width: 85%; }
+.rep-msg.him { background: linear-gradient(135deg, var(--r-primary), var(--r-purple)); color: #fff; margin-left: auto; }
+.rep-msg.her { background: var(--r-card); border: 1px solid var(--r-border); color: var(--r-text); }
+
+.rep-point { background: var(--r-card); border: 1px solid var(--r-border); border-left: 3px solid var(--r-red); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; font-size: clamp(0.95rem, 3.6vw, 1.08rem); }
+.rep-point-n { display: inline-flex; width: 24px; height: 24px; border-radius: 6px; background: var(--r-red); color: #fff; font-size: 0.85rem; font-weight: 800; align-items: center; justify-content: center; margin-right: 9px; }
+
+/* Blur removido — relatório 100% legível (classe mantida, sem efeito) */
+.rep-blur { }
+.rep-lockchip { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ═══ TELA DE BUSCA ═══ -->
+<div id="lookup-view" class="lookup-wrap">
+    <img src="/logo.png" alt="Breno Carrera" class="lookup-logo" onerror="this.style.display='none'">
+    <h1 class="lookup-title">Recuperar meu relatório</h1>
+    <p class="lookup-sub">Digite o mesmo WhatsApp que você usou no quiz para ver sua análise de novo.</p>
+    <div class="lookup-field">
+        <label class="lookup-label" for="f-lookup-whatsapp">Seu WhatsApp (com DDD)</label>
+        <input type="tel" id="f-lookup-whatsapp" class="lookup-input" placeholder="(21) 99999-9999" inputmode="numeric" maxlength="16" oninput="maskPhoneBR(this)" onkeydown="if(event.key==='Enter')buscarRelatorio()">
+    </div>
+    <button class="lookup-btn" id="btn-lookup" onclick="buscarRelatorio()">Ver meu relatório</button>
+    <div class="lookup-msg" id="lookup-msg"></div>
+</div>
+
+<!-- ═══ RELATÓRIO (copiado de quiz.html #s-report, sem timer/email/ofertas) ═══ -->
+<div id="s-report">
+    <div class="rep-scroll">
+
+        <!-- HERO -->
+        <div class="rep-hero">
+            <div class="rep-kicker">Jogo do Texto · Análise de Perfil Completa</div>
+            <div class="rep-kicker t2">Resultado da sua análise</div>
+            <div class="rep-pill" id="rep-pill">O Cara da Conversa</div>
+            <p class="rep-hero-sub" id="rep-hero-sub">Ela acha você fascinante para trocar ideia. Mas não sente urgência de te ver pessoalmente. Você está a 3 calibrações de mudar completamente isso.</p>
+            <div class="rep-meta" id="rep-meta">Perfil INTJ</div>
+        </div>
+
+        <!-- SEÇÃO 01 — Suas Respostas -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 01</div>
+            <div class="rep-sec-title">Suas Respostas</div>
+            <div class="rep-card accent">
+                <div class="rep-q">Como você inicia conversa depois de um match?</div>
+                <div class="rep-a">"Faço uma observação inteligente sobre algo no perfil dela — diferente do 'oi linda' que todo mundo manda."</div>
+            </div>
+            <div>
+                <div class="rep-card accent">
+                    <div class="rep-q">Quando ela demora a responder, você...</div>
+                    <div class="rep-a">"Fico elaborando mentalmente o que vou escrever. Às vezes reescrevo a mensagem inteira."</div>
+                </div>
+                <div class="rep-card accent">
+                    <div class="rep-q">Qual é seu principal objetivo na conversa?</div>
+                    <div class="rep-a">"Criar conexão genuína antes de qualquer coisa. Não gosto de marcar encontro com quem mal conheço."</div>
+                </div>
+                <div class="rep-card accent">
+                    <div class="rep-q">+ 6 respostas analisadas</div>
+                    <div class="rep-a">"..."</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 02 — Perfil MBTI -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 02</div>
+            <div class="rep-sec-title">Seu Perfil Myers-Briggs Conectado à Sedução</div>
+            <div class="rep-card accent">
+                <div class="rep-card-title" id="rep-mbti-titulo">INTJ — O Estrategista que Analisa em Vez de Sentir</div>
+                <p class="rep-p">Você é um dos perfis mais raros e analiticamente poderosos do Myers-Briggs — menos de 2% da população. Quando você gosta de alguém, vai fundo de verdade.</p>
+                <div>
+                    <p class="rep-p">O problema no contexto de sedução: sua maior força é seu maior obstáculo. Você otimiza a comunicação como se fosse um problema lógico — quando ela decide te encontrar com o cérebro primitivo, não com o racional. Lógica não gera desejo. Tensão calibrada gera.</p>
+                    <div class="rep-tags" id="rep-mbti-tags">
+                        <span class="rep-tag">Analítico</span><span class="rep-tag">Estratégico</span><span class="rep-tag">Independente</span><span class="rep-tag">Perfeccionista</span><span class="rep-tag">Reservado</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Gerar interesse intelectual</span><span class="rep-bar"><span id="bar-fill-inteligente" class="rep-bar-fill" style="width:94%;background:var(--r-primary)"></span></span><span id="bar-val-inteligente" class="rep-bar-val" style="color:var(--r-primary)">94%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Frame de confiança e alto valor</span><span class="rep-bar"><span id="bar-fill-confiavel" class="rep-bar-fill" style="width:78%;background:var(--r-primary)"></span></span><span id="bar-val-confiavel" class="rep-bar-val" style="color:var(--r-primary)">78%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Resistência a testes femininos</span><span class="rep-bar"><span id="bar-fill-ambicioso" class="rep-bar-fill" style="width:61%;background:var(--r-purple)"></span></span><span id="bar-val-ambicioso" class="rep-bar-val" style="color:var(--r-purple)">61%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Leveza e humor nas mensagens</span><span class="rep-bar"><span id="bar-fill-divertido" class="rep-bar-fill" style="width:32%;background:var(--r-orange)"></span></span><span id="bar-val-divertido" class="rep-bar-val" style="color:var(--r-orange)">32%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Criação de tensão sexual via texto</span><span class="rep-bar"><span id="bar-fill-sexual" class="rep-bar-fill" style="width:21%;background:var(--r-red)"></span></span><span id="bar-val-sexual" class="rep-bar-val" style="color:var(--r-red)">21%</span></div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 03 — Os 9 Tipos -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 03</div>
+            <div class="rep-sec-title">Os 9 Tipos que Ela Identifica em Menos de 3 Minutos</div>
+            <p class="rep-sec-intro">Baseado em David DeAngelo (Lover/Provider), Jogo do Texto e PT2 Female Mind — estes são os 9 arquétipos que o cérebro primitivo dela categoriza automaticamente nas primeiras mensagens.</p>
+            <div class="rep-grid">
+                <div id="rep-tipo-01" class="rep-type"><div class="rep-type-num">Tipo 01</div><div class="rep-type-ico">👻</div><div class="rep-type-name">O Invisível</div></div>
+                <div id="rep-tipo-02" class="rep-type"><div class="rep-type-num">Tipo 02</div><div class="rep-type-ico">💛</div><div class="rep-type-name">O Amigo Legal Demais</div></div>
+                <div id="rep-tipo-03" class="rep-type"><div class="rep-type-num">Tipo 03</div><div class="rep-type-ico">💬</div><div class="rep-type-name">O Cara da Conversa</div></div>
+                <div id="rep-tipo-04" class="rep-type"><div class="rep-type-num">Tipo 04</div><div class="rep-type-ico">🙏</div><div class="rep-type-name">O Provider Ansioso</div></div>
+                <div id="rep-tipo-05" class="rep-type"><div class="rep-type-num">Tipo 05</div><div class="rep-type-ico">〰️</div><div class="rep-type-name">O Fantasma Digital</div></div>
+                <div id="rep-tipo-06" class="rep-type"><div class="rep-type-num">Tipo 06</div><div class="rep-type-ico">⚠️</div><div class="rep-type-name">O Predatório Óbvio</div></div>
+                <div id="rep-tipo-07" class="rep-type"><div class="rep-type-num">Tipo 07</div><div class="rep-type-ico">🎲</div><div class="rep-type-name">O Bad Boy Instável</div></div>
+                <div id="rep-tipo-08" class="rep-type"><div class="rep-type-num">Tipo 08</div><div class="rep-type-ico">🧭</div><div class="rep-type-name">O Aventureiro Calibrado</div></div>
+                <div id="rep-tipo-09" class="rep-type"><div class="rep-type-num">Tipo 09</div><div class="rep-type-ico">♟️</div><div class="rep-type-name">O Homem de Alto Valor</div></div>
+            </div>
+            <div class="rep-card accent" style="margin-top:12px">
+                <div class="rep-card-title" id="rep-diag-titulo">Análise do seu tipo</div>
+                <p class="rep-p" id="rep-diagnostico"></p>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 08 — Bios geradas -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Bônus</div>
+            <div class="rep-sec-title">Suas 3 Bios — Calibradas para Você</div>
+            <div id="rep-bios-list"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// ── Constantes de renderização (copiadas de quiz.html) ──
+const MBTI_REP = {
+    ENTJ: { titulo: 'ENTJ — O Comandante',       tags: ['Decisivo','Ambicioso','Direto','Estratégico','Líder'] },
+    ENTP: { titulo: 'ENTP — O Provocador',        tags: ['Criativo','Debatedor','Ágil','Imprevisível','Curioso'] },
+    ENFJ: { titulo: 'ENFJ — O Magnetizador',      tags: ['Empático','Carismático','Inspirador','Inclusivo','Presente'] },
+    ENFP: { titulo: 'ENFP — A Faísca',            tags: ['Espontâneo','Entusiasmado','Criativo','Curioso','Adaptável'] },
+    ESTJ: { titulo: 'ESTJ — O Executor',          tags: ['Organizado','Confiável','Direto','Estruturado','Responsável'] },
+    ESTP: { titulo: 'ESTP — O Caçador',           tags: ['Ágil','Presente','Corajoso','Prático','Intenso'] },
+    ESFJ: { titulo: 'ESFJ — O Anfitrião',         tags: ['Atencioso','Social','Harmonioso','Leal','Prestativo'] },
+    ESFP: { titulo: 'ESFP — O Festeiro',          tags: ['Divertido','Energético','Presente','Espontâneo','Popular'] },
+    INTJ: { titulo: 'INTJ — O Estrategista',      tags: ['Analítico','Estratégico','Independente','Perfeccionista','Reservado'] },
+    INTP: { titulo: 'INTP — O Analista',          tags: ['Lógico','Curioso','Conceitual','Independente','Preciso'] },
+    INFJ: { titulo: 'INFJ — O Místico',           tags: ['Profundo','Empático','Visionário','Reservado','Intuitivo'] },
+    INFP: { titulo: 'INFP — O Sonhador',          tags: ['Autêntico','Sensível','Criativo','Idealista','Leal'] },
+    ISTJ: { titulo: 'ISTJ — A Rocha',             tags: ['Confiável','Disciplinado','Sólido','Honesto','Consistente'] },
+    ISTP: { titulo: 'ISTP — O Especialista',      tags: ['Competente','Silencioso','Prático','Intenso','Fascinante'] },
+    ISFJ: { titulo: 'ISFJ — O Protetor',          tags: ['Cuidadoso','Confiável','Atencioso','Paciente','Leal'] },
+    ISFP: { titulo: 'ISFP — O Artista',           tags: ['Sensorial','Espontâneo','Autêntico','Gentil','Presente'] },
+};
+const ARQUETIPO_TIPO9 = { niceguy: '02', direto: '03', alfa: '08', provocador: '07' };
+const TIPO9_NOME = {
+    '01':'O Invisível', '02':'O Amigo Legal Demais', '03':'O Cara da Conversa',
+    '04':'O Provider Ansioso', '05':'O Fantasma Digital', '06':'O Predatório Óbvio',
+    '07':'O Bad Boy Instável', '08':'O Aventureiro Calibrado', '09':'O Homem de Alto Valor',
+};
+// Só os metadados das bios (version/style) — descrições completas ficam no quiz
+const ARCHETYPES = {
+    niceguy:    { name: 'O Gentleman em Evolução', desc: 'Você tem empatia genuína e presença real — ativos raros. Mas ainda coloca os desejos dos outros antes dos seus, especialmente com mulheres. Isso cria dinâmica de amizade onde você queria atração. O trabalho é redirecionar isso com mais valor próprio e menos aprovação externa.', bios: [ {version:'Versão Direta',style:'Tom: Seguro, sem necessidade de aprovação'}, {version:'Versão Provocadora',style:'Tom: Levemente irônico, com autoridade implícita'}, {version:'Versão Gentleman',style:'Tom: Sofisticado, com substância'} ] },
+    alfa:       { name: 'O Alfa Consolidado', desc: 'Você tem presença natural e age com segurança na maioria das situações. As mulheres percebem isso. O risco do seu perfil é a frieza excessiva — uma presença que atrai mas não conecta. O equilíbrio entre presença e calor é o que separa quem só atrai de quem também conecta.', bios: [ {version:'Versão Direta',style:'Tom: Confiante, sem explicações'}, {version:'Versão Provocadora',style:'Tom: Desafiador, com leveza'}, {version:'Versão Gentleman',style:'Tom: Seguro e acessível ao mesmo tempo'} ] },
+    provocador: { name: 'O Provocador', desc: 'Você usa humor e imprevisibilidade como ferramentas de atração — e funciona. Cria tensão, gera reações, nunca é entediante. O ponto cego: às vezes a provocação vira escudo e impede conexão real. Saber quando soltar a armadura é o que separa quem só diverte de quem realmente conecta.', bios: [ {version:'Versão Direta',style:'Tom: Imprevisível, com confiança'}, {version:'Versão Provocadora',style:'Tom: Irônico, com calor implícito'}, {version:'Versão Gentleman',style:'Tom: Inteligente e sofisticado'} ] },
+    direto:     { name: 'O Direto', desc: 'Você fala o que pensa e age com clareza. Isso é raro e valioso — mas pode intimidar em culturas que esperam jogo. Seu maior ativo é a autenticidade. Embrulhar sua objetividade com um pouco mais de calor transforma resultados bons em resultados excepcionais.', bios: [ {version:'Versão Direta',style:'Tom: Objetivo, sem enrolação'}, {version:'Versão Provocadora',style:'Tom: Direto com uma pitada de ironia'}, {version:'Versão Gentleman',style:'Tom: Assertivo e sofisticado'} ] },
+};
+
+// Estado preenchido a partir da API
+let lastReportBios = [];
+let lastReportArch = '';
+let lastReportDiagnostico = '';
+
+// ── Máscara / validação (iguais ao quiz) ──
+function maskPhoneBR(el) {
+    let d = el.value.replace(/\D/g, '').slice(0, 11);
+    let out = d;
+    if (d.length > 2) out = '(' + d.slice(0, 2) + ') ' + d.slice(2);
+    if (d.length > 7) out = '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
+    el.value = out;
+}
+function isValidPhoneBR(v) {
+    return String(v).replace(/\D/g, '').length === 11;
+}
+
+// ── Render (copiado de quiz.html, adaptado para dados da API) ──
+function renderReportBios() {
+    const list = document.getElementById('rep-bios-list');
+    if (!list) return;
+    const a = ARCHETYPES[lastReportArch] || { bios: [] };
+    list.innerHTML = '';
+    (lastReportBios || []).slice(0,3).forEach((item, i) => {
+        const bioTexto = (typeof item === 'string') ? item : (item.bio || '');
+        const meta = (a.bios && a.bios[i]) || { version:`Versão ${i+1}`, style:'' };
+        const card = document.createElement('div');
+        card.className = 'rep-card accent';
+        card.innerHTML = `
+            <div class="rep-card-title">${meta.version}${meta.style ? ' · <span style="font-weight:400;color:var(--r-muted)">'+meta.style+'</span>' : ''}</div>
+            <p class="rep-a" id="rbio-${i}">${bioTexto}</p>`;
+        list.appendChild(card);
+    });
+}
+
+function preencherReportMBTI(scores) {
+    const tipo   = scores.mbtiTipo || 'INTJ';
+    const adicas = scores.adicas   || {};
+    const rep    = MBTI_REP[tipo]  || MBTI_REP['INTJ'];
+
+    const elTitulo = document.getElementById('rep-mbti-titulo');
+    if (elTitulo) elTitulo.textContent = rep.titulo;
+
+    const elTags = document.getElementById('rep-mbti-tags');
+    if (elTags) elTags.innerHTML = rep.tags.map(t => `<span class="rep-tag">${t}</span>`).join('');
+
+    const BARRAS = [
+        { traco: 'inteligente', fillId: 'bar-fill-inteligente', valId: 'bar-val-inteligente', corAlta: 'var(--r-primary)', corBaixa: 'var(--r-primary)' },
+        { traco: 'confiavel',   fillId: 'bar-fill-confiavel',   valId: 'bar-val-confiavel',   corAlta: 'var(--r-primary)', corBaixa: 'var(--r-primary)' },
+        { traco: 'ambicioso',   fillId: 'bar-fill-ambicioso',   valId: 'bar-val-ambicioso',   corAlta: 'var(--r-primary)', corBaixa: 'var(--r-purple)'  },
+        { traco: 'divertido',   fillId: 'bar-fill-divertido',   valId: 'bar-val-divertido',   corAlta: 'var(--r-primary)', corBaixa: 'var(--r-orange)'  },
+        { traco: 'sexual',      fillId: 'bar-fill-sexual',      valId: 'bar-val-sexual',      corAlta: 'var(--r-primary)', corBaixa: 'var(--r-red)'     },
+    ];
+    const rawScores = BARRAS.map(b => adicas[b.traco] || 0);
+    const maxRaw    = Math.max(...rawScores, 1);
+    BARRAS.forEach((b, i) => {
+        const raw = rawScores[i];
+        const pct = Math.round(20 + (raw / maxRaw) * 75);
+        const cor = pct >= 60 ? b.corAlta : b.corBaixa;
+        const fill = document.getElementById(b.fillId);
+        const val  = document.getElementById(b.valId);
+        if (fill) { fill.style.width = pct + '%'; fill.style.background = cor; }
+        if (val)  { val.textContent = pct + '%'; val.style.color = cor; }
+    });
+
+    const arch   = lastReportArch || 'direto';
+    const tipoId = ARQUETIPO_TIPO9[arch] || '03';
+    for (let n = 1; n <= 9; n++) {
+        const numStr = String(n).padStart(2, '0');
+        const card   = document.getElementById('rep-tipo-' + numStr);
+        if (!card) continue;
+        const isActive = numStr === tipoId;
+        card.classList.toggle('current', isActive);
+        const badgeExist = card.querySelector('.rep-type-badge');
+        if (isActive && !badgeExist) {
+            const badge = document.createElement('div');
+            badge.className   = 'rep-type-badge';
+            badge.textContent = 'SEU TIPO ATUAL';
+            card.insertBefore(badge, card.firstChild);
+        } else if (!isActive && badgeExist) {
+            badgeExist.remove();
+        }
+    }
+
+    const elDiagT = document.getElementById('rep-diag-titulo');
+    const elDiag  = document.getElementById('rep-diagnostico');
+    if (elDiagT) elDiagT.textContent = `Análise do seu tipo — ${TIPO9_NOME[tipoId] || ''} (Tipo ${tipoId})`;
+    if (elDiag)  elDiag.textContent  = lastReportDiagnostico
+        || 'Seu diagnóstico personalizado aparece aqui assim que a análise é gerada.';
+}
+
+// ── Personaliza o topo (pill/subtítulo/meta) com o resultado e dados reais ──
+function personalizarHero(mbti, nome, idade) {
+    const tipoId = ARQUETIPO_TIPO9[lastReportArch] || '03';
+    const pill = document.getElementById('rep-pill');
+    if (pill && TIPO9_NOME[tipoId]) pill.textContent = TIPO9_NOME[tipoId];
+    const a = ARCHETYPES[lastReportArch];
+    const sub = document.getElementById('rep-hero-sub');
+    if (sub && a && a.desc) sub.textContent = a.desc;
+    const meta = document.getElementById('rep-meta');
+    if (meta) {
+        const partes = [nome, idade ? `${idade} anos` : null, `Perfil ${mbti}`].filter(Boolean);
+        meta.textContent = partes.join(' · ');
+    }
+}
+
+// ── Busca por telefone ──
+async function buscarRelatorio() {
+    const input = document.getElementById('f-lookup-whatsapp');
+    const msg   = document.getElementById('lookup-msg');
+    const btn   = document.getElementById('btn-lookup');
+    const fone  = input.value.trim();
+    msg.textContent = '';
+
+    if (!isValidPhoneBR(fone)) {
+        msg.textContent = 'Digite um WhatsApp válido com DDD. Ex: (21) 99999-9999';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Buscando...';
+    try {
+        const res = await fetch('/api/meu-relatorio', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ whatsapp: fone.replace(/\D/g, '') }),
+        });
+        const data = await res.json();
+
+        if (!data || !data.found) {
+            msg.textContent = 'Não encontramos seu relatório com esse número. Verifique e tente novamente.';
+            btn.disabled = false;
+            btn.textContent = 'Ver meu relatório';
+            return;
+        }
+
+        lastReportArch        = data.arquetipo || 'direto';
+        lastReportDiagnostico = data.diagnostico || '';
+        lastReportBios        = Array.isArray(data.bios) ? data.bios : [];
+        preencherReportMBTI({ mbtiTipo: data.mbti_tipo, adicas: data.adicas || {} });
+        renderReportBios();
+        personalizarHero(data.mbti_tipo, data.nome, data.idade);
+
+        document.getElementById('lookup-view').style.display = 'none';
+        document.getElementById('s-report').style.display = 'block';
+        window.scrollTo(0, 0);
+    } catch (err) {
+        msg.textContent = 'Ocorreu um erro na busca. Tente novamente.';
+        btn.disabled = false;
+        btn.textContent = 'Ver meu relatório';
+    }
+}
+</script>
+</body>
+</html>

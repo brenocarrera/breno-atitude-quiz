@@ -3,7 +3,7 @@ const crypto = require('crypto');
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { nome, idade, altura, peso, profissao, email, whatsapp, arquetipo } = req.body;
+    const { nome, idade, altura, peso, profissao, email, whatsapp, arquetipo, mbtiTipo, adicas, diagnostico, bios } = req.body;
 
     const url = process.env.SUPABASE_URL;
     const key = process.env.SUPABASE_ANON_KEY;
@@ -29,6 +29,10 @@ module.exports = async function handler(req, res) {
                 email,
                 whatsapp,
                 arquetipo,
+                mbti_tipo:   mbtiTipo    || null,
+                adicas:      adicas      || null,
+                diagnostico: diagnostico || null,
+                bios:        bios        || null,
                 created_at: new Date().toISOString(),
             }),
         });
@@ -45,8 +49,71 @@ module.exports = async function handler(req, res) {
         // Nunca bloqueia o resultado do quiz
     }
 
+    // Fixa o laudo do quiz em oxyreport para o botão "OxyReport" do OxyBoard ler.
+    // Roda depois de ativarTrialOxy, que garante a conta em usuarios.
+    try {
+        await gravarOxyreport(url, email, { arquetipo, mbtiTipo, adicas, diagnostico, bios });
+    } catch (err) {
+        console.error('[save-lead] Falha ao gravar oxyreport:', err);
+        // Nunca bloqueia o resultado do quiz
+    }
+
     return res.status(200).json({ ok: true });
 };
+
+async function gravarOxyreport(url, email, { arquetipo, mbtiTipo, adicas, diagnostico, bios }) {
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !serviceKey || !email) {
+        console.error('[gravarOxyreport] abortado - faltando:', { url: !!url, serviceKey: !!serviceKey, email: !!email });
+        return;
+    }
+
+    const emailNorm = email.toLowerCase().trim();
+    const headers = {
+        'Content-Type': 'application/json',
+        'apikey': serviceKey,
+        'Authorization': `Bearer ${serviceKey}`,
+    };
+
+    // Busca o usuario_id pelo email. Se o lead ainda não tem conta em usuarios, pula (sem erro).
+    const selectRes = await fetch(
+        `${url}/rest/v1/usuarios?email=eq.${encodeURIComponent(emailNorm)}&select=id`,
+        { headers }
+    );
+    if (!selectRes.ok) {
+        console.error('[gravarOxyreport] SELECT usuarios falhou:', selectRes.status, await selectRes.text());
+        return;
+    }
+    const usuarios = await selectRes.json();
+    const usuario = Array.isArray(usuarios) ? usuarios[0] : null;
+    if (!usuario) {
+        console.log('[gravarOxyreport] lead sem conta em usuarios, pulando:', emailNorm);
+        return;
+    }
+
+    const insertRes = await fetch(`${url}/rest/v1/oxyreport`, {
+        method: 'POST',
+        headers: { ...headers, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({
+            usuario_id: usuario.id,
+            mbti: mbtiTipo || null,
+            adicas: adicas || null,
+            arquetipo: arquetipo || null,
+            // Payload completo do relatório (mesmos campos que meu-relatorio.html usa)
+            // para o OxyBoard renderizar idêntico ao que o cliente viu no fim do quiz.
+            relatorio_json: {
+                arquetipo:   arquetipo   || null,
+                mbti_tipo:   mbtiTipo    || null,
+                adicas:      adicas      || null,
+                diagnostico: diagnostico || null,
+                bios:        bios        || null,
+            },
+        }),
+    });
+    if (!insertRes.ok) {
+        console.error('[gravarOxyreport] INSERT oxyreport falhou:', insertRes.status, await insertRes.text());
+    }
+}
 
 async function ativarTrialOxy(url, email, nome) {
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;

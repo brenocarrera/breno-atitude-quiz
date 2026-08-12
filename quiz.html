@@ -1091,17 +1091,47 @@ body.presell-mode .expert-header { height: 300px; }
 .rep-scarcity-text b { color: var(--r-orange); font-weight: 700; }
 .rep-timer { font-size: 1.6rem; font-weight: 800; color: var(--r-orange); font-variant-numeric: tabular-nums; margin-top: 6px; }
 
-/* Botões de oferta (duas portas) */
-.rep-offers { display: flex; flex-direction: column; gap: 12px; margin-top: 18px; }
-.rep-offer-btn {
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-    width: 100%; padding: 16px; border-radius: 14px; cursor: pointer;
-    font-family: inherit; border: none; color: #fff;
-}
-.rep-offer-btn .rep-offer-main { font-size: 1.05rem; font-weight: 800; }
-.rep-offer-btn .rep-offer-tag { font-size: 0.78rem; opacity: 0.9; }
-.rep-offer-btn.free { background: linear-gradient(135deg, var(--r-green), #059669); box-shadow: 0 6px 20px rgba(16,185,129,0.35); }
-.rep-offer-btn.paid { background: linear-gradient(135deg, var(--r-primary), var(--r-purple)); box-shadow: 0 6px 20px rgba(139,92,246,0.35); }
+/* Cartão de oferta (grátis x pago) */
+.oferta-wrap { display: grid; grid-template-columns: 1fr; align-items: start; gap: 10px; max-width: 640px; margin: 18px auto 0; }
+
+.card-gratis { background: #0f2530; border-radius: 12px; border: 0.5px solid #1e3a45; padding: 0.9rem; }
+.card-gratis .label { font-size: 14px; font-weight: 500; margin-bottom: 2px; color: #7fa8b3; }
+.card-gratis .titulo { font-size: 18px; font-weight: 500; margin-bottom: 12px; color: #e8f0f2; }
+.card-gratis ul { list-style: none; margin-bottom: 14px; display: flex; flex-direction: column; gap: 8px; }
+.card-gratis li { display: flex; gap: 7px; font-size: 13px; color: #c5d8dc; align-items: flex-start; }
+.btn-gratis { width: 100%; font-size: 13px; padding: 10px; background: transparent; border: 0.5px solid #2a4550; color: #c5d8dc; border-radius: 8px; cursor: pointer; }
+
+.card-pago { background: radial-gradient(ellipse at top, #1c1608, #0a1410 70%); border-radius: 12px; border: 1.5px solid #c9a04e; padding: 0.85rem; }
+.card-pago .versao-label { font-size: 14px; font-weight: 500; margin-bottom: 2px; color: #f2e4c4; opacity: 0.55; }
+.card-pago .oxy-titulo { font-size: 18px; font-weight: 500; margin-bottom: 10px; color: #f2e4c4; }
+
+.mini-gratis { background: #0f2530; border-radius: 10px; border: 0.5px solid #1e3a45; padding: 0.85rem; margin-bottom: 14px; }
+.mini-gratis .label { font-size: 14px; font-weight: 500; margin-bottom: 2px; color: #7fa8b3; }
+.mini-gratis ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.mini-gratis li { display: flex; gap: 7px; font-size: 13px; color: #c5d8dc; align-items: flex-start; }
+
+.tudo-mais { font-size: 15px; font-weight: 500; margin-bottom: 10px; color: #f2e4c4; }
+
+.secao-titulo { margin: 20px 0 10px; }
+.secao-titulo:first-of-type { margin-top: 16px; }
+.secao-titulo p { font-size: 17px; font-weight: 500; margin-bottom: 6px; color: #f2d089; display: flex; align-items: center; gap: 7px; }
+.secao-titulo .divisor { height: 2px; background: linear-gradient(90deg, #e0b969, transparent); width: 100%; }
+
+.grade-ebooks { display: grid; grid-template-columns: repeat(auto-fit, minmax(85px, 1fr)); gap: 7px; margin-bottom: 20px; }
+.box-ebook { position: relative; background: linear-gradient(180deg, #2a2008, #14100a); border: 1px solid #c9a04e; border-radius: 10px; padding: 16px 8px; text-align: center; aspect-ratio: 3 / 4.2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; overflow: hidden; }
+.box-ebook .brilho, .box-curso .brilho { position: absolute; top: -40%; left: -40%; width: 180%; height: 180%; background: conic-gradient(from 0deg, transparent, rgba(224,185,105,0.4), transparent 25%); }
+.box-ebook .emoji { position: relative; font-size: 26px; }
+.box-ebook p { position: relative; font-size: 13px; color: #f5ecd4; font-weight: 500; line-height: 1.3; }
+.box-ebook .num { color: #e0b969; }
+
+.grade-cursos { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 7px; }
+.box-curso { position: relative; background: rgba(255,255,255,0.04); border: 1px solid rgba(224,185,105,0.5); border-radius: 10px; padding: 14px 8px; text-align: center; min-height: 108px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; overflow: hidden; }
+.box-curso.full { max-width: none; margin: 0; }
+.box-curso .emoji { position: relative; font-size: 20px; }
+.box-curso p { position: relative; font-size: 13px; color: #f0e6cc; font-weight: 500; line-height: 1.3; }
+.box-curso .num { color: #e0b969; }
+
+.btn-baixar { width: 100%; font-size: 13px; margin-top: 16px; padding: 12px; background: linear-gradient(180deg, #f2d089 0%, #c9a04e 60%, #a67f2e 100%); color: #1a1206; border: none; font-weight: 500; border-radius: 8px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -1346,9 +1376,9 @@ body.presell-mode .expert-header { height: 300px; }
         <div class="rep-hero">
             <div class="rep-kicker">Jogo do Texto · Análise de Perfil Completa</div>
             <div class="rep-kicker t2">Resultado da sua análise</div>
-            <div class="rep-pill">O Cara da Conversa</div>
-            <p class="rep-hero-sub rep-blur">Ela acha você fascinante para trocar ideia. Mas não sente urgência de te ver pessoalmente. Você está a 3 calibrações de mudar completamente isso.</p>
-            <div class="rep-meta rep-blur">Rafael M. · 31 anos · São Paulo · Perfil INTJ</div>
+            <div class="rep-pill" id="rep-pill">O Cara da Conversa</div>
+            <p class="rep-hero-sub rep-blur" id="rep-hero-sub">Ela acha você fascinante para trocar ideia. Mas não sente urgência de te ver pessoalmente. Você está a 3 calibrações de mudar completamente isso.</p>
+            <div class="rep-meta rep-blur" id="rep-meta">Rafael M. · 31 anos · São Paulo · Perfil INTJ</div>
         </div>
 
         <!-- SEÇÃO 01 — Suas Respostas -->
@@ -1532,21 +1562,60 @@ body.presell-mode .expert-header { height: 300px; }
         <!-- Botões de oferta (placeholder — sem integração ainda) -->
         <div id="rep-offers-section" style="display:none;margin-top:18px;">
             <div class="rep-sec-title" style="font-size:1.1rem;margin-bottom:10px;">Escolha a melhor opção para receber sua análise</div>
-            <div class="rep-offers" id="rep-offers">
-                <button class="rep-offer-btn free" id="btn-whatsapp" onclick="chooseOffer('whats')">
-                    <span class="rep-offer-main">Receber via WhatsApp</span>
-                    <span class="rep-offer-tag">grátis</span>
-                </button>
-                <button class="rep-offer-btn paid" id="btn-oxyreport" onclick="chooseOffer('paid')">
-                    <span class="rep-offer-main">Baixar — R$9</span>
-                    <span class="rep-offer-tag">na hora, sem espera</span>
-                </button>
+            <div class="form-group" id="wa-phone-group" style="margin-bottom:10px;">
+                <label class="form-label" style="color:#e7ecf5;">Seu WhatsApp (com DDD) — para receber a análise</label>
+                <input type="tel" id="f-report-whatsapp" class="form-input" placeholder="(21) 99999-9999" inputmode="numeric" maxlength="16" oninput="maskPhoneBR(this)">
+            </div>
+            <div class="oferta-wrap">
+                <!-- CARD GRÁTIS -->
+                <div class="card-gratis">
+                    <p class="label">Versão 1</p>
+                    <p class="titulo">Grátis</p>
+                    <ul>
+                        <li><span>✓</span>Relatório completo</li>
+                        <li><span>✓</span>Seu perfil + MBTI</li>
+                        <li><span>✓</span>Prioridade no Círculo</li>
+                    </ul>
+                    <button class="btn-gratis" id="btn-whatsapp" onclick="chooseOffer('whats')">Receber grátis</button>
+                </div>
+                <!-- CARD PAGO -->
+                <div class="card-pago">
+                    <p class="versao-label">Versão</p>
+                    <p class="oxy-titulo">✨ OXY-REPORT</p>
+                    <div class="mini-gratis">
+                        <p class="label">Versão 1</p>
+                        <ul>
+                            <li><span>✓</span>Relatório completo</li>
+                            <li><span>✓</span>Seu perfil + MBTI</li>
+                            <li><span>✓</span>Prioridade no Círculo</li>
+                        </ul>
+                    </div>
+                    <p class="tudo-mais">Tudo isso, mais:</p>
+                    <div class="secao-titulo">
+                        <p><span>⭐</span><span style="color:#d4af37;">Combo 4 E-Books Premium</span></p>
+                        <div class="divisor"></div>
+                    </div>
+                    <div class="grade-ebooks">
+                        <div class="box-ebook"><div class="brilho"></div><span class="emoji">📖</span><p><span class="num">1.</span> 43 mensagens para puxar assunto</p></div>
+                        <div class="box-ebook"><div class="brilho"></div><span class="emoji">📖</span><p><span class="num">2.</span> Avalanche de matches</p></div>
+                        <div class="box-ebook"><div class="brilho"></div><span class="emoji">📖</span><p><span class="num">3.</span> Conversas que convertem</p></div>
+                        <div class="box-ebook"><div class="brilho"></div><span class="emoji">📖</span><p><span class="num">4.</span> Guia do encontro</p></div>
+                    </div>
+                    <div class="secao-titulo">
+                        <p><span>⭐</span><span style="color:#d4af37;">5 Cursos VIP Bônus</span></p>
+                        <div class="divisor"></div>
+                    </div>
+                    <div class="grade-cursos">
+                        <div class="box-curso"><div class="brilho"></div><span class="emoji">🎓</span><p><span class="num">1.</span> Perfil irresistível no Tinder</p></div>
+                        <div class="box-curso"><div class="brilho"></div><span class="emoji">🎓</span><p><span class="num">2.</span> Primeiras mensagens que sempre geram resposta</p></div>
+                        <div class="box-curso"><div class="brilho"></div><span class="emoji">🎓</span><p><span class="num">3.</span> Pulverizando a trava de falar com mulher bonita</p></div>
+                        <div class="box-curso"><div class="brilho"></div><span class="emoji">🎓</span><p><span class="num">4.</span> Isso faz ela querer você: atração x sedução</p></div>
+                        <div class="box-curso full"><div class="brilho"></div><span class="emoji">🎓</span><p><span class="num">5.</span> Por que ela não vê que você é o cara certo</p></div>
+                    </div>
+                    <button class="btn-baixar" id="btn-oxyreport" onclick="chooseOffer('paid')">⚡ Baixar — R$9</button>
+                </div>
             </div>
         </div>
-
-        <a href="/mensagens" style="display:block;width:100%;margin-top:14px;padding:16px;border-radius:14px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.35);color:#a855f7;font-size:15px;font-weight:600;text-align:center;text-decoration:none;">
-            ✦ Gerar mensagens para conversas
-        </a>
     </div>
 </div>
 
@@ -1767,7 +1836,7 @@ const ARCHETYPES = {
     alfa: {
         badge: 'Arquétipo Identificado',
         name: 'O Alfa Consolidado',
-        desc: 'Você tem presença natural e age com segurança na maioria das situações. As mulheres percebem isso. O risco do seu perfil é a frieza excessiva — uma presença que atrai mas não conecta. O equilíbrio entre polo e calor separa o Alfa funcional do Alfa completo.',
+        desc: 'Você tem presença natural e age com segurança na maioria das situações. As mulheres percebem isso. O risco do seu perfil é a frieza excessiva — uma presença que atrai mas não conecta. O equilíbrio entre presença e calor é o que separa quem só atrai de quem também conecta.',
         template: 'Não estou aqui pra agradar todo mundo — e tudo bem. {profissao}, {idade} anos. Se gosta de conversa real, continuamos. Se não, sem drama.',
         bios: [
             { version:'Versão Direta',    style:'Tom: Confiante, sem explicações',       effect:'Filtra imediatamente. Mulheres de alto valor reconhecem e respondem.' },
@@ -1778,7 +1847,7 @@ const ARCHETYPES = {
     provocador: {
         badge: 'Arquétipo Identificado',
         name: 'O Provocador',
-        desc: 'Você usa humor e imprevisibilidade como ferramentas de atração — e funciona. Cria tensão, gera reações, nunca é entediante. O ponto cego: às vezes a provocação vira escudo e impede conexão real. Saber quando soltar a armadura é o que separa o Provocador do Alfa completo.',
+        desc: 'Você usa humor e imprevisibilidade como ferramentas de atração — e funciona. Cria tensão, gera reações, nunca é entediante. O ponto cego: às vezes a provocação vira escudo e impede conexão real. Saber quando soltar a armadura é o que separa quem só diverte de quem realmente conecta.',
         template: 'Aviso antes: sou daqueles que faz você rir quando menos espera. {profissao}, {idade} anos. Dica: minha segunda foto conta mais que a primeira.',
         bios: [
             { version:'Versão Direta',    style:'Tom: Imprevisível, com confiança',       effect:'Gera curiosidade imediata. Ela vai querer entender quem você é.' },
@@ -2491,10 +2560,19 @@ function confirmReportEmail() {
 
     window.leadEmail = email;
 
+    // Dados do relatório já estão prontos em memória neste ponto (bios + diagnóstico + scores)
+    let adicasScores = null;
+    try { adicasScores = QuizLogic.calcularScores(respostas).adicas; } catch (e) {}
     fetch('/api/save-lead', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ ...userData, email: window.leadEmail }),
+        body: JSON.stringify({
+            ...userData,
+            email: window.leadEmail,
+            adicas:      adicasScores,
+            diagnostico: lastReportDiagnostico,
+            bios:        lastReportBios,
+        }),
     }).catch(()=>{});
 
     document.getElementById('rep-email-capture').style.display = 'none';
@@ -2647,6 +2725,24 @@ function preencherReportMBTI(scores) {
     if (elDiagT) elDiagT.textContent = `Análise do seu tipo — ${TIPO9_NOME[tipoId] || ''} (Tipo ${tipoId})`;
     if (elDiag)  elDiag.textContent  = lastReportDiagnostico
         || 'Seu diagnóstico personalizado aparece aqui assim que a análise é gerada.';
+
+    // 6. Topo (hero) — personalizado: título = tipo destacado, subtítulo = descrição do
+    //    arquétipo, e a linha de identificação com os dados REAIS do usuário.
+    const elPill = document.getElementById('rep-pill');
+    if (elPill && TIPO9_NOME[tipoId]) elPill.textContent = TIPO9_NOME[tipoId];
+    const elHeroSub = document.getElementById('rep-hero-sub');
+    const arqDesc = (ARCHETYPES[arch] || {}).desc;
+    if (elHeroSub && arqDesc) elHeroSub.textContent = arqDesc;
+    const elMeta = document.getElementById('rep-meta');
+    if (elMeta) {
+        const partes = [
+            userData.nome,
+            userData.idade ? `${userData.idade} anos` : null,
+            userData.cidade,
+            `Perfil ${tipo}`,
+        ].filter(Boolean);
+        elMeta.textContent = partes.join(' · ');
+    }
 }
 
 function openReport() {
@@ -2660,14 +2756,46 @@ function openReport() {
     // Sem auto-scroll: a pessoa entra e lê o aviso de escassez no topo primeiro
 }
 
-// Placeholder das ofertas (sem integração ainda — só registra a escolha)
+// Máscara e validação de WhatsApp BR — (DD) 9XXXX-XXXX
+function maskPhoneBR(el) {
+    let d = el.value.replace(/\D/g, '').slice(0, 11);
+    let out = d;
+    if (d.length > 2) out = '(' + d.slice(0, 2) + ') ' + d.slice(2);
+    if (d.length > 7) out = '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
+    el.value = out;
+}
+function isValidPhoneBR(v) {
+    return String(v).replace(/\D/g, '').length === 11;
+}
+
 function chooseOffer(type) {
+    // WhatsApp exige telefone válido antes de tudo
+    let waFull = null;
+    if (type === 'whats') {
+        const waInput = document.getElementById('f-report-whatsapp');
+        const fone = waInput ? waInput.value.trim() : '';
+        if (!isValidPhoneBR(fone)) {
+            soundError();
+            alert('Digite um WhatsApp válido com DDD. Ex: (21) 99999-9999');
+            if (waInput) waInput.focus();
+            return;
+        }
+        waFull = '55' + fone.replace(/\D/g, ''); // 55 + DDD + número
+    }
+
     soundClick();
     userData.oferta = type; // 'whats' (grátis) ou 'paid' (R$9)
     localStorage.setItem('oxyquiz_converted', 'true');
     console.log('[oferta escolhida]', type);
 
     if (type === 'whats') {
+        // Salva o telefone no lead (server-side) antes de abrir o WhatsApp
+        fetch('/api/update-whatsapp', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ email: window.leadEmail, whatsapp: waFull }),
+        }).catch(()=>{});
+
         const numero  = '5521992670127';
         const mensagem = 'Olá! Acabei de fazer o quiz e quero minha análise 🙂';
         window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`, '_blank');

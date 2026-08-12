@@ -10,6 +10,7 @@
   "rewrites": [
     { "source": "/", "destination": "/quiz.html" },
     { "source": "/quiz", "destination": "/quiz.html" },
-    { "source": "/mensagens", "destination": "/mensagens.html" }
+    { "source": "/mensagens", "destination": "/mensagens.html" },
+    { "source": "/meu-relatorio", "destination": "/meu-relatorio.html" }
   ]
 }
