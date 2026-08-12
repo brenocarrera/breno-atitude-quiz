@@ -3,7 +3,7 @@ const crypto = require('crypto');
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { nome, idade, altura, peso, profissao, email, whatsapp, arquetipo, mbtiTipo, adicas, diagnostico, bios } = req.body;
+    const { nome, idade, altura, peso, profissao, email, whatsapp, arquetipo, mbtiTipo, adicas, diagnostico, bios, apps, cidade, signo, ultimoDate, sessionId } = req.body;
 
     const url = process.env.SUPABASE_URL;
     const key = process.env.SUPABASE_ANON_KEY;
@@ -23,7 +23,7 @@ module.exports = async function handler(req, res) {
             body: JSON.stringify({
                 nome,
                 idade:    idade    ? parseInt(idade)    : null,
-                altura:   altura   ? parseInt(altura)   : null,
+                altura:   altura   ? Math.round(parseFloat(String(altura).replace(',', '.').replace('m', '')) * 100) : null,
                 peso:     peso     ? parseInt(peso)     : null,
                 profissao,
                 email,
@@ -33,6 +33,10 @@ module.exports = async function handler(req, res) {
                 adicas:      adicas      || null,
                 diagnostico: diagnostico || null,
                 bios:        bios        || null,
+                apps:        apps        || null,
+                cidade:      cidade      || null,
+                signo:       signo       || null,
+                ultimo_date: ultimoDate  || null,
                 created_at: new Date().toISOString(),
             }),
         });
@@ -43,7 +47,7 @@ module.exports = async function handler(req, res) {
 
     // Ativa trial de 5 dias no OxyBoard/OxyMessage para todo mundo que completa o quiz
     try {
-        await ativarTrialOxy(url, email, nome);
+        await ativarTrialOxy(url, email, nome, sessionId);
     } catch (err) {
         console.error('[save-lead] Falha ao ativar trial em usuarios:', err);
         // Nunca bloqueia o resultado do quiz
@@ -115,7 +119,7 @@ async function gravarOxyreport(url, email, { arquetipo, mbtiTipo, adicas, diagno
     }
 }
 
-async function ativarTrialOxy(url, email, nome) {
+async function ativarTrialOxy(url, email, nome, sessionId) {
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !serviceKey || !email) {
         console.error('[ativarTrialOxy] abortado - faltando:', { url: !!url, serviceKey: !!serviceKey, email: !!email });
@@ -181,6 +185,29 @@ async function ativarTrialOxy(url, email, nome) {
         const errBody = await upsertRes.text();
         console.error('[ativarTrialOxy] UPSERT falhou:', upsertRes.status, errBody);
         return;
+    }
+
+    if (sessionId) {
+        try {
+            const selectIdRes = await fetch(
+                `${url}/rest/v1/usuarios?email=eq.${encodeURIComponent(emailNorm)}&select=id`,
+                { headers }
+            );
+            const usuarioRows = await selectIdRes.json();
+            const usuarioId = Array.isArray(usuarioRows) ? usuarioRows[0]?.id : null;
+            if (usuarioId) {
+                await fetch(
+                    `${url}/rest/v1/respostas_lands?session_id=eq.${encodeURIComponent(sessionId)}&usuario_id=is.null`,
+                    {
+                        method: 'PATCH',
+                        headers: { ...headers, 'Prefer': 'return=minimal' },
+                        body: JSON.stringify({ usuario_id: usuarioId }),
+                    }
+                );
+            }
+        } catch (err) {
+            console.error('[ativarTrialOxy] Falha ao vincular respostas_lands:', err);
+        }
     }
 
     if (contaNova) {

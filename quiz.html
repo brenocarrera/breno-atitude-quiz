@@ -2334,6 +2334,7 @@ function startQuiz() {
         apps:       selectedApps.slice(),
         signo:      selectedSigno,
         ultimoDate: selectedUltimoDate,
+        sessionId:  localStorage.getItem('oxy_session_id'),
     };
     // Sorteia 20 perguntas balanceadas (2 por eixo MBTI × 4 + 2 por traço ADICAS × 6)
     try {
