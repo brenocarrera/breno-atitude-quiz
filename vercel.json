@@ -12,5 +12,9 @@
     { "source": "/quiz", "destination": "/quiz.html" },
     { "source": "/mensagens", "destination": "/mensagens.html" },
     { "source": "/meu-relatorio", "destination": "/meu-relatorio.html" }
-  ]
+  ],
+  "functions": {
+    "api/gerar-pdf-relatorio.js": { "maxDuration": 60 },
+    "api/whatsapp-webhook.js": { "maxDuration": 30 }
+  }
 }

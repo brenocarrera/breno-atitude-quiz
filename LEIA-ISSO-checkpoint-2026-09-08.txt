@@ -1,0 +1,44 @@
+CHECKPOINT DE SEGURANCA - Oxy Quizz
+====================================
+
+O QUE E ISSO:
+Esse branch ("checkpoint-2026-09-08") e uma copia de seguranca das
+alteracoes que estavam penduradas (editadas mas nunca commitadas) no
+Quiz, guardada no GitHub so como backup.
+
+POR QUE FOI CRIADO:
+Em 10/09/2026, ao revisar o painel de PWAs, percebemos que existiam
+varios arquivos do Quiz modificados no computador mas nunca commitados
+nem enviados pro GitHub. Pra nao perder esse trabalho, foi criado esse
+branch separado so pra guardar isso com seguranca.
+
+IMPORTANTE - ISSO NAO FOI PUBLICADO:
+- Esse branch NAO e o "main" (o branch oficial/de producao).
+- A Vercel so publica automaticamente o branch "main".
+- Ou seja: nada aqui foi pro site que esta no ar. E so um backup.
+- O branch "main" e o "feat/mbti-adicas-quiz" continuam exatamente
+  como estavam antes, sem nenhuma mudanca.
+
+ARQUIVOS INCLUIDOS NESSE CHECKPOINT (com a data real da ultima edicao
+no computador, antes de virar commit):
+- quiz.html                          (editado em 08/09/2026)
+- api/save-lead.js                   (editado em 04/09/2026)
+- meu-relatorio.html                 (editado em 13/08/2026)
+- package.json                       (editado em 13/08/2026)
+- vercel.json                        (editado em 13/08/2026)
+- api/gerar-pdf-relatorio.js         (nunca tinha sido commitado)
+- api/track-evento.js                (nunca tinha sido commitado)
+- api/update-caminho.js              (nunca tinha sido commitado)
+- api/whatsapp-webhook.js            (nunca tinha sido commitado)
+- vault/VAULT-RELATORIO.md           (nunca tinha sido commitado)
+- .gitignore                         (novo)
+- quiz.html.bak-antes-pixel-showresult-08Sep2026  (backup manual anterior)
+- quiz.html.bak-antes-substituicao                (backup manual anterior)
+
+SE PRECISAR USAR DE NOVO NO FUTURO:
+Pra ver ou recuperar esse trabalho, use:
+  git checkout checkpoint-2026-09-08
+Ou peca pro Claude Code puxar esse branch especifico do GitHub.
+
+Isso NAO foi apagado nem descartado -- so foi guardado separado do
+fluxo principal ate decidir se e pra aproveitar, testar ou descartar.

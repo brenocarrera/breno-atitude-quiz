@@ -2673,20 +2673,6 @@ function showResult(arch, bios, relatorio) {
     lastReportBios = bios;
     lastReportArch = arch;
     lastReportDiagnostico = relatorio || '';
-
-    // Pixel por temperamento — dispara AQUI, assim que o resultado aparece na tela,
-    // não só depois do email. Cria o publico amplo "viu o resultado X" desde já;
-    // o email (mais abaixo) some encima do mesmo pixel ja iniciado, entao o Lead
-    // passa a contar tambem pro pixel especifico do arquetipo (antes so ia pro fixo).
-    if (typeof fbq === 'function' && !avatarPixelFired) {
-        const pixelId = pixelMap[arch];
-        if (pixelId) {
-            fbq('init', pixelId);
-            fbq('track', 'PageView');
-            avatarPixelFired = true;
-        }
-    }
-
     openReport();
 }
 
@@ -2728,8 +2714,7 @@ function confirmReportEmail() {
 
     window.leadEmail = email;
     if (typeof fbq === 'function') {
-        // Fallback: se por algum motivo o pixel do temperamento nao disparou ainda
-        // em showResult() (ex: usuario recarregou a tela do relatorio), inicia aqui.
+        fbq('track', 'Lead');
         if (!avatarPixelFired) {
             const pixelId = pixelMap[userData.arquetipo];
             if (pixelId) {
@@ -2738,10 +2723,6 @@ function confirmReportEmail() {
                 avatarPixelFired = true;
             }
         }
-        // Lead so dispara depois do pixel do temperamento estar iniciado (acima ou em
-        // showResult) — assim o evento conta tanto pro pixel fixo quanto pro pixel
-        // especifico do arquetipo, formando o publico "quente" (deu email).
-        fbq('track', 'Lead');
     }
 
     if (typeof gtag === 'function') {

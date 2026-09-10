@@ -1,11 +1,101 @@
-const crypto = require('crypto');
+// ── Arquivo Alfa (Sessão 3): identifica o registro via cookie oxy_alfa_id
+// (Domain=.breno-atitude.com, setado pelas lands em LANDS-ALL/arquivo-alfa.js) ──
+function getCookieValue(cookieHeader, name) {
+    if (!cookieHeader) return null;
+    const match = cookieHeader.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+    return match ? decodeURIComponent(match[1]) : null;
+}
+
+// Atualiza o arquivo_alfa existente (via id) ou cria um novo (sem land de origem,
+// para quem entra direto no quiz) com os campos passados. Retorna o id (existente ou novo).
+async function upsertArquivoAlfa(url, serviceKey, alfaId, campos) {
+    if (!url || !serviceKey) return alfaId || null;
+
+    const corpo = {};
+    for (const k in campos) if (campos[k] !== undefined) corpo[k] = campos[k];
+
+    if (alfaId) {
+        const res = await fetch(`${url}/rest/v1/arquivo_alfa?id=eq.${encodeURIComponent(alfaId)}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': serviceKey,
+                'Authorization': `Bearer ${serviceKey}`,
+                'Prefer': 'return=representation',
+            },
+            body: JSON.stringify(corpo),
+        });
+        if (!res.ok) { console.error('[arquivo_alfa] PATCH falhou:', res.status, await res.text()); return alfaId; }
+        const rows = await res.json();
+        if (rows && rows.length > 0) return alfaId;
+        // Cookie apontava pra um id que não existe mais (ex: registro de teste apagado) —
+        // cria um novo em vez de perder o dado silenciosamente.
+        console.error('[arquivo_alfa] PATCH não encontrou o id do cookie, criando novo registro:', alfaId);
+        return upsertArquivoAlfa(url, serviceKey, null, campos);
+    }
+
+    corpo.primeira_land = null; // entrou direto no quiz, sem passar por land
+    const res = await fetch(`${url}/rest/v1/arquivo_alfa`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'apikey': serviceKey,
+            'Authorization': `Bearer ${serviceKey}`,
+            'Prefer': 'return=representation',
+        },
+        body: JSON.stringify(corpo),
+    });
+    if (!res.ok) { console.error('[arquivo_alfa] INSERT falhou:', res.status, await res.text()); return null; }
+    const rows = await res.json();
+    return (rows && rows[0]) ? rows[0].id : null;
+}
+
+function parseDispositivo(userAgent) {
+    const ua = userAgent || '';
+    let navegador = 'Navegador desconhecido';
+    if (/Edg\//.test(ua)) navegador = 'Edge';
+    else if (/OPR\//.test(ua)) navegador = 'Opera';
+    else if (/Chrome\//.test(ua) && !/Chromium/.test(ua)) navegador = 'Chrome';
+    else if (/Firefox\//.test(ua)) navegador = 'Firefox';
+    else if (/Safari\//.test(ua) && /Version\//.test(ua)) navegador = 'Safari';
+
+    let sistema = 'dispositivo desconhecido';
+    if (/iPhone/.test(ua)) sistema = 'iPhone';
+    else if (/iPad/.test(ua)) sistema = 'iPad';
+    else if (/Android/.test(ua)) sistema = 'Android';
+    else if (/Windows/.test(ua)) sistema = 'Windows';
+    else if (/Mac OS X/.test(ua)) sistema = 'Mac';
+    else if (/Linux/.test(ua)) sistema = 'Linux';
+
+    return `${navegador} no ${sistema}`;
+}
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-    const { nome, idade, altura, peso, profissao, email, whatsapp, arquetipo, mbtiTipo, adicas, diagnostico, bios, apps, cidade, signo, ultimoDate, sessionId } = req.body;
-
     const url = process.env.SUPABASE_URL;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const cookieAlfaId = getCookieValue(req.headers.cookie, 'oxy_alfa_id');
+
+    // Chamada leve disparada em chooseOffer() (quiz.html) só pra fechar a fase "raiox"
+    // do arquivo_alfa (tempo relatório → saída da oferta) — não toca em leads/oxyreport.
+    if (req.body && req.body.soAtualizarAlfa) {
+        try {
+            await upsertArquivoAlfa(url, serviceKey, req.body.alfaId || cookieAlfaId, {
+                tempos_fase: req.body.temposFase || undefined,
+                scroll_maximo_freereport_percentual: (typeof req.body.scrollMaximoFreereportPercentual === 'number')
+                    ? req.body.scrollMaximoFreereportPercentual
+                    : undefined,
+            });
+        } catch (err) {
+            console.error('[save-lead] Falha ao atualizar arquivo_alfa (raiox):', err);
+        }
+        return res.status(200).json({ ok: true });
+    }
+
+    const { nome, idade, altura, peso, profissao, email, whatsapp, arquetipo, mbtiTipo, adicas, diagnostico, bios, apps, cidade, signo, ultimoDate, duracaoQuiz, respostasQuiz, temposPerguntas, temposFase, velocidadeCarregamentoQuizMs, tempoAteEmailSegundos } = req.body;
+    const dispositivo = parseDispositivo(req.headers['user-agent']);
+
     const key = process.env.SUPABASE_ANON_KEY;
 
     // Se Supabase não estiver configurado, retorna ok silenciosamente
@@ -37,6 +127,8 @@ module.exports = async function handler(req, res) {
                 cidade:      cidade      || null,
                 signo:       signo       || null,
                 ultimo_date: ultimoDate  || null,
+                dispositivo,
+                duracao_quiz_segundos: duracaoQuiz || null,
                 created_at: new Date().toISOString(),
             }),
         });
@@ -45,16 +137,46 @@ module.exports = async function handler(req, res) {
         // Nunca bloqueia o resultado do quiz
     }
 
-    // Ativa trial de 5 dias no OxyBoard/OxyMessage para todo mundo que completa o quiz
+    let alfaId = null;
     try {
-        await ativarTrialOxy(url, email, nome, sessionId);
+        alfaId = await upsertArquivoAlfa(url, serviceKey, cookieAlfaId, {
+            respostas_quiz: respostasQuiz || null,
+            tempos_perguntas: temposPerguntas || null,
+            tempos_fase: temposFase || null,
+            velocidade_carregamento_quiz_ms: velocidadeCarregamentoQuizMs || null,
+            dispositivo_user_agent: req.headers['user-agent'] || null,
+            tempo_ate_email_segundos: tempoAteEmailSegundos || null,
+        });
+        // Seta/corrige o cookie quando o id final é diferente do que veio na requisição:
+        // quem entrou direto no quiz (sem land) ainda não tinha cookie, ou o cookie
+        // apontava pra um registro que não existe mais (ex: dado de teste apagado) e
+        // upsertArquivoAlfa criou um novo — nos dois casos o navegador precisa do id certo,
+        // mesmo formato usado em LANDS-ALL/arquivo-alfa.js, pra evitar duplicar o
+        // registro caso a chamada de chooseOffer() dispare antes da resposta deste fetch.
+        if (alfaId && alfaId !== cookieAlfaId) {
+            const doisAnos = 60 * 60 * 24 * 365 * 2;
+            res.setHeader('Set-Cookie', `oxy_alfa_id=${alfaId}; Max-Age=${doisAnos}; Path=/; Domain=.breno-atitude.com; Secure; SameSite=Lax`);
+        }
     } catch (err) {
-        console.error('[save-lead] Falha ao ativar trial em usuarios:', err);
+        console.error('[save-lead] Falha ao atualizar arquivo_alfa:', err);
         // Nunca bloqueia o resultado do quiz
     }
 
-    // Fixa o laudo do quiz em oxyreport para o botão "OxyReport" do OxyBoard ler.
-    // Roda depois de ativarTrialOxy, que garante a conta em usuarios.
+    // O quiz.html já chama /api/auth/quiz-signup em paralelo (sem esperar), então não há
+    // garantia de que a conta já exista quando o código chega aqui. Espera essa chamada
+    // (idempotente) antes de gravar o oxyreport, que depende do usuario_id já existir.
+    // Repassa o arquivoAlfaId (Sessão 4 — Arquivo Mike) já resolvido acima, pra que o
+    // usuarios criado/atualizado aqui já nasça vinculado ao arquivo_alfa da pessoa.
+    try {
+        await fetch('https://oxy-message.vercel.app/api/auth/quiz-signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, nome, arquivoAlfaId: alfaId }),
+        });
+    } catch (err) {
+        console.error('[save-lead] Falha ao garantir conta via quiz-signup:', err);
+    }
+
     try {
         await gravarOxyreport(url, email, { arquetipo, mbtiTipo, adicas, diagnostico, bios });
     } catch (err) {
@@ -62,7 +184,7 @@ module.exports = async function handler(req, res) {
         // Nunca bloqueia o resultado do quiz
     }
 
-    return res.status(200).json({ ok: true });
+    return res.status(200).json({ ok: true, alfaId });
 };
 
 async function gravarOxyreport(url, email, { arquetipo, mbtiTipo, adicas, diagnostico, bios }) {
@@ -116,148 +238,5 @@ async function gravarOxyreport(url, email, { arquetipo, mbtiTipo, adicas, diagno
     });
     if (!insertRes.ok) {
         console.error('[gravarOxyreport] INSERT oxyreport falhou:', insertRes.status, await insertRes.text());
-    }
-}
-
-async function ativarTrialOxy(url, email, nome, sessionId) {
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!url || !serviceKey || !email) {
-        console.error('[ativarTrialOxy] abortado - faltando:', { url: !!url, serviceKey: !!serviceKey, email: !!email });
-        return;
-    }
-
-    const emailNorm = email.toLowerCase().trim();
-    const headers = {
-        'Content-Type': 'application/json',
-        'apikey': serviceKey,
-        'Authorization': `Bearer ${serviceKey}`,
-    };
-
-    const selectRes = await fetch(
-        `${url}/rest/v1/usuarios?email=eq.${encodeURIComponent(emailNorm)}&select=plano,plano_expira_em,trial_usado_em,auth_user_id`,
-        { headers }
-    );
-    if (!selectRes.ok) {
-        const errBody = await selectRes.text();
-        console.error('[ativarTrialOxy] SELECT falhou:', selectRes.status, errBody);
-        return;
-    }
-    const existing = await selectRes.json();
-    const row = Array.isArray(existing) ? existing[0] : null;
-
-    if (row && row.trial_usado_em) {
-        console.log('[save-lead] trial já utilizado anteriormente para este email:', emailNorm);
-        return; // trial é único por email, para sempre — não concede de novo
-    }
-
-    if (row) {
-        const planoPago = row.plano === 'basico' || row.plano === 'premium';
-        const expiraFuturo = row.plano_expira_em && new Date(row.plano_expira_em) > new Date();
-        if (planoPago && expiraFuturo) return; // já tem plano pago ativo, não sobrescreve
-    }
-
-    let authUserId = row && row.auth_user_id ? row.auth_user_id : null;
-    const contaNova = !authUserId;
-
-    if (contaNova) {
-        const senha = gerarSenha();
-        authUserId = await criarContaAuth(url, serviceKey, emailNorm, senha);
-        if (!authUserId) return; // erro já logado em criarContaAuth; sem auth_user_id o upsert quebra (coluna NOT NULL)
-    }
-
-    const agora = new Date().toISOString();
-    const planoExpira = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
-
-    const upsertRes = await fetch(`${url}/rest/v1/usuarios?on_conflict=email`, {
-        method: 'POST',
-        headers: { ...headers, 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-        body: JSON.stringify({
-            email: emailNorm,
-            auth_user_id: authUserId,
-            nome: nome || emailNorm,
-            plano: 'basico',
-            plano_expira_em: planoExpira,
-            ativo: true,
-            trial_usado_em: agora,
-        }),
-    });
-    if (!upsertRes.ok) {
-        const errBody = await upsertRes.text();
-        console.error('[ativarTrialOxy] UPSERT falhou:', upsertRes.status, errBody);
-        return;
-    }
-
-    if (sessionId) {
-        try {
-            const selectIdRes = await fetch(
-                `${url}/rest/v1/usuarios?email=eq.${encodeURIComponent(emailNorm)}&select=id`,
-                { headers }
-            );
-            if (!selectIdRes.ok) {
-                console.error('[ativarTrialOxy] SELECT usuarios (vinculo) falhou:', selectIdRes.status, await selectIdRes.text());
-            } else {
-                const usuarioRows = await selectIdRes.json();
-                const usuarioId = Array.isArray(usuarioRows) ? usuarioRows[0]?.id : null;
-                if (usuarioId) {
-                    const linkRes = await fetch(
-                        `${url}/rest/v1/respostas_lands?session_id=eq.${encodeURIComponent(sessionId)}&usuario_id=is.null`,
-                        {
-                            method: 'PATCH',
-                            headers: { ...headers, 'Prefer': 'return=minimal' },
-                            body: JSON.stringify({ usuario_id: usuarioId }),
-                        }
-                    );
-                    if (!linkRes.ok) {
-                        console.error('[ativarTrialOxy] UPDATE respostas_lands falhou:', linkRes.status, await linkRes.text());
-                    }
-                } else {
-                    console.error('[ativarTrialOxy] vinculo abortado - usuario nao encontrado por email:', emailNorm);
-                }
-            }
-        } catch (err) {
-            console.error('[ativarTrialOxy] Falha ao vincular respostas_lands:', err);
-        }
-    }
-
-    if (contaNova) {
-        try {
-            await solicitarDefinicaoSenha(emailNorm);
-        } catch (err) {
-            console.error('[ativarTrialOxy] Falha ao solicitar definição de senha:', err);
-        }
-    }
-}
-
-function gerarSenha() {
-    return crypto.randomBytes(6).toString('hex');
-}
-
-async function criarContaAuth(url, serviceKey, email, senha) {
-    const authRes = await fetch(`${url}/auth/v1/admin/users`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'apikey': serviceKey,
-            'Authorization': `Bearer ${serviceKey}`,
-        },
-        body: JSON.stringify({ email, password: senha, email_confirm: true }),
-    });
-    const authData = await authRes.json();
-    if (!authRes.ok) {
-        console.error('[ativarTrialOxy] Erro ao criar Auth user:', authRes.status, authData);
-        return null;
-    }
-    return authData.id;
-}
-
-async function solicitarDefinicaoSenha(email) {
-    const res = await fetch('https://oxy-message.vercel.app/api/auth/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-    });
-    if (!res.ok) {
-        const errBody = await res.text();
-        console.error('[ativarTrialOxy] Falha ao solicitar definição de senha:', res.status, errBody);
     }
 }

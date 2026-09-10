@@ -431,6 +431,18 @@ async function buscarRelatorio() {
         btn.textContent = 'Ver meu relatório';
     }
 }
+
+// Auto-lookup via query param ?tel= (mesmo formato de leads.whatsapp: 55+DDD+numero).
+// Usado pela geração automática de PDF (api/gerar-pdf-relatorio.js). Sem o parâmetro,
+// a página se comporta exatamente como antes (form manual).
+(function autoLookupFromQueryParam() {
+    const tel = new URLSearchParams(window.location.search).get('tel');
+    if (!tel) return;
+    const digits = tel.replace(/\D/g, '');
+    const semDDI = digits.startsWith('55') ? digits.slice(2) : digits; // isValidPhoneBR exige 11 digitos sem o 55
+    document.getElementById('f-lookup-whatsapp').value = semDDI;
+    buscarRelatorio();
+})();
 </script>
 </body>
 </html>
