@@ -1684,6 +1684,26 @@ function trackFunilStep(nome) {
     }
 })();
 
+// Recebe os parametros UTM da Land via URL (mesmo motivo do sid: dominios diferentes
+// nao compartilham localStorage) e guarda localmente pra mandar junto no save-lead.
+// So sobrescreve se a URL atual trouxer utm_source - senao mantem o que ja tinha guardado
+// (evita perder a origem se a pessoa navegar dentro do quiz sem UTM na URL).
+(function garantirUtm() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.get('utm_source')) return;
+    const utm = {
+        utm_source:   params.get('utm_source')   || null,
+        utm_campaign: params.get('utm_campaign') || null,
+        utm_medium:   params.get('utm_medium')   || null,
+        utm_content:  params.get('utm_content')  || null,
+        utm_term:     params.get('utm_term')     || null,
+    };
+    localStorage.setItem('oxy_utm', JSON.stringify(utm));
+})();
+function obterUtmSalvo() {
+    try { return JSON.parse(localStorage.getItem('oxy_utm') || 'null'); } catch (e) { return null; }
+}
+
 // ═══════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════
@@ -2673,6 +2693,20 @@ function showResult(arch, bios, relatorio) {
     lastReportBios = bios;
     lastReportArch = arch;
     lastReportDiagnostico = relatorio || '';
+
+    // Pixel por temperamento — dispara AQUI, assim que o resultado aparece na tela,
+    // não só depois do email. Cria o publico amplo "viu o resultado X" desde já;
+    // o email (mais abaixo) some encima do mesmo pixel ja iniciado, entao o Lead
+    // passa a contar tambem pro pixel especifico do arquetipo (antes so ia pro fixo).
+    if (typeof fbq === 'function' && !avatarPixelFired) {
+        const pixelId = pixelMap[arch];
+        if (pixelId) {
+            fbq('init', pixelId);
+            fbq('track', 'PageView');
+            avatarPixelFired = true;
+        }
+    }
+
     openReport();
 }
 
@@ -2714,7 +2748,8 @@ function confirmReportEmail() {
 
     window.leadEmail = email;
     if (typeof fbq === 'function') {
-        fbq('track', 'Lead');
+        // Fallback: se por algum motivo o pixel do temperamento nao disparou ainda
+        // em showResult() (ex: usuario recarregou a tela do relatorio), inicia aqui.
         if (!avatarPixelFired) {
             const pixelId = pixelMap[userData.arquetipo];
             if (pixelId) {
@@ -2723,6 +2758,10 @@ function confirmReportEmail() {
                 avatarPixelFired = true;
             }
         }
+        // Lead so dispara depois do pixel do temperamento estar iniciado (acima ou em
+        // showResult) — assim o evento conta tanto pro pixel fixo quanto pro pixel
+        // especifico do arquetipo, formando o publico "quente" (deu email).
+        fbq('track', 'Lead');
     }
 
     if (typeof gtag === 'function') {
@@ -2751,6 +2790,7 @@ function confirmReportEmail() {
             temposFase,
             velocidadeCarregamentoQuizMs,
             tempoAteEmailSegundos,
+            utm: obterUtmSalvo(),
         }),
     })
     .then(r => r.json())
