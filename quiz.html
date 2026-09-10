@@ -1,9 +1,34 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-852TXLSLTW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-852TXLSLTW');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Análise de Arquétipo — Breno Carrera</title>
+<link rel="preconnect" href="https://connect.facebook.net">
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '2027250401407462');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=2027250401407462&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
@@ -18,6 +43,7 @@
     --muted:   #3d6a8a;
     --muted2:  #2e5470;
     --danger:  #ff6b6b;
+    --amber:   #ffb020;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -142,7 +168,7 @@ body.presell-mode .expert-header { display: block; }
     color: #fff;
     padding: 4px 13px;
     border-radius: 20px;
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: 3px;
     text-transform: uppercase;
     font-weight: 700;
@@ -157,8 +183,9 @@ body.presell-mode .expert-header { display: block; }
 }
 
 .screen-sub {
-    color: var(--muted);
-    font-size: 16px;
+    color: var(--text);
+    opacity: 0.85;
+    font-size: clamp(0.95rem, 3.4vw, 1.1rem);
     line-height: 1.5;
     margin-bottom: 14px;
 }
@@ -237,6 +264,207 @@ select.form-input option { background: var(--card); color: var(--text); }
 .form-input::placeholder { color: var(--muted2); }
 
 /* ══════════════════════════════════════
+   PROGRESS BAR (welcome steps)
+══════════════════════════════════════ */
+.progress-title {
+    color: var(--text);
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 10px;
+}
+.wtrack {
+    width: 100%;
+    height: 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 18px;
+}
+.wfill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--blue) 100%);
+    transition: width 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+.wfill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    width: 40%;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
+    animation: wshine 1.6s ease-in-out infinite;
+}
+@keyframes wshine {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(250%); }
+}
+
+.wsteps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+.wstep {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+}
+.wstep-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted2);
+    transition: all 0.25s ease;
+}
+.wstep-label {
+    font-size: 10px;
+    color: var(--muted2);
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.2;
+}
+.wstep.done .wstep-circle {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #06101e;
+}
+.wstep.done .wstep-label { color: var(--primary); }
+.wstep.active .wstep-circle {
+    background: linear-gradient(135deg, var(--primary), var(--blue));
+    border-color: var(--primary);
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(0,200,160,0.18);
+    transform: scale(1.08);
+}
+.wstep.active .wstep-label { color: var(--text); }
+
+/* Anel de progresso do passo ativo (substitui o círculo cheio) */
+.wstep-ring circle:last-child { transition: stroke-dashoffset 0.4s ease; }
+.wstep.active .wstep-ring {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 3px rgba(0,200,160,0.5));
+}
+
+/* ══════════════════════════════════════
+   CHIPS (low-friction select)
+══════════════════════════════════════ */
+.chip-group { display:flex; flex-wrap:wrap; gap:8px; }
+.chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 9px 16px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+.chip.selected {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #06101e;
+    font-weight: 700;
+}
+.chip:active { transform: scale(0.97); }
+
+.form-required { color: var(--danger); margin-left: 3px; }
+
+/* ══════════════════════════════════════
+   AGE SLIDER
+══════════════════════════════════════ */
+.age-value {
+    color: var(--primary);
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+}
+.age-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--border);
+    outline: none;
+    margin: 10px 0 4px;
+}
+.age-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--primary);
+    cursor: pointer;
+}
+.age-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid var(--bg);
+    cursor: pointer;
+}
+
+/* ══════════════════════════════════════
+   HEIGHT STEPPER
+══════════════════════════════════════ */
+.stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+}
+.stepper-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--primary);
+    font-size: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+}
+.stepper-btn:active { transform: scale(0.94); }
+.stepper-value {
+    color: var(--text);
+    font-size: 24px;
+    font-weight: 700;
+    min-width: 90px;
+    text-align: center;
+}
+.stepper-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--border);
+    font-family: inherit;
+    outline: none;
+    padding: 2px 0;
+}
+.stepper-input:focus { border-bottom-color: var(--primary); }
+
+/* ══════════════════════════════════════
    BUTTONS
 ══════════════════════════════════════ */
 .btn {
@@ -257,6 +485,27 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.presell-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    text-align: left;
+    font-size: 13px;
+    color: var(--text-dim, #a0a8c0);
+    margin: 16px 0;
+    line-height: 1.4;
+    cursor: pointer;
+}
+.presell-consent input[type="checkbox"] {
+    margin-top: 2px;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+    flex-shrink: 0;
+    cursor: pointer;
+}
 
 /* Scanning/processing state */
 .btn.scanning {
@@ -299,7 +548,7 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .phase-number {
-    font-size: 11px;
+    font-size: clamp(0.75rem, 2.6vw, 0.95rem);
     color: var(--primary);
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -307,36 +556,28 @@ select.form-input option { background: var(--card); color: var(--text); }
     margin-bottom: 10px;
 }
 
+.phase-number-top {
+    display: block;
+    color: var(--muted2);
+    font-size: 0.7em;
+    letter-spacing: 4px;
+    margin-bottom: 4px;
+}
+
 .phase-title {
-    font-size: 28px;
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
     font-weight: 800;
     line-height: 1.2;
     margin-bottom: 10px;
 }
 
 .phase-sub {
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.65;
+    color: var(--text);
+    opacity: 0.85;
+    font-size: clamp(1.05rem, 3.6vw, 1.3rem);
+    line-height: 1.6;
     margin-bottom: 22px;
 }
-
-.phase-track {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 22px;
-}
-
-.p-pip {
-    width: 34px; height: 5px;
-    border-radius: 4px;
-    background: var(--border);
-    transition: background 0.4s;
-}
-
-.p-pip.done   { background: var(--primary); opacity: 0.5; }
-.p-pip.active { background: linear-gradient(90deg, var(--primary), var(--blue)); }
 
 .analyzing-row {
     display: flex;
@@ -365,7 +606,7 @@ select.form-input option { background: var(--card); color: var(--text); }
 ══════════════════════════════════════ */
 .phase-label {
     font-size: 13px;
-    color: var(--primary);
+    color: var(--accent, var(--primary));
     letter-spacing: 3px;
     text-transform: uppercase;
     font-weight: 700;
@@ -425,6 +666,10 @@ select.form-input option { background: var(--card); color: var(--text); }
     box-shadow: 0 0 10px var(--primary);
 }
 
+/* Barra "esquenta" ao passar de 70% */
+.progress-fill.hot { background: linear-gradient(90deg, var(--amber), var(--danger)); }
+.progress-fill.hot::after { background: var(--amber); box-shadow: 0 0 10px var(--amber); }
+
 .question-text {
     font-size: 24px;
     font-weight: 700;
@@ -432,19 +677,22 @@ select.form-input option { background: var(--card); color: var(--text); }
     margin-bottom: 14px;
 }
 
-.options { display: flex; flex-direction: column; gap: 8px; }
+.options { display: flex; flex-direction: column; gap: 10px; counter-reset: option-num; }
 /* 2 colunas quando há muitas opções ou texto curto (cabe sem rolar) */
-.options.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.options.grid2 .option { font-size: 14px; padding: 11px 13px; }
+.options.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.options.grid2 .option { font-size: 14px; padding: 11px 12px 11px 38px; }
 
 .option {
+    counter-increment: option-num;
+    position: relative;
     background: var(--card);
     border: 1px solid var(--border);
+    border-left: 3px solid var(--pos-color, var(--border));
     border-radius: 11px;
-    padding: 14px 15px;
+    padding: 13px 14px 13px 42px;
     cursor: pointer;
     font-size: 17px;
-    line-height: 1.45;
+    line-height: 1.55;
     text-align: left;
     color: #7aacc8;
     transition: all 0.18s;
@@ -453,7 +701,39 @@ select.form-input option { background: var(--card); color: var(--text); }
     opacity: 0;
     transform: translateY(8px);
     animation: up 0.28s ease forwards;
+    /* clamp leve de segurança — não corta o conteúdo atual, só evita estouro */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
+
+/* Badge numérico (numeração automática via CSS counter) */
+.option::before {
+    content: counter(option-num);
+    position: absolute;
+    left: 10px;
+    /* Ancorado perto da 1a linha (não centralizado no bloco) — evita
+       sobrepor o texto quando a opção quebra em 3+ linhas em telas estreitas */
+    top: 15px;
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px;
+    font-size: 12px; font-weight: 800;
+    color: var(--accent, var(--primary));
+    border: 1px solid var(--accent, var(--primary));
+    background: rgba(255,255,255,0.02);
+}
+.options.grid2 .option::before { left: 8px; top: 12px; width: 20px; height: 20px; }
+
+/* Negrito automático nas 1as palavras (via JS) */
+.option .opt-head { color: var(--text); font-weight: 700; }
+
+/* Cores fixas por posição (stripe lateral esquerda) */
+.option:nth-child(1) { --pos-color: var(--primary); }
+.option:nth-child(2) { --pos-color: var(--blue); }
+.option:nth-child(3) { --pos-color: var(--amber); }
+.option:nth-child(4) { --pos-color: var(--danger); }
 
 .option:nth-child(1) { animation-delay: 0.04s; }
 .option:nth-child(2) { animation-delay: 0.10s; }
@@ -462,9 +742,15 @@ select.form-input option { background: var(--card); color: var(--text); }
 
 @keyframes up { to { opacity:1; transform:translateY(0); } }
 
-.option:hover  { border-color: var(--primary); background: #071e30; color: var(--text); }
-.option.picked { border-color: var(--primary); background: #071e30; color: var(--text); pointer-events: none; }
-.option.picked::before { content: '✓  '; color: var(--primary); font-weight:800; }
+.option:hover  { border-color: var(--accent, var(--primary)); background: #071e30; color: var(--text); }
+.option.picked { border-color: var(--accent, var(--primary)); background: #071e30; color: var(--text); pointer-events: none; }
+.option.picked::before { content: '✓'; color: #06101e; background: var(--accent, var(--primary)); border-color: var(--accent, var(--primary)); }
+
+/* Sotaque por fase (muda só a cor de destaque) */
+#s-quiz.accent-1 { --accent: var(--primary); }
+#s-quiz.accent-2 { --accent: var(--blue); }
+#s-quiz.accent-3 { --accent: var(--amber); }
+#s-quiz .phase-number-top { color: var(--accent, var(--primary)); }
 
 /* ══════════════════════════════════════
    COMMENT MODAL (interrupt)
@@ -504,6 +790,11 @@ select.form-input option { background: var(--card); color: var(--text); }
     transform: scale(1) translateY(0);
 }
 
+/* Variante âmbar (1 dos interrupts) */
+.comment-card.amber { border-color: var(--amber); box-shadow: 0 0 40px rgba(255,176,32,0.28), 0 20px 60px rgba(0,0,0,0.6); }
+.comment-card.amber .comment-chip { background: linear-gradient(135deg, var(--amber), var(--danger)); }
+.comment-card.amber .comment-headline span { color: var(--amber); }
+
 .comment-chip {
     display: inline-flex;
     align-items: center;
@@ -537,9 +828,10 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .comment-body-text {
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.65;
-    color: var(--muted);
+    color: var(--text);
+    opacity: 0.85;
     margin-bottom: 20px;
 }
 
@@ -558,48 +850,6 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .btn-comment:hover { opacity: 0.88; }
-
-/* ══════════════════════════════════════
-   GATE
-══════════════════════════════════════ */
-.gate-wrap {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    justify-content: center;
-}
-
-.gate-lock { font-size: 36px; margin-bottom: 10px; }
-.gate-title { font-size: 22px; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
-.gate-sub   { color: var(--muted); font-size: 13px; line-height: 1.65; margin-bottom: 16px; }
-
-.delivery-choice {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 14px;
-}
-
-.choice-btn {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 11px 10px;
-    color: var(--muted);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    text-align: center;
-    transition: all 0.2s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-}
-
-.choice-btn .choice-icon { font-size: 20px; }
-.choice-btn.selected { border-color: var(--primary); color: var(--primary); background: #071e30; }
 
 /* ══════════════════════════════════════
    LOADING
@@ -654,139 +904,23 @@ select.form-input option { background: var(--card); color: var(--text); }
 .lstep.done .lstep-dot { background: var(--primary); box-shadow: 0 0 7px var(--primary); }
 
 /* ══════════════════════════════════════
-   RESULT
-══════════════════════════════════════ */
-.result-top {
-    background: linear-gradient(135deg, rgba(0,200,160,0.08), rgba(0,102,204,0.08));
-    border: 1px solid rgba(0,200,160,0.2);
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 18px;
-}
-
-.r-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--primary), var(--blue));
-    color: #fff;
-    padding: 4px 13px;
-    border-radius: 20px;
-    font-size: 9px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.r-name { font-size: 28px; font-weight: 800; margin-bottom: 10px; line-height: 1.1; }
-
-.r-desc {
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.7;
-    border-left: 2px solid var(--border);
-    padding-left: 14px;
-}
-
-.bios-section-title {
-    font-size: 10px;
-    color: var(--primary);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin-bottom: 12px;
-    margin-top: 4px;
-}
-
-.bio-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 10px;
-    position: relative;
-}
-
-.bio-type-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    gap: 10px;
-}
-
-.bio-type-info {}
-
-.bio-version {
-    font-size: 12px;
-    font-weight: 800;
-    color: var(--text);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 2px;
-}
-
-.bio-style {
-    font-size: 11px;
-    color: var(--muted);
-}
-
-.bio-effect {
-    font-size: 11px;
-    color: var(--primary);
-    text-align: right;
-    flex-shrink: 0;
-    max-width: 140px;
-    line-height: 1.4;
-}
-
-.bio-divider {
-    height: 1px;
-    background: var(--border);
-    margin-bottom: 10px;
-}
-
-.bio-text { font-size: 15px; line-height: 1.75; color: #b8d4ec; }
-
-.copy-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 7px 14px;
-    border-radius: 8px;
-    font-size: 12px;
-    cursor: pointer;
-    margin-top: 11px;
-    transition: all 0.2s;
-    font-family: inherit;
-}
-
-.copy-btn:hover { border-color: var(--primary); color: var(--primary); }
-.copy-btn.copied { border-color: #00e5b0; color: #00e5b0; }
-
-.result-bottom-note {
-    text-align: center;
-    color: var(--muted2);
-    font-size: 12px;
-    line-height: 1.6;
-    padding: 16px 0 8px;
-}
-
-/* ══════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════ */
 @media (max-height: 680px) {
     .expert-header { height: 140px; }
-    .phase-title   { font-size: 24px; }
     .screen-title  { font-size: 20px; }
     .question-text { font-size: 18px; }
-    .phase-sub, .screen-sub { font-size: 12px; margin-bottom: 10px; }
+    /* fontes de fase/sub seguem o clamp() — aqui só reduz a margem p/ caber */
+    .phase-sub, .screen-sub { margin-bottom: 10px; }
     .phase-intro { padding: 4px 0; }
     .form-group  { margin-bottom: 7px; }
 }
 
 @media (max-width: 380px) {
     .question-text { font-size: 17px; }
-    .option { font-size: 14px; padding: 11px 13px; }
+    /* padding-left mantém espaço pro badge numérico (10px + 22px de largura) — não pode cair pra 13px */
+    .option { font-size: 14px; padding: 11px 13px 11px 36px; }
+    .option::before { top: 13px; }
 }
 
 /* ══════════════════════════════════════
@@ -825,9 +959,210 @@ body.presell-mode .expert-header { height: 300px; }
     .presell-headline { font-size: 23px; margin-bottom: 10px; }
     .presell-sub { font-size: 17px; margin-bottom: 16px; }
 }
+
+/* ══════════════════════════════════════
+   BOTÃO DE MUDO
+══════════════════════════════════════ */
+.mute-btn {
+    position: fixed;
+    top: 10px; right: 10px;
+    z-index: 600;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: rgba(11,24,41,0.8);
+    color: var(--primary);
+    font-size: 17px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+    transition: color 0.2s, border-color 0.2s;
+}
+.mute-btn.muted { color: var(--muted2); border-color: var(--muted2); }
+
+/* ══════════════════════════════════════
+   PROVA SOCIAL (na tela de loading)
+══════════════════════════════════════ */
+.social-proof { width: 100%; margin-top: 18px; }
+.sp-count {
+    text-align: center;
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+.sp-count strong { color: var(--primary); font-size: 17px; }
+.sp-bubbles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+.sp-bubble {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 9px 13px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #7aacc8;
+    max-width: 46%;
+}
+.sp-bubble:nth-child(odd)  { border-left: 3px solid var(--primary); }
+.sp-bubble:nth-child(even) { border-left: 3px solid var(--blue); }
+
+@media (max-height: 680px) {
+    .social-proof { margin-top: 12px; }
+    .sp-bubble { padding: 7px 11px; font-size: 12px; }
+}
+
+/* ══════════════════════════════════════
+   RELATÓRIO FINAL (paleta APP 7 / Qwen — namespaced rep-)
+══════════════════════════════════════ */
+#s-report {
+    --r-bg:      #05070a;
+    --r-card:    #12151f;
+    --r-border:  #262b3a;
+    --r-primary: #8b5cf6;
+    --r-purple:  #a855f7;
+    --r-text:    #ffffff;
+    --r-muted:   #94a3b8;
+    --r-green:   #10b981;
+    --r-blue:    #3b82f6;
+    --r-orange:  #f59e0b;
+    --r-red:     #ef4444;
+    --r-pink:    #ec4899;
+}
+#s-report { background: var(--r-bg); }
+.rep-scroll { overflow-y: auto; flex: 1; width: 100%; max-width: 680px; margin: 0 auto; padding: 8px clamp(16px, 5vw, 40px) 36px; font-family: 'Inter','Segoe UI',sans-serif; }
+
+.rep-hero { text-align: center; padding: 16px 0 24px; border-bottom: 1px solid var(--r-border); margin-bottom: 24px; }
+.rep-kicker { font-size: clamp(0.72rem, 2.6vw, 0.82rem); letter-spacing: 3px; text-transform: uppercase; color: var(--r-muted); margin-bottom: 5px; }
+.rep-kicker.t2 { color: var(--r-primary); opacity: 0.8; margin-bottom: 16px; }
+.rep-pill {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--r-primary), var(--r-purple));
+    color: #fff; font-weight: 800; font-size: clamp(1.4rem, 6vw, 2rem);
+    padding: 12px 28px; border-radius: 40px;
+    box-shadow: 0 8px 30px rgba(139,92,246,0.35); margin-bottom: 14px;
+}
+.rep-hero-sub { color: var(--r-muted); font-size: clamp(1rem, 3.6vw, 1.12rem); line-height: 1.7; max-width: 400px; margin: 0 auto 12px; }
+.rep-meta { font-size: clamp(0.72rem, 2.6vw, 0.82rem); letter-spacing: 1px; color: var(--r-muted); text-transform: uppercase; opacity: 0.7; }
+
+/* Seções */
+.rep-section { margin-bottom: 32px; }
+.rep-sec-label { font-size: clamp(0.7rem, 2.6vw, 0.8rem); letter-spacing: 3px; text-transform: uppercase; color: var(--r-primary); opacity: 0.7; margin-bottom: 6px; }
+.rep-sec-title { font-size: clamp(1.25rem, 5vw, 1.6rem); font-weight: 800; color: var(--r-text); margin-bottom: 12px; line-height: 1.25; }
+.rep-sec-intro { font-size: clamp(0.95rem, 3.4vw, 1.05rem); line-height: 1.7; color: var(--r-muted); margin-bottom: 18px; }
+
+.rep-card {
+    background: var(--r-card); border: 1px solid var(--r-border);
+    border-radius: 14px; padding: 16px 18px; margin-bottom: 14px;
+}
+.rep-card.accent { border-left: 3px solid var(--r-primary); }
+.rep-card.green  { border-left: 3px solid var(--r-green); background: rgba(16,185,129,0.06); }
+.rep-card-title { font-weight: 700; font-size: clamp(1rem, 3.8vw, 1.15rem); color: var(--r-text); margin-bottom: 8px; line-height: 1.35; }
+.rep-card-title.green { color: var(--r-green); }
+.rep-q { font-size: clamp(0.82rem, 3vw, 0.92rem); color: var(--r-muted); margin-bottom: 5px; }
+.rep-a { font-size: clamp(0.95rem, 3.5vw, 1.05rem); color: var(--r-text); line-height: 1.55; font-weight: 600; }
+.rep-p { font-size: clamp(0.92rem, 3.4vw, 1.02rem); color: var(--r-muted); line-height: 1.7; margin-bottom: 10px; }
+
+/* Tags */
+.rep-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.rep-tag { background: rgba(139,92,246,0.15); color: var(--r-purple); border: 1px solid rgba(139,92,246,0.3); padding: 4px 11px; border-radius: 12px; font-size: clamp(0.78rem, 2.8vw, 0.85rem); }
+
+/* Barras de dimensão */
+.rep-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.rep-bar-label { flex: 0 0 46%; font-size: clamp(0.8rem, 3vw, 0.92rem); color: var(--r-muted); line-height: 1.35; }
+.rep-bar { flex: 1; height: 9px; background: #1e2330; border-radius: 5px; overflow: hidden; }
+.rep-bar-fill { display: block; height: 100%; border-radius: 5px; transition: width 0.6s ease; }
+.rep-bar-val { flex: 0 0 40px; text-align: right; font-size: clamp(0.8rem, 3vw, 0.92rem); font-weight: 700; }
+
+/* Grid 9 tipos */
+.rep-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.rep-type { background: var(--r-card); border: 1px solid var(--r-border); border-radius: 12px; padding: 14px 10px; text-align: center; }
+.rep-type.current { border-color: var(--r-primary); background: rgba(139,92,246,0.1); position: relative; }
+.rep-type-badge { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: var(--r-primary); color: #fff; font-size: 0.58rem; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+.rep-type-num { font-size: 0.62rem; letter-spacing: 1px; color: var(--r-muted); }
+.rep-type-ico { font-size: 1.5rem; margin: 6px 0; }
+.rep-type-name { font-size: clamp(0.8rem, 3vw, 0.92rem); font-weight: 700; color: var(--r-text); line-height: 1.3; }
+
+/* Dossiê CIA/FBI mono */
+.rep-dossier { font-family: 'Courier New', monospace; background: #0a0d14; border: 1px solid var(--r-border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+.rep-dossier-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.rep-seal { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--r-green); color: var(--r-green); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; flex-shrink: 0; }
+.rep-seal.fbi { border-color: var(--r-blue); color: var(--r-blue); }
+.rep-dossier-meta { font-size: clamp(0.62rem, 2.4vw, 0.72rem); color: var(--r-muted); letter-spacing: 1px; line-height: 1.5; }
+.rep-mono { font-size: clamp(0.8rem, 3vw, 0.9rem); color: #c7d2e0; line-height: 1.75; }
+
+/* Mensagens (chat) */
+.rep-msg { padding: 11px 14px; border-radius: 12px; margin-bottom: 10px; font-size: clamp(0.9rem, 3.4vw, 1rem); line-height: 1.5; max-width: 85%; }
+.rep-msg.him { background: linear-gradient(135deg, var(--r-primary), var(--r-purple)); color: #fff; margin-left: auto; }
+.rep-msg.her { background: var(--r-card); border: 1px solid var(--r-border); color: var(--r-text); }
+
+/* Pontos numerados */
+.rep-point { background: var(--r-card); border: 1px solid var(--r-border); border-left: 3px solid var(--r-red); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; font-size: clamp(0.95rem, 3.6vw, 1.08rem); }
+.rep-point-n { display: inline-flex; width: 24px; height: 24px; border-radius: 6px; background: var(--r-red); color: #fff; font-size: 0.85rem; font-weight: 800; align-items: center; justify-content: center; margin-right: 9px; }
+
+/* Blur removido — relatório 100% legível (classe mantida, sem efeito) */
+.rep-blur { }
+.rep-lockchip { display: none; }
+
+/* Escassez / timer */
+.rep-scarcity {
+    background: rgba(245,158,11,0.1); border: 1px solid var(--r-orange);
+    border-radius: 12px; padding: 12px 14px; margin-bottom: 18px; text-align: center;
+}
+.rep-scarcity-text { font-size: 0.92rem; color: #e7ecf5; line-height: 1.55; }
+.rep-scarcity-text b { color: var(--r-orange); font-weight: 700; }
+.rep-timer { font-size: 1.6rem; font-weight: 800; color: var(--r-orange); font-variant-numeric: tabular-nums; margin-top: 6px; }
+
+/* Cartão de oferta (grátis x pago) */
+.oferta-wrap { display: grid; grid-template-columns: 1fr; align-items: start; gap: 10px; max-width: 640px; margin: 18px auto 0; }
+
+.card-gratis { background: #0f2530; border-radius: 12px; border: 0.5px solid #1e3a45; padding: 0.9rem; }
+.card-gratis .label { font-size: 14px; font-weight: 500; margin-bottom: 2px; color: #7fa8b3; }
+.card-gratis .titulo { font-size: 18px; font-weight: 500; margin-bottom: 12px; color: #e8f0f2; }
+.card-gratis ul { list-style: none; margin-bottom: 14px; display: flex; flex-direction: column; gap: 8px; }
+.card-gratis li { display: flex; gap: 7px; font-size: 13px; color: #c5d8dc; align-items: flex-start; }
+.btn-gratis { width: 100%; font-size: 13px; padding: 10px; background: transparent; border: 0.5px solid #2a4550; color: #c5d8dc; border-radius: 8px; cursor: pointer; }
+
+.card-pago { background: radial-gradient(ellipse at top, #1c1608, #0a1410 70%); border-radius: 12px; border: 1.5px solid #c9a04e; padding: 0.85rem; }
+.card-pago .versao-label { font-size: 14px; font-weight: 500; margin-bottom: 2px; color: #f2e4c4; opacity: 0.55; }
+.card-pago .oxy-titulo { font-size: 18px; font-weight: 500; margin-bottom: 10px; color: #f2e4c4; }
+
+.mini-gratis { background: #0f2530; border-radius: 10px; border: 0.5px solid #1e3a45; padding: 0.85rem; margin-bottom: 14px; }
+.mini-gratis .label { font-size: 14px; font-weight: 500; margin-bottom: 2px; color: #7fa8b3; }
+.mini-gratis ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.mini-gratis li { display: flex; gap: 7px; font-size: 13px; color: #c5d8dc; align-items: flex-start; }
+
+.tudo-mais { font-size: 15px; font-weight: 500; margin-bottom: 10px; color: #f2e4c4; }
+
+.secao-titulo { margin: 20px 0 10px; }
+.secao-titulo:first-of-type { margin-top: 16px; }
+.secao-titulo p { font-size: 17px; font-weight: 500; margin-bottom: 6px; color: #f2d089; display: flex; align-items: center; gap: 7px; }
+.secao-titulo .divisor { height: 2px; background: linear-gradient(90deg, #e0b969, transparent); width: 100%; }
+
+.grade-ebooks { display: grid; grid-template-columns: repeat(auto-fit, minmax(85px, 1fr)); gap: 7px; margin-bottom: 20px; }
+.box-ebook { position: relative; background: linear-gradient(180deg, #2a2008, #14100a); border: 1px solid #c9a04e; border-radius: 10px; padding: 16px 8px; text-align: center; aspect-ratio: 3 / 4.2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; overflow: hidden; }
+.box-ebook .brilho, .box-curso .brilho { position: absolute; top: -40%; left: -40%; width: 180%; height: 180%; background: conic-gradient(from 0deg, transparent, rgba(224,185,105,0.4), transparent 25%); }
+.box-ebook .emoji { position: relative; font-size: 26px; }
+.box-ebook p { position: relative; font-size: 13px; color: #f5ecd4; font-weight: 500; line-height: 1.3; }
+.box-ebook .num { color: #e0b969; }
+
+.grade-cursos { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 7px; }
+.box-curso { position: relative; background: rgba(255,255,255,0.04); border: 1px solid rgba(224,185,105,0.5); border-radius: 10px; padding: 14px 8px; text-align: center; min-height: 108px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; overflow: hidden; }
+.box-curso.full { max-width: none; margin: 0; }
+.box-curso .emoji { position: relative; font-size: 20px; }
+.box-curso p { position: relative; font-size: 13px; color: #f0e6cc; font-weight: 500; line-height: 1.3; }
+.box-curso .num { color: #e0b969; }
+
+.btn-baixar { width: 100%; font-size: 13px; margin-top: 16px; padding: 12px; background: linear-gradient(180deg, #f2d089 0%, #c9a04e 60%, #a67f2e 100%); color: #1a1206; border: none; font-weight: 500; border-radius: 8px; cursor: pointer; }
 </style>
 </head>
 <body>
+
+<!-- ═══ BOTÃO DE MUDO ═══ -->
+<button class="mute-btn" id="mute-btn" onclick="toggleMute()" aria-label="Som" title="Som ligado/desligado">🔊</button>
 
 <!-- ═══ EXPERT HEADER ═══ -->
 <header class="expert-header">
@@ -843,134 +1178,172 @@ body.presell-mode .expert-header { height: 300px; }
 <div id="s-presell" class="screen active">
     <div class="presell-wrap">
         <h1 class="presell-headline">
-            Seu Perfil Determina a <span class="accent">Quantidade e Qualidade</span> dos Seus Matches
+            COMECE SEU RAIO-X
         </h1>
-        <p class="presell-sub">Em 8 minutos, descubra o que o seu perfil comunica hoje.</p>
-        <button class="btn" onclick="show('s-welcome')">COMEÇAR →</button>
+        <label class="presell-consent">
+            <input type="checkbox" id="lgpd-consent" onchange="document.getElementById('btn-presell').disabled = !this.checked">
+            Concordo em seguir nos termos de privacidade da Lei LGPD e termos próprios.
+        </label>
+        <button class="btn" id="btn-presell" onclick="trackFunilStep('RaioX_IniciouIdentificacao'); show('s-welcome-1')" disabled>Começar Meu RAIO-X</button>
     </div>
 </div>
 
-<!-- ── WELCOME ── -->
-<div id="s-welcome" class="screen">
-    <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
-        <div class="badge">Análise de Arquétipo</div>
-        <h1 class="screen-title" id="welcome-title">Vamos descobrir quem você realmente é.</h1>
-        <p class="screen-sub">Em 8 minutos você entende como as mulheres te percebem.</p>
-        <div class="form-row">
-            <div class="form-group">
-                <label class="form-label">Nome</label>
-                <input type="text" id="f-nome" class="form-input" placeholder="Seu nome">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Idade</label>
-                <input type="number" id="f-idade" class="form-input" placeholder="Ex: 32" min="18" max="70" inputmode="numeric">
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label class="form-label">Cidade</label>
-                <input type="text" id="f-cidade" class="form-input" placeholder="Ex: São Paulo">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Altura</label>
-                <input type="text" id="f-altura" class="form-input" placeholder="Ex: 1,78m">
-            </div>
-        </div>
+<!-- ── RECUPERAÇÃO (viu o resultado antes e não converteu) ── -->
+<div id="s-recover" class="screen">
+    <div class="presell-wrap">
+        <h1 class="presell-headline">Que bom que você voltou! 🎉</h1>
+        <p class="presell-sub">Coloque seu email aqui para refazer o Quiz</p>
         <div class="form-group">
-            <label class="form-label">Apps que usa</label>
-            <div class="ms" id="ms-apps">
-                <button type="button" class="form-input ms-box" onclick="toggleAppsPanel(event)">
-                    <span class="ms-label placeholder" id="ms-apps-label">Selecione</span>
+            <input type="email" id="f-recover-email" class="form-input" placeholder="Seu email" required>
+        </div>
+        <button class="btn" onclick="submitRecoverEmail()">Refazer o quiz agora</button>
+    </div>
+</div>
+
+<!-- ── WELCOME PARTE 1 (Nome, Apps, Cidade, Último Date) ── -->
+<div id="s-welcome-1" class="screen">
+    <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
+        <div class="badge">Personalizando Seu Raio-X</div>
+
+        <div id="funnel-progress-1"></div>
+
+        <div class="form-group">
+            <label class="form-label">Nome<span class="form-required">*</span></label>
+            <input type="text" id="f-nome" class="form-input" placeholder="Seu nome">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Apps que usa<span class="form-required">*</span></label>
+            <div class="chip-group" id="chips-apps">
+                <button type="button" class="chip" data-value="Tinder" onclick="toggleChipMulti(this,'apps')">Tinder</button>
+                <button type="button" class="chip" data-value="Bumble" onclick="toggleChipMulti(this,'apps')">Bumble</button>
+                <button type="button" class="chip" data-value="Badoo" onclick="toggleChipMulti(this,'apps')">Badoo</button>
+                <button type="button" class="chip" data-value="Inner Circle" onclick="toggleChipMulti(this,'apps')">Inner Circle</button>
+                <button type="button" class="chip" data-value="Happn" onclick="toggleChipMulti(this,'apps')">Happn</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Cidade</label>
+            <input type="text" id="f-cidade" class="form-input" placeholder="Ex: São Paulo">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Último date<span class="form-required">*</span></label>
+            <div class="chip-group" id="chips-ultimo-date">
+                <button type="button" class="chip" data-value="menos de 1 mês" onclick="toggleChipSingle(this,'ultimoDate')">Menos de 1 mês</button>
+                <button type="button" class="chip" data-value="1 a 6 meses" onclick="toggleChipSingle(this,'ultimoDate')">1 a 6 meses</button>
+                <button type="button" class="chip" data-value="6 meses a 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">6 meses a 1 ano</button>
+                <button type="button" class="chip" data-value="mais de 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">Mais de 1 ano</button>
+                <button type="button" class="chip" data-value="nunca tive" onclick="toggleChipSingle(this,'ultimoDate')">Nunca tive</button>
+            </div>
+        </div>
+
+        <button class="btn" id="btn-welcome-1" onclick="goToWelcome2()">Continuar</button>
+    </div>
+</div>
+
+<!-- ── WELCOME PARTE 2 (Idade, Signo, Altura, Profissão) ── -->
+<div id="s-welcome-2" class="screen">
+    <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
+        <div class="badge">Deixando Exclusivo Seu Raio-X</div>
+
+        <div id="funnel-progress-2"></div>
+
+        <div class="form-group">
+            <label class="form-label">Idade<span class="form-required">*</span></label>
+            <div class="age-value" id="age-value-label">32 anos</div>
+            <input type="range" id="f-idade" class="age-slider" min="18" max="70" value="32" oninput="onAgeSlide(this.value)">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Signo<span class="form-required">*</span></label>
+            <div class="ms" id="ms-signo">
+                <button type="button" class="form-input ms-box" onclick="toggleSignoPanel(event)">
+                    <span class="ms-label placeholder" id="ms-signo-label">Selecione</span>
                     <span class="ms-caret">▾</span>
                 </button>
-                <div class="ms-panel" id="ms-apps-panel">
-                    <label class="ms-option"><input type="checkbox" value="Tinder" onchange="onAppToggle()"> Tinder</label>
-                    <label class="ms-option"><input type="checkbox" value="Bumble" onchange="onAppToggle()"> Bumble</label>
-                    <label class="ms-option"><input type="checkbox" value="Badoo" onchange="onAppToggle()"> Badoo</label>
-                    <label class="ms-option"><input type="checkbox" value="Inner Circle" onchange="onAppToggle()"> Inner Circle</label>
-                    <label class="ms-option"><input type="checkbox" value="Happn" onchange="onAppToggle()"> Happn</label>
+                <div class="ms-panel" id="ms-signo-panel">
+                    <div class="ms-option" onclick="selectSigno('Áries','♈')">♈ Áries</div>
+                    <div class="ms-option" onclick="selectSigno('Touro','♉')">♉ Touro</div>
+                    <div class="ms-option" onclick="selectSigno('Gêmeos','♊')">♊ Gêmeos</div>
+                    <div class="ms-option" onclick="selectSigno('Câncer','♋')">♋ Câncer</div>
+                    <div class="ms-option" onclick="selectSigno('Leão','♌')">♌ Leão</div>
+                    <div class="ms-option" onclick="selectSigno('Virgem','♍')">♍ Virgem</div>
+                    <div class="ms-option" onclick="selectSigno('Libra','♎')">♎ Libra</div>
+                    <div class="ms-option" onclick="selectSigno('Escorpião','♏')">♏ Escorpião</div>
+                    <div class="ms-option" onclick="selectSigno('Sagitário','♐')">♐ Sagitário</div>
+                    <div class="ms-option" onclick="selectSigno('Capricórnio','♑')">♑ Capricórnio</div>
+                    <div class="ms-option" onclick="selectSigno('Aquário','♒')">♒ Aquário</div>
+                    <div class="ms-option" onclick="selectSigno('Peixes','♓')">♓ Peixes</div>
                 </div>
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label class="form-label">Signo</label>
-                <select id="f-signo" class="form-input">
-                    <option value="">Selecione</option>
-                    <option>Áries</option><option>Touro</option><option>Gêmeos</option>
-                    <option>Câncer</option><option>Leão</option><option>Virgem</option>
-                    <option>Libra</option><option>Escorpião</option><option>Sagitário</option>
-                    <option>Capricórnio</option><option>Aquário</option><option>Peixes</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Último date</label>
-                <select id="f-ultimo-date" class="form-input">
-                    <option value="">Selecione</option>
-                    <option>menos de 1 mês</option>
-                    <option>1 a 6 meses</option>
-                    <option>6 meses a 1 ano</option>
-                    <option>mais de 1 ano</option>
-                    <option>nunca tive</option>
-                </select>
+
+        <div class="form-group">
+            <label class="form-label">Altura<span class="form-required">*</span></label>
+            <div class="stepper">
+                <button type="button" class="stepper-btn" onclick="onHeightStep(-1)">−</button>
+                <input type="text" class="stepper-value stepper-input" id="height-value-label"
+                       value="1,70m" inputmode="numeric"
+                       onfocus="this.value = String(selectedAlturaCm)"
+                       onblur="onHeightType(this.value)">
+                <button type="button" class="stepper-btn" onclick="onHeightStep(1)">+</button>
             </div>
         </div>
-        <button class="btn" id="btn-start" onclick="startQuiz()">Iniciar minha análise →</button>
+
+        <div class="form-group">
+            <label class="form-label">Profissão</label>
+            <input type="text" id="f-profissao" class="form-input" placeholder="Ex: Engenheiro">
+        </div>
+
+        <button class="btn" id="btn-start" onclick="startQuiz()">Continuar</button>
     </div>
 </div>
 
 <!-- ── PHASE 1 INTRO ── -->
 <div id="s-p1" class="screen">
-    <button class="back-btn" onclick="show('s-welcome')">
+    <button class="back-btn" onclick="show('s-welcome-2')">
         <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         Voltar
     </button>
     <div class="phase-intro">
-        <div class="phase-number">Fase 1 de 3</div>
-        <h2 class="phase-title">Como ela te vê hoje</h2>
-        <p class="phase-sub">A primeira fase mapeia como você aparece para as mulheres — sua presença, postura e os sinais que transmite sem perceber.</p>
-        <div class="phase-track">
-            <div class="p-pip active"></div>
-            <div class="p-pip"></div>
-            <div class="p-pip"></div>
+        <div id="funnel-progress-p1"></div>
+        <div class="phase-number"><span class="phase-number-top">Raio X</span>Fase 1 de 3</div>
+        <h2 class="phase-title">O Jeito Que Você Passa Sem Perceber</h2>
+        <p class="phase-sub">E Faz Ela Te Por na Gaveta Errada: "Provedor Torcendo Por Um SIM Dela..."</p>
+        <div class="analyzing-row">
+            <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
-        <button class="btn" id="btn-p1" onclick="goQ(0)">Começar análise →</button>
+        <button class="btn" id="btn-p1" onclick="goQ(0)">Prosseguir Meu Raio-X →</button>
     </div>
 </div>
 
 <!-- ── PHASE 2 INTRO ── -->
 <div id="s-p2" class="screen">
     <div class="phase-intro">
+        <div id="funnel-progress-p2"></div>
+        <div class="phase-number"><span class="phase-number-top">Raio X</span>Fase 2 de 3</div>
+        <h2 class="phase-title">O que está te travando</h2>
+        <p class="phase-sub">Fase 1 concluída. Já identificamos padrões muito específicos no seu perfil. Agora vamos ao que está entre você e os resultados que merece.</p>
         <div class="analyzing-row">
             <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
-        <div class="phase-number">Fase 2 de 3</div>
-        <h2 class="phase-title">O que está te travando</h2>
-        <p class="phase-sub">Fase 1 concluída. Já identificamos padrões muito específicos no seu perfil. Agora vamos ao que está entre você e os resultados que merece.</p>
-        <div class="phase-track">
-            <div class="p-pip done"></div>
-            <div class="p-pip active"></div>
-            <div class="p-pip"></div>
-        </div>
-        <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 2000, function(){ goQ(7); })">Continuar análise →</button>
+        <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 2000, function(){ goQ(8); })">Prosseguir Meu Raio-X →</button>
     </div>
 </div>
 
 <!-- ── PHASE 3 INTRO ── -->
 <div id="s-p3" class="screen">
     <div class="phase-intro">
+        <div id="funnel-progress-p3"></div>
+        <div class="phase-number"><span class="phase-number-top">Raio X</span>Fase 3 de 3</div>
+        <h2 class="phase-title">Seu arquétipo real</h2>
+        <p class="phase-sub">Ponto crítico identificado. Seu perfil tem uma característica específica que a maioria dos homens nunca descobre. A fase final confirma tudo.</p>
         <div class="analyzing-row">
             <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
-        <div class="phase-number">Fase 3 de 3 — Final</div>
-        <h2 class="phase-title">Seu arquétipo real</h2>
-        <p class="phase-sub">Ponto crítico identificado. Seu perfil tem uma característica específica que a maioria dos homens nunca descobre. A fase final confirma tudo.</p>
-        <div class="phase-track">
-            <div class="p-pip done"></div>
-            <div class="p-pip done"></div>
-            <div class="p-pip active"></div>
-        </div>
-        <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 2000, function(){ goQ(14); })">Revelar meu arquétipo →</button>
+        <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 2000, function(){ goQ(16); })">Prosseguir Meu Raio-X →</button>
     </div>
 </div>
 
@@ -980,51 +1353,12 @@ body.presell-mode .expert-header { height: 300px; }
         <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         Voltar
     </button>
+    <div class="phase-number-top">Raio X</div>
     <div class="phase-label" id="q-phase-label">FASE 1 DE 3</div>
     <div class="phase-name-sm" id="q-phase-name">Como ela te vê hoje</div>
-    <div class="progress-wrap">
-        <div class="progress-meta">
-            <span class="p-counter" id="q-counter">PERGUNTA 1 DE 7</span>
-            <span class="p-pct" id="q-pct">0%</span>
-        </div>
-        <div class="progress-bar">
-            <div class="progress-fill" id="q-bar" style="width:0%"></div>
-        </div>
-    </div>
+    <div id="funnel-progress-quiz"></div>
     <div class="question-text" id="q-text"></div>
     <div class="options" id="q-opts"></div>
-</div>
-
-<!-- ── GATE ── -->
-<div id="s-gate" class="screen">
-    <button class="back-btn" onclick="goQ(18)">
-        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-        Voltar
-    </button>
-    <div class="gate-wrap">
-        <div class="gate-lock">🔐</div>
-        <h2 class="gate-title">Seu diagnóstico está pronto.<br>E vai te incomodar.</h2>
-        <p class="gate-sub">O relatório tem <strong style="color:var(--text)">análise completa do seu arquétipo</strong>, os padrões que te travam, pontos cegos que você nunca viu — e as 3 bios calibradas pra você. É extenso. Vale cada linha.<br><br>Por onde quer receber?</p>
-        <div class="delivery-choice">
-            <button class="choice-btn selected" id="ch-whats" onclick="selectDelivery('whats')">
-                <span class="choice-icon">📱</span>
-                WhatsApp
-            </button>
-            <button class="choice-btn" id="ch-email" onclick="selectDelivery('email')">
-                <span class="choice-icon">📧</span>
-                Email
-            </button>
-        </div>
-        <div class="form-group">
-            <label class="form-label">WhatsApp (com DDD)</label>
-            <input type="tel" id="f-whatsapp" class="form-input" placeholder="(11) 99999-9999" inputmode="tel">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Seu melhor email</label>
-            <input type="email" id="f-email" class="form-input" placeholder="email@exemplo.com" inputmode="email">
-        </div>
-        <button class="btn" onclick="doGenerate()">Quero meu diagnóstico completo →</button>
-    </div>
 </div>
 
 <!-- ── LOADING ── -->
@@ -1039,26 +1373,274 @@ body.presell-mode .expert-header { height: 300px; }
             <div class="lstep" id="ls3"><div class="lstep-dot"></div>Mapeando pontos cegos</div>
             <div class="lstep" id="ls4"><div class="lstep-dot"></div>Gerando bios personalizadas</div>
         </div>
+
+        <!-- Prova social (textos placeholder — preencher depois) -->
+        <div class="social-proof">
+            <div class="sp-count">Junte-se a <strong>+21.000 homens</strong></div>
+            <div class="sp-bubbles">
+                <div class="sp-bubble">Depoimento 1</div>
+                <div class="sp-bubble">Depoimento 2</div>
+                <div class="sp-bubble">Depoimento 3</div>
+                <div class="sp-bubble">Depoimento 4</div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- ── RESULT ── -->
-<div id="s-result" class="screen">
-    <div style="overflow-y:auto;flex:1;padding-bottom:8px;">
-        <div class="result-top">
-            <div class="r-badge" id="r-badge">Arquétipo</div>
-            <div class="r-name" id="r-name"></div>
-            <div class="r-desc" id="r-desc"></div>
+<!-- ── RELATÓRIO FINAL ── -->
+<div id="s-report" class="screen">
+    <div class="rep-scroll">
+
+        <!-- Aviso de escassez + timer (topo — 1ª coisa que a pessoa lê) -->
+        <div class="rep-scarcity">
+            <div class="rep-scarcity-text">Geramos seu relatório agora. Por privacidade, ele fica disponível por <b>9 minutos</b> antes de ser apagado dos nossos servidores.</div>
+            <div class="rep-timer" id="bio-timer">09:00</div>
         </div>
-        <div class="bios-section-title">SUAS 3 BIOS — CALIBRADAS PARA VOCÊ</div>
-        <div id="r-bios"></div>
-        <div class="result-bottom-note">
-            Salve as bios e teste cada uma. O relatório completo<br>
-            chegará no canal que você escolheu.
+
+        <!-- HERO -->
+        <div class="rep-hero">
+            <div class="rep-kicker">Jogo do Texto · Análise de Perfil Completa</div>
+            <div class="rep-kicker t2">Resultado da sua análise</div>
+            <div class="rep-pill" id="rep-pill">O Cara da Conversa</div>
+            <p class="rep-hero-sub rep-blur" id="rep-hero-sub">Ela acha você fascinante para trocar ideia. Mas não sente urgência de te ver pessoalmente. Você está a 3 calibrações de mudar completamente isso.</p>
+            <div class="rep-meta rep-blur" id="rep-meta">Rafael M. · 31 anos · São Paulo · Perfil INTJ</div>
         </div>
-        <a id="btn-app-msg" href="/mensagens" style="display:block;width:100%;margin-top:16px;margin-bottom:8px;padding:16px;border-radius:14px;background:rgba(0,200,160,0.08);border:1px solid rgba(0,200,160,0.3);color:#00c8a0;font-size:15px;font-weight:600;text-align:center;text-decoration:none;">
-            ✦ Gerar mensagens para conversas
-        </a>
+
+        <!-- SEÇÃO 01 — Suas Respostas -->
+
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 01</div>
+            <div class="rep-sec-title">Suas Respostas</div>
+            <div class="rep-card accent">
+                <div class="rep-q">Como você inicia conversa depois de um match?</div>
+                <div class="rep-a">"Faço uma observação inteligente sobre algo no perfil dela — diferente do 'oi linda' que todo mundo manda."</div>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-card accent">
+                    <div class="rep-q">Quando ela demora a responder, você...</div>
+                    <div class="rep-a">"Fico elaborando mentalmente o que vou escrever. Às vezes reescrevo a mensagem inteira."</div>
+                </div>
+                <div class="rep-card accent">
+                    <div class="rep-q">Qual é seu principal objetivo na conversa?</div>
+                    <div class="rep-a">"Criar conexão genuína antes de qualquer coisa. Não gosto de marcar encontro com quem mal conheço."</div>
+                </div>
+                <div class="rep-card accent">
+                    <div class="rep-q">+ 6 respostas analisadas</div>
+                    <div class="rep-a">"..."</div>
+                </div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie para ver suas 9 respostas analisadas</span>
+        </div>
+
+        <!-- SEÇÃO 02 — Perfil MBTI (PESSOAL: teaser + blur) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 02</div>
+            <div class="rep-sec-title">Seu Perfil Myers-Briggs Conectado à Sedução</div>
+            <div class="rep-card accent">
+                <div class="rep-card-title" id="rep-mbti-titulo">INTJ — O Estrategista que Analisa em Vez de Sentir</div>
+                <p class="rep-p">Você é um dos perfis mais raros e analiticamente poderosos do Myers-Briggs — menos de 2% da população. Quando você gosta de alguém, vai fundo de verdade.</p>
+                <div class="rep-blur">
+                    <p class="rep-p">O problema no contexto de sedução: sua maior força é seu maior obstáculo. Você otimiza a comunicação como se fosse um problema lógico — quando ela decide te encontrar com o cérebro primitivo, não com o racional. Lógica não gera desejo. Tensão calibrada gera.</p>
+                    <div class="rep-tags" id="rep-mbti-tags">
+                        <span class="rep-tag">Analítico</span><span class="rep-tag">Estratégico</span><span class="rep-tag">Independente</span><span class="rep-tag">Perfeccionista</span><span class="rep-tag">Reservado</span>
+                    </div>
+                </div>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-bar-row"><span class="rep-bar-label">Gerar interesse intelectual</span><span class="rep-bar"><span id="bar-fill-inteligente" class="rep-bar-fill" style="width:94%;background:var(--r-primary)"></span></span><span id="bar-val-inteligente" class="rep-bar-val" style="color:var(--r-primary)">94%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Frame de confiança e alto valor</span><span class="rep-bar"><span id="bar-fill-confiavel" class="rep-bar-fill" style="width:78%;background:var(--r-primary)"></span></span><span id="bar-val-confiavel" class="rep-bar-val" style="color:var(--r-primary)">78%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Resistência a testes femininos</span><span class="rep-bar"><span id="bar-fill-ambicioso" class="rep-bar-fill" style="width:61%;background:var(--r-purple)"></span></span><span id="bar-val-ambicioso" class="rep-bar-val" style="color:var(--r-purple)">61%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Leveza e humor nas mensagens</span><span class="rep-bar"><span id="bar-fill-divertido" class="rep-bar-fill" style="width:32%;background:var(--r-orange)"></span></span><span id="bar-val-divertido" class="rep-bar-val" style="color:var(--r-orange)">32%</span></div>
+                <div class="rep-bar-row"><span class="rep-bar-label">Criação de tensão sexual via texto</span><span class="rep-bar"><span id="bar-fill-sexual" class="rep-bar-fill" style="width:21%;background:var(--r-red)"></span></span><span id="bar-val-sexual" class="rep-bar-val" style="color:var(--r-red)">21%</span></div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie sua pontuação completa por dimensão</span>
+        </div>
+
+        <!-- SEÇÃO 03 — Os 9 Tipos (MÉTODO: aberto) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 03</div>
+            <div class="rep-sec-title">Os 9 Tipos que Ela Identifica em Menos de 3 Minutos</div>
+            <p class="rep-sec-intro">Baseado em David DeAngelo (Lover/Provider), Jogo do Texto e PT2 Female Mind — estes são os 9 arquétipos que o cérebro primitivo dela categoriza automaticamente nas primeiras mensagens.</p>
+            <div class="rep-grid">
+                <div id="rep-tipo-01" class="rep-type"><div class="rep-type-num">Tipo 01</div><div class="rep-type-ico">👻</div><div class="rep-type-name">O Invisível</div></div>
+                <div id="rep-tipo-02" class="rep-type"><div class="rep-type-num">Tipo 02</div><div class="rep-type-ico">💛</div><div class="rep-type-name">O Amigo Legal Demais</div></div>
+                <div id="rep-tipo-03" class="rep-type"><div class="rep-type-num">Tipo 03</div><div class="rep-type-ico">💬</div><div class="rep-type-name">O Cara da Conversa</div></div>
+                <div id="rep-tipo-04" class="rep-type"><div class="rep-type-num">Tipo 04</div><div class="rep-type-ico">🙏</div><div class="rep-type-name">O Provider Ansioso</div></div>
+                <div id="rep-tipo-05" class="rep-type"><div class="rep-type-num">Tipo 05</div><div class="rep-type-ico">〰️</div><div class="rep-type-name">O Fantasma Digital</div></div>
+                <div id="rep-tipo-06" class="rep-type"><div class="rep-type-num">Tipo 06</div><div class="rep-type-ico">⚠️</div><div class="rep-type-name">O Predatório Óbvio</div></div>
+                <div id="rep-tipo-07" class="rep-type"><div class="rep-type-num">Tipo 07</div><div class="rep-type-ico">🎲</div><div class="rep-type-name">O Bad Boy Instável</div></div>
+                <div id="rep-tipo-08" class="rep-type"><div class="rep-type-num">Tipo 08</div><div class="rep-type-ico">🧭</div><div class="rep-type-name">O Aventureiro Calibrado</div></div>
+                <div id="rep-tipo-09" class="rep-type"><div class="rep-type-num">Tipo 09</div><div class="rep-type-ico">♟️</div><div class="rep-type-name">O Homem de Alto Valor</div></div>
+            </div>
+            <div class="rep-card accent" style="margin-top:12px">
+                <div class="rep-card-title" id="rep-diag-titulo">Análise do seu tipo</div>
+                <p class="rep-p" id="rep-diagnostico"></p>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 04 — CIA/FBI (intro aberta, dossiê com teaser+blur) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 04</div>
+            <div class="rep-sec-title">Classificação CIA / FBI</div>
+            <p class="rep-sec-intro">Com base no "Manual de Persuasão do FBI" (Jack Schafer, Friendship Formula) + PT2 Female Mind — como agências de inteligência categorizariam e empregariam um perfil como o seu.</p>
+            <div class="rep-dossier">
+                <div class="rep-dossier-head">
+                    <div class="rep-seal">CIA</div>
+                    <div class="rep-dossier-meta">CENTRAL INTELLIGENCE AGENCY · DIRECTORATE OF ANALYSIS<br>TOP SECRET · Behavioral Profile Assessment</div>
+                </div>
+                <div class="rep-mono">FUNÇÃO PRIMÁRIA: Analista de Inteligência Estratégica<br>FUNÇÃO SECUNDÁRIA: Profiler Psicológico de Alvos</div>
+                <div class="rep-mono rep-blur" style="margin-top:8px">AVALIAÇÃO: Sujeito demonstra capacidade analítica excepcional. LIMITAÇÃO CRÍTICA: dificuldade em operações de aproximação emocional de curto prazo. DIAGNÓSTICO: o tipo que lê 300 páginas de inteligência sobre o alvo mas hesita no momento da abordagem real.</div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie o dossiê CIA + FBI completo</span>
+        </div>
+
+        <!-- SEÇÃO 05 — O Homem que Ela Vê (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 05</div>
+            <div class="rep-sec-title">O Homem que Ela Vê nas Suas Mensagens</div>
+            <div class="rep-card accent">
+                <div class="rep-card-title">"O Amigo Inteligente"</div>
+                <p class="rep-p">O cara que ela avisaria "oi sumido" quando precisar de um conselho.<span class="rep-blur"> Que ela apresentaria pra mãe. Mas que às 23h, sozinha no sofá, ela não está pensando em você. Ela está pensando no cara que criou tensão naquele dia.</span></p>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-card green">
+                    <div class="rep-card-title green">"O Arquiteto Sedutor"</div>
+                    <p class="rep-p">O homem que é ao mesmo tempo o mais interessante que ela conheceu E o que ela mais quer ver pessoalmente. Inteligência + tensão calibrada = obsessão genuína.</p>
+                </div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie a leitura completa das suas mensagens</span>
+        </div>
+
+        <!-- SEÇÃO 06 — O Melhor que Ela Veria (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 06</div>
+            <div class="rep-sec-title">O Melhor que Ela Conseguiria Ver em Você</div>
+            <div class="rep-card green">
+                <div class="rep-card-title green">O Arquiteto Sedutor — INTJ Desbloqueado</div>
+                <p class="rep-p">O INTJ que aprende a usar sua inteligência estratégica a favor da sedução se torna o tipo mais poderoso do espectro.<span class="rep-blur"> Enquanto o Bad Boy é excitante mas imprevisível, e o Provider é estável mas sem tensão — o INTJ calibrado entrega os dois ao mesmo tempo: intelectualmente dominante E estrategicamente imprevisível. Ele cria o "momento" não por acaso, mas por design.</span></p>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie sua projeção completa</span>
+        </div>
+
+        <!-- SEÇÃO 07 — 5 Pontos de Ajuste (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 07</div>
+            <div class="rep-sec-title">5 Pontos de Ajuste na Comunicação</div>
+            <div class="rep-point">
+                <div><span class="rep-point-n">1</span><b style="color:var(--r-text)">Profundidade sem leveza — o peso da primeira impressão</b></div>
+                <p class="rep-p" style="margin-top:8px">Você vai fundo cedo demais. A primeira conversa parece uma entrevista filosófica.<span class="rep-blur"> Ela sente o esforço mental necessário e associa você à palavra "pesado" antes de sentir qualquer atração. O conteúdo é bom — o timing é errado. ▶ Ajuste: leveza nos primeiros 5 minutos.</span></p>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-point"><div><span class="rep-point-n">2</span><b style="color:var(--r-text)">Lógica nos testes — a resposta que mata a tensão</b></div><p class="rep-p" style="margin-top:8px">Quando ela te testa, você explica seu ponto logicamente. Um homem de alto valor não explica — reage com calma, humor ou inverte o jogo.</p></div>
+                <div class="rep-point"><div><span class="rep-point-n">3</span><b style="color:var(--r-text)">Pipeline de 1 — a ansiedade que ela sente</b></div><p class="rep-p" style="margin-top:8px">Quando você foca só nela, sua energia muda de forma sutil mas detectável. Você perde o frame de escassez que cria atração.</p></div>
+                <div class="rep-point" style="opacity:0.6"><div><span class="rep-point-n">4</span><b style="color:var(--r-text)">+ 2 pontos críticos identificados</b></div></div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie os 5 ajustes com o passo a passo</span>
+        </div>
+
+        <!-- SEÇÃO 08 — Bios (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 08</div>
+            <div class="rep-sec-title">Bios Estratégicas por Plataforma</div>
+            <div class="rep-card accent">
+                <div class="rep-card-title">🔥 Tinder — Gerador de Curiosidade</div>
+                <p class="rep-p">Arquiteto de dia. Investigador de comportamento humano por hobby.<span class="rep-blur"> Minhas ex namoram melhor depois de mim — pelo menos é o que elas dizem. Especialista em fazer café perfeito e em não responder mensagem de voz. Se você também acha que conversa de madrugada revela mais do que qualquer perfil de app — talvez a gente se dê bem.</span></p>
+            </div>
+            <div class="rep-blur">
+                <div class="rep-card accent"><div class="rep-card-title">📷 Instagram — Eu Sou o Prêmio</div><p class="rep-p">Leio pessoas mais rápido do que leio livros. E leio muito livro. As fotos são 80% ângulo estratégico. Os textos são 100% o que eu realmente penso.</p></div>
+                <div class="rep-card green"><div class="rep-card-title green">💬 WhatsApp — Frame de Alto Valor</div><p class="rep-p">Respondo quando quero conversar de verdade. Isso acontece com frequência menor do que você espera e com qualidade maior do que você está acostumada.</p></div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie suas 3 bios prontas para copiar</span>
+        </div>
+
+        <!-- SEÇÃO 09 — 1ª Mensagem (PESSOAL) -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Seção 09</div>
+            <div class="rep-sec-title">Primeira Mensagem Pós-Match Matadora</div>
+            <div class="rep-msg her">Ela tem foto em Amsterdã no perfil</div>
+            <div class="rep-msg him">Amsterdã fica melhor na foto ou pessoalmente? Pergunto porque quem foi costuma ter opinião bem forte sobre isso.</div>
+            <div class="rep-blur">
+                <div class="rep-msg her">Pessoalmente com certeza haha mas o que você quer dizer com "opinião forte"?</div>
+                <div class="rep-msg him">Tem uma galera que idealiza tanto que se decepciona. Outra que chega sem expectativa e se apaixona. Pela foto você parece do segundo grupo.</div>
+                <div class="rep-msg her">Acertou kkk fui completamente apaixonada. Você já foi?</div>
+                <div class="rep-card accent" style="margin-top:8px"><div class="rep-card-title green">Por que essa abertura funciona</div><p class="rep-p">Não começa com elogio à aparência · pressuposto embutido · "opinião forte" gera curiosidade · leitura fria · ela faz a pergunta no fim = inversão completa.</p></div>
+            </div>
+            <span class="rep-lockchip">🔒 Desbloqueie a sequência completa + análise técnica</span>
+        </div>
+
+        <!-- BÔNUS — as 3 bios geradas -->
+        <div class="rep-section">
+            <div class="rep-sec-label">Bônus</div>
+            <div class="rep-sec-title">Suas 3 Bios — Calibradas para Você</div>
+            <div id="rep-bios-list"></div>
+        </div>
+
+        <!-- Captura de email (antes de liberar as opções de recebimento) -->
+        <div class="rep-card accent" id="rep-email-capture" style="margin-top:18px;">
+            <div class="rep-card-title">Deixe seu email para receber sua análise</div>
+            <div class="form-group" style="margin-top:10px;margin-bottom:0;">
+                <input type="email" id="f-report-email" class="form-input" placeholder="Seu melhor email">
+            </div>
+            <button class="btn" id="btn-confirm-email" style="margin-top:10px;" onclick="confirmReportEmail()">Continuar</button>
+        </div>
+
+        <!-- Botões de oferta (placeholder — sem integração ainda) -->
+        <div id="rep-offers-section" style="display:none;margin-top:18px;">
+            <div class="rep-sec-title" style="font-size:1.1rem;margin-bottom:10px;">Escolha a melhor opção para receber sua análise</div>
+            <div class="form-group" id="wa-phone-group" style="margin-bottom:10px;">
+                <label class="form-label" style="color:#e7ecf5;">Seu WhatsApp (com DDD) — para receber a análise</label>
+                <input type="tel" id="f-report-whatsapp" class="form-input" placeholder="(21) 99999-9999" inputmode="numeric" maxlength="16" oninput="maskPhoneBR(this)">
+            </div>
+            <div class="oferta-wrap">
+                <!-- CARD GRÁTIS -->
+                <div class="card-gratis">
+                    <p class="label">Versão 1</p>
+                    <p class="titulo">Grátis</p>
+                    <ul>
+                        <li><span>✓</span>Relatório completo</li>
+                        <li><span>✓</span>Seu perfil + MBTI</li>
+                        <li><span>✓</span>Prioridade no Círculo</li>
+                    </ul>
+                    <button class="btn-gratis" id="btn-whatsapp" onclick="chooseOffer('whats')">Receber grátis</button>
+                </div>
+                <!-- CARD PAGO -->
+                <div class="card-pago">
+                    <p class="versao-label">Versão</p>
+                    <p class="oxy-titulo">✨ OXY-REPORT</p>
+                    <div class="mini-gratis">
+                        <p class="label">Versão 1</p>
+                        <ul>
+                            <li><span>✓</span>Relatório completo</li>
+                            <li><span>✓</span>Seu perfil + MBTI</li>
+                            <li><span>✓</span>Prioridade no Círculo</li>
+                        </ul>
+                    </div>
+                    <p class="tudo-mais">Tudo isso, mais:</p>
+                    <div class="secao-titulo">
+                        <p><span>⭐</span><span style="color:#d4af37;">Combo 4 E-Books Premium</span></p>
+                        <div class="divisor"></div>
+                    </div>
+                    <div class="grade-ebooks">
+                        <div class="box-ebook"><div class="brilho"></div><span class="emoji">📖</span><p><span class="num">1.</span> 43 mensagens para puxar assunto</p></div>
+                        <div class="box-ebook"><div class="brilho"></div><span class="emoji">📖</span><p><span class="num">2.</span> Avalanche de matches</p></div>
+                        <div class="box-ebook"><div class="brilho"></div><span class="emoji">📖</span><p><span class="num">3.</span> Conversas que convertem</p></div>
+                        <div class="box-ebook"><div class="brilho"></div><span class="emoji">📖</span><p><span class="num">4.</span> Guia do encontro</p></div>
+                    </div>
+                    <div class="secao-titulo">
+                        <p><span>⭐</span><span style="color:#d4af37;">5 Cursos VIP Bônus</span></p>
+                        <div class="divisor"></div>
+                    </div>
+                    <div class="grade-cursos">
+                        <div class="box-curso"><div class="brilho"></div><span class="emoji">🎓</span><p><span class="num">1.</span> Perfil irresistível no Tinder</p></div>
+                        <div class="box-curso"><div class="brilho"></div><span class="emoji">🎓</span><p><span class="num">2.</span> Primeiras mensagens que sempre geram resposta</p></div>
+                        <div class="box-curso"><div class="brilho"></div><span class="emoji">🎓</span><p><span class="num">3.</span> Pulverizando a trava de falar com mulher bonita</p></div>
+                        <div class="box-curso"><div class="brilho"></div><span class="emoji">🎓</span><p><span class="num">4.</span> Isso faz ela querer você: atração x sedução</p></div>
+                        <div class="box-curso full"><div class="brilho"></div><span class="emoji">🎓</span><p><span class="num">5.</span> Por que ela não vê que você é o cara certo</p></div>
+                    </div>
+                    <button class="btn-baixar" id="btn-oxyreport" onclick="chooseOffer('paid')">⚡ Baixar — R$9</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1085,14 +1667,31 @@ body.presell-mode .expert-header { height: 300px; }
 <script src="/banco-perguntas.js"></script>
 <script src="/quiz-logic.js"></script>
 <script>
+// Dispara evento customizado de etapa do funil pro Meta Pixel (não bloqueia se o pixel não carregar)
+function trackFunilStep(nome) {
+    if (typeof fbq === 'function') fbq('trackCustom', nome);
+}
+
+// Recebe o session_id da land via URL (domínios diferentes não compartilham localStorage) e guarda localmente.
+// Se ninguem mandou (acesso direto ao quiz, sem land), gera um aqui mesmo - o "Arquivo Alpha" comeca
+// no pageview, entao precisa de um id mesmo pra quem nunca passou por uma land.
+(function garantirSessionId() {
+    const sid = new URLSearchParams(window.location.search).get('sid');
+    if (sid) { localStorage.setItem('oxy_session_id', sid); return; }
+    if (!localStorage.getItem('oxy_session_id')) {
+        const gerado = (crypto.randomUUID ? crypto.randomUUID() : 'sid-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+        localStorage.setItem('oxy_session_id', gerado);
+    }
+})();
+
 // ═══════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════
 
 const PHASES = [
-    { label:'FASE 1 DE 3', name:'Como ela te vê hoje',    start:0,  end:6  },
-    { label:'FASE 2 DE 3', name:'O que está te travando', start:7,  end:13 },
-    { label:'FASE 3 DE 3', name:'Seu arquétipo real',     start:14, end:19 },
+    { label:'FASE 1 DE 3', name:'Como ela te vê hoje',    start:0,  end:7  },
+    { label:'FASE 2 DE 3', name:'O que está te travando', start:8,  end:15 },
+    { label:'FASE 3 DE 3', name:'Seu arquétipo real',     start:16, end:23 },
 ];
 
 // Preenchido dinamicamente em startQuiz() via QuizLogic.sortearPerguntas()
@@ -1246,19 +1845,19 @@ const COMMENTS = {
         headline: 'Esse padrão revelou algo que <span>9 em 10 homens nunca percebem</span> sobre si mesmos.',
         body: 'Continue. O que vem a seguir vai começar a fazer muito sentido quando você ver o diagnóstico final.'
     },
-    5: {
+    6: {
         headline: 'Identificamos o traço que separa os <span>8% de homens com resultados reais</span> dos outros 92%.',
         body: 'Seus padrões de resposta têm uma consistência rara. Isso vai influenciar diretamente a bio que vai funcionar pra você.'
     },
-    9: {
+    11: {
         headline: '<span>Ponto crítico detectado.</span> Esse comportamento explica uma parte importante dos seus resultados.',
         body: 'Poucos homens têm clareza disso. A fase 3 vai revelar exatamente como transformar isso a seu favor.'
     },
-    13: {
+    15: {
         headline: 'Sistema identificou um traço que aparece em <span>menos de 1 em 10 perfis</span> analisados.',
         body: 'Isso muda completamente o tipo de estratégia que vai funcionar pra você. Última fase — e a mais reveladora.'
     },
-    17: {
+    20: {
         headline: 'Quase lá. Seu arquétipo é <span>mais específico do que você imagina</span> — e mais valioso.',
         body: 'A última pergunta vai confirmar algo que provavelmente ninguém te disse ainda sobre seu perfil.'
     },
@@ -1279,7 +1878,7 @@ const ARCHETYPES = {
     alfa: {
         badge: 'Arquétipo Identificado',
         name: 'O Alfa Consolidado',
-        desc: 'Você tem presença natural e age com segurança na maioria das situações. As mulheres percebem isso. O risco do seu perfil é a frieza excessiva — uma presença que atrai mas não conecta. O equilíbrio entre polo e calor separa o Alfa funcional do Alfa completo.',
+        desc: 'Você tem presença natural e age com segurança na maioria das situações. As mulheres percebem isso. O risco do seu perfil é a frieza excessiva — uma presença que atrai mas não conecta. O equilíbrio entre presença e calor é o que separa quem só atrai de quem também conecta.',
         template: 'Não estou aqui pra agradar todo mundo — e tudo bem. {profissao}, {idade} anos. Se gosta de conversa real, continuamos. Se não, sem drama.',
         bios: [
             { version:'Versão Direta',    style:'Tom: Confiante, sem explicações',       effect:'Filtra imediatamente. Mulheres de alto valor reconhecem e respondem.' },
@@ -1290,7 +1889,7 @@ const ARCHETYPES = {
     provocador: {
         badge: 'Arquétipo Identificado',
         name: 'O Provocador',
-        desc: 'Você usa humor e imprevisibilidade como ferramentas de atração — e funciona. Cria tensão, gera reações, nunca é entediante. O ponto cego: às vezes a provocação vira escudo e impede conexão real. Saber quando soltar a armadura é o que separa o Provocador do Alfa completo.',
+        desc: 'Você usa humor e imprevisibilidade como ferramentas de atração — e funciona. Cria tensão, gera reações, nunca é entediante. O ponto cego: às vezes a provocação vira escudo e impede conexão real. Saber quando soltar a armadura é o que separa quem só diverte de quem realmente conecta.',
         template: 'Aviso antes: sou daqueles que faz você rir quando menos espera. {profissao}, {idade} anos. Dica: minha segunda foto conta mais que a primeira.',
         bios: [
             { version:'Versão Direta',    style:'Tom: Imprevisível, com confiança',       effect:'Gera curiosidade imediata. Ela vai querer entender quem você é.' },
@@ -1319,8 +1918,175 @@ let userName  = '';
 let userData  = {};
 let respostas = []; // { a: string } por índice de pergunta
 let curQ      = 0;
-let delivery  = 'whats';
+let quizStartTime   = null; // Date.now() quando startQuiz() roda, ate confirmReportEmail()
+let reportShownTime = null; // Date.now() quando o relatorio aparece (openReport()), ate chooseOffer()
 let pendingCallback = null;
+let reportVisible   = false; // true enquanto #s-report esta na tela (janela de medição do scroll do freereport)
+let reportScrollMax = 0;     // maior % de rolagem observado enquanto reportVisible
+
+// ── Arquivo Alfa (Sessão 3): tempos por pergunta/fase e velocidade de carregamento ──
+const pageLoadStart = Date.now(); // marca a abertura do quiz.html (início da fase "perfil")
+let faseStartTime    = pageLoadStart;
+let temposFase        = {}; // { perfil, fase1, fase2, fase3, raiox } em segundos
+let temposPerguntas   = []; // paralelo a "respostas": segundos gastos em cada pergunta
+let questionShownAt   = null;
+let velocidadeCarregamentoQuizMs = null;
+window.__oxyAlfaId = null; // preenchido com o id do arquivo_alfa após o 1º /api/save-lead
+
+// ── Cliques por pergunta/fase (mesmo padrão de LANDS-ALL/arquivo-alfa.js): usa o
+// cookie oxy_alfa_id já setado pela land, sem depender do save-lead do fim do quiz ──
+const ALFA_EVENTO_URL = 'https://kyzecbqeeybnjtmxuljg.supabase.co/functions/v1/arquivo-alfa-evento';
+function getAlfaCookie() {
+    const m = document.cookie.match(/(?:^|; )oxy_alfa_id=([^;]*)/);
+    return m ? decodeURIComponent(m[1]) : null;
+}
+function enviarEventoAlfa(tipoEvento, metadata) {
+    const id = getAlfaCookie();
+    if (!id) return;
+    const payload = { id, tipo_evento: tipoEvento };
+    if (metadata) payload.metadata = metadata;
+    try {
+        navigator.sendBeacon(ALFA_EVENTO_URL, new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+    } catch (e) {
+        fetch(ALFA_EVENTO_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            keepalive: true,
+        }).catch(() => {});
+    }
+}
+
+// ── Rolagem no FreeReport (Sessão 68.11): quem rola aqui não é a window/body (tem
+// overflow:hidden no CSS do app), e sim o container <main class="main"> — diferente
+// do padrão de LANDS-ALL/arquivo-alfa.js, que mede a window de uma página estática comum.
+// Só conta enquanto a tela #s-report está visível ──
+const mainScrollEl = document.querySelector('main.main');
+if (mainScrollEl) {
+    mainScrollEl.addEventListener('scroll', function () {
+        if (!reportVisible) return;
+        const altura = mainScrollEl.scrollHeight - mainScrollEl.clientHeight;
+        const pct = altura > 0 ? Math.round((mainScrollEl.scrollTop / altura) * 100) : 100;
+        if (pct > reportScrollMax) reportScrollMax = Math.min(pct, 100);
+    }, { passive: true });
+}
+
+function enviarScrollFreereportFinal() {
+    if (!reportVisible || reportScrollMax <= 0) return;
+    const payload = { soAtualizarAlfa: true, alfaId: window.__oxyAlfaId || null, scrollMaximoFreereportPercentual: reportScrollMax };
+    try {
+        navigator.sendBeacon('/api/save-lead', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+    } catch (e) {
+        fetch('/api/save-lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true }).catch(() => {});
+    }
+}
+document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') enviarScrollFreereportFinal();
+});
+window.addEventListener('pagehide', enviarScrollFreereportFinal);
+
+function fecharFase(nome) {
+    temposFase[nome] = Math.round((Date.now() - faseStartTime) / 1000);
+    faseStartTime = Date.now();
+}
+
+function medirVelocidadeCarregamentoQuiz() {
+    try {
+        const nav = performance.getEntriesByType('navigation')[0];
+        if (nav && nav.loadEventEnd > 0) velocidadeCarregamentoQuizMs = Math.round(nav.loadEventEnd);
+    } catch (e) {}
+}
+// Se o script rodar depois do "load" (documento já completo), mede direto — o evento já passou e nunca dispararia.
+if (document.readyState === 'complete') medirVelocidadeCarregamentoQuiz();
+else window.addEventListener('load', medirVelocidadeCarregamentoQuiz);
+
+// ─────────────────────────────────────────
+// SOM (Web Audio API — gerado por código, sem arquivos)
+// Obs: Web Audio não lê o botão físico de silencioso do iOS;
+// por isso o botão de mudo é o controle do usuário (lembrado no aparelho).
+// ─────────────────────────────────────────
+let audioCtx = null;
+let muted = localStorage.getItem('quiz_muted') === '1';
+
+function ensureCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+}
+
+// Toca 1 oscilador seco (corte abrupto, sem reverb). Agenda e retorna na hora.
+function osc(freq, freqEnd, type, durMs, vol, when) {
+    const ctx = ensureCtx();
+    const t = ctx.currentTime + (when || 0);
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(freq, t);
+    if (freqEnd && freqEnd !== freq) o.frequency.exponentialRampToValueAtTime(freqEnd, t + durMs/1000);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.004);                 // ataque rápido
+    g.gain.exponentialRampToValueAtTime(0.0001, t + durMs/1000);    // decaimento seco
+    o.connect(g); g.connect(ctx.destination);
+    o.start(t); o.stop(t + durMs/1000 + 0.02);
+}
+
+// ── Biblioteca de micro-sons (cada um disparado por AÇÃO do usuário) ──
+
+// Selecionar opção: tick/pop seco com leve variação de pitch (anti-repetição)
+function soundClick() {
+    if (muted) return;
+    try { const f = 620 + Math.random()*150; osc(f, f*0.6, 'triangle', 95, 0.05, 0); } catch (e) {}
+}
+
+// Avançar de tela: whoosh curtíssimo (ruído filtrado, sweep ascendente)
+function soundAdvance() {
+    if (muted) return;
+    try {
+        const ctx = ensureCtx(), t = ctx.currentTime, dur = 0.18;
+        const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate*dur), ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random()*2 - 1;
+        const src = ctx.createBufferSource(); src.buffer = buf;
+        const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.8;
+        bp.frequency.setValueAtTime(400, t);
+        bp.frequency.exponentialRampToValueAtTime(1800, t + dur);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(0.05, t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        src.connect(bp); bp.connect(g); g.connect(ctx.destination);
+        src.start(t); src.stop(t + dur);
+    } catch (e) {}
+}
+
+// Completar uma fase: blip ascendente alegre (3 notas)
+function soundPhase() {
+    if (muted) return;
+    try { osc(523,0,'sine',70,0.05,0); osc(659,0,'sine',70,0.05,0.07); osc(880,0,'sine',90,0.05,0.14); } catch (e) {}
+}
+
+// Erro / campo vazio: tom curto descendente e suave (não agressivo)
+function soundError() {
+    if (muted) return;
+    try { osc(420, 300, 'sine', 150, 0.04, 0); } catch (e) {}
+}
+
+// Relatório pronto: arpejo de conquista de 3 notas (toca 1x)
+function soundSuccess() {
+    if (muted) return;
+    try { osc(523,0,'triangle',120,0.05,0); osc(659,0,'triangle',120,0.05,0.10); osc(784,0,'triangle',180,0.06,0.20); } catch (e) {}
+}
+
+function toggleMute() {
+    muted = !muted;
+    localStorage.setItem('quiz_muted', muted ? '1' : '0');
+    updateMuteBtn();
+}
+function updateMuteBtn() {
+    const b = document.getElementById('mute-btn');
+    if (!b) return;
+    b.textContent = muted ? '🔇' : '🔊';
+    b.classList.toggle('muted', muted);
+}
 
 // ─────────────────────────────────────────
 // HELPER — deriva arquétipo (ADICAS + desempate por MBTI)
@@ -1372,46 +2138,209 @@ function archetypeFromAdicas(adicas, mbtiTipo) {
 // ═══════════════════════════════════════
 
 window.onload = () => {
+    fetch('/api/track-evento', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tipo: 'page_view', sessionId: localStorage.getItem('oxy_session_id') }),
+    }).catch(()=>{});
+
+    updateMuteBtn(); // reflete preferência de som salva
     document.body.classList.add('presell-mode'); // pré-sell começa ativa
     const p = new URLSearchParams(window.location.search);
     userName = p.get('nome') || p.get('name') || p.get('first_name') || '';
     if (userName) {
-        document.getElementById('welcome-title').textContent =
-            `Olá, ${userName}! Vamos descobrir quem você realmente é.`;
         const fn = document.getElementById('f-nome');
         if (fn) fn.value = userName; // pré-preenche o campo Nome
     }
     if (p.get('adjust') === '1') initAdjustMode();
+
+    // Já viu o resultado antes e nunca converteu (nem WhatsApp nem Greenn) → pede email antes de liberar o quiz
+    // ?preview_recover=1 força a visualização da tela (só para demonstração, sem precisar mexer no localStorage)
+    if (p.get('preview_recover') === '1' || (localStorage.getItem('oxyquiz_result_seen') === 'true' && !localStorage.getItem('oxyquiz_converted'))) {
+        show('s-recover');
+    }
 };
 
-// Apps selecionados (múltipla escolha em caixa única)
-let selectedApps = [];
+function submitRecoverEmail() {
+    const email = document.getElementById('f-recover-email').value.trim();
+    if (!email) { soundError(); alert('Preencha o email para continuar.'); return; }
 
-function toggleAppsPanel(e) {
-    if (e) e.stopPropagation();
-    document.getElementById('ms-apps-panel').classList.toggle('open');
+    fetch('/api/save-recovered-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email,
+            device_flag: /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+        }),
+    }).catch(() => {});
+
+    localStorage.setItem('oxyquiz_converted', 'true');
+    show('s-presell');
 }
 
-function onAppToggle() {
-    const checks = document.querySelectorAll('#ms-apps-panel input[type=checkbox]');
-    selectedApps = Array.from(checks).filter(c => c.checked).map(c => c.value);
-    const label = document.getElementById('ms-apps-label');
-    if (selectedApps.length) {
-        label.textContent = selectedApps.join(', ');
-        label.classList.remove('placeholder');
-    } else {
-        label.textContent = 'Selecione';
-        label.classList.add('placeholder');
+// Apps selecionados (múltipla escolha em caixa única)
+// ═══════════════════════════════════════
+// FUNNEL PROGRESS (barra + 5 etapas)
+// ═══════════════════════════════════════
+const FUNNEL_STEPS = [
+    { key:'perfil', label:'Perfil',      icon:'👤' },
+    { key:'fase1',  label:'Fase 1',      icon:'①'  },
+    { key:'fase2',  label:'Fase 2',      icon:'②'  },
+    { key:'fase3',  label:'Fase 3',      icon:'③'  },
+    { key:'raiox',  label:'Seu Raio-X',  icon:'✨' },
+];
+
+// Mapa tela → { step: índice 0-4, pct: progresso dentro da barra (0-100) }
+const FUNNEL_SCREEN_MAP = {
+    's-welcome-1': { step: 0, pct: 20 },
+    's-welcome-2': { step: 0, pct: 60 },
+    // pct:0 nas telas de aviso de fase — a bolinha começa vazia e só enche
+    // a partir da 1a pergunta de verdade, senão dá a impressão de "reset"
+    's-p1':        { step: 1, pct: 0 },
+    's-p2':        { step: 2, pct: 0 },
+    's-p3':        { step: 3, pct: 0 },
+};
+
+const WSTEP_RING_R = 15;
+const WSTEP_RING_C = 2 * Math.PI * WSTEP_RING_R; // circunferência do anel (~94.2)
+
+function renderFunnelSteps(slotId, activeStep, fillPct) {
+    const slot = document.getElementById(slotId);
+    if (!slot) return;
+
+    // % de progresso só dentro do passo ativo, derivado do mesmo fillPct que
+    // já alimenta a barra de cima (.wfill) — não é uma segunda fonte de verdade.
+    const segSize = 100 / FUNNEL_STEPS.length;
+    const localPct = Math.max(0, Math.min(100, (fillPct - activeStep * segSize) / segSize * 100));
+    const ringOffset = WSTEP_RING_C - (WSTEP_RING_C * localPct / 100);
+
+    const stepsHtml = FUNNEL_STEPS.map((s, i) => {
+        let cls = 'wstep';
+        if (i < activeStep) cls += ' done';
+        else if (i === activeStep) cls += ' active';
+
+        const circleHtml = i === activeStep
+            ? `<svg class="wstep-ring" width="34" height="34" viewBox="0 0 34 34">
+                <circle cx="17" cy="17" r="${WSTEP_RING_R}" fill="none" stroke="var(--border)" stroke-width="3"></circle>
+                <circle cx="17" cy="17" r="${WSTEP_RING_R}" fill="none" stroke="var(--primary)" stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-dasharray="${WSTEP_RING_C.toFixed(2)}"
+                    stroke-dashoffset="${ringOffset.toFixed(2)}"
+                    transform="rotate(-90 17 17)"></circle>
+            </svg>`
+            : `<div class="wstep-circle">${i < activeStep ? '✓' : s.icon}</div>`;
+
+        return `<div class="${cls}">
+            ${circleHtml}
+            <div class="wstep-label">${s.label}</div>
+        </div>`;
+    }).join('');
+
+    slot.innerHTML = `
+        <div class="wtrack"><div class="wfill" style="width:${fillPct}%"></div></div>
+        <div class="wsteps">${stepsHtml}</div>
+    `;
+}
+
+// Progresso geral (0-100) considerando a etapa ativa + sub-progresso dentro dela
+function overallFunnelPct(step, subPct) {
+    return Math.round(((step + subPct / 100) / FUNNEL_STEPS.length) * 100);
+}
+
+function updateFunnelProgress(screenId) {
+    const map = FUNNEL_SCREEN_MAP[screenId];
+    if (!map) return;
+    const overall = overallFunnelPct(map.step, map.pct);
+
+    const slotByScreen = {
+        's-welcome-1': 'funnel-progress-1',
+        's-welcome-2': 'funnel-progress-2',
+        's-p1': 'funnel-progress-p1',
+        's-p2': 'funnel-progress-p2',
+        's-p3': 'funnel-progress-p3',
+    };
+    const slotId = slotByScreen[screenId];
+    if (slotId) renderFunnelSteps(slotId, map.step, overall);
+}
+
+// Chamada de dentro de renderQ() — sincroniza a barra durante as perguntas
+function updateFunnelProgressQuiz(phaseIdx, subPct) {
+    const step = phaseIdx + 1; // fase 1 = step 1, fase 2 = step 2, fase 3 = step 3
+    const overall = overallFunnelPct(step, subPct);
+    renderFunnelSteps('funnel-progress-quiz', step, overall);
+}
+
+let selectedApps = [];
+let selectedSigno = '';
+let selectedUltimoDate = '';
+let selectedIdade = 32;
+let selectedAlturaCm = 170;
+
+function toggleChipMulti(btn, group) {
+    btn.classList.toggle('selected');
+    if (group === 'apps') {
+        const active = document.querySelectorAll('#chips-apps .chip.selected');
+        selectedApps = Array.from(active).map(c => c.dataset.value);
     }
 }
 
-// Fecha o painel ao tocar fora dele
+function toggleChipSingle(btn, group) {
+    const container = btn.parentElement;
+    container.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    btn.classList.add('selected');
+    if (group === 'ultimoDate') selectedUltimoDate = btn.dataset.value;
+}
+
+function toggleSignoPanel(e) {
+    if (e) e.stopPropagation();
+    document.getElementById('ms-signo-panel').classList.toggle('open');
+}
+
+function selectSigno(nome, emoji) {
+    selectedSigno = nome;
+    const label = document.getElementById('ms-signo-label');
+    label.textContent = emoji + ' ' + nome;
+    label.classList.remove('placeholder');
+    document.getElementById('ms-signo-panel').classList.remove('open');
+}
+
 document.addEventListener('click', (e) => {
-    const ms = document.getElementById('ms-apps');
+    const ms = document.getElementById('ms-signo');
     if (ms && !ms.contains(e.target)) {
-        document.getElementById('ms-apps-panel').classList.remove('open');
+        document.getElementById('ms-signo-panel').classList.remove('open');
     }
 });
+
+function onAgeSlide(value) {
+    selectedIdade = parseInt(value, 10);
+    document.getElementById('age-value-label').textContent = selectedIdade + ' anos';
+}
+
+function formatAltura(cm) {
+    const m = (cm / 100).toFixed(2).replace('.', ',');
+    return m + 'm';
+}
+
+function onHeightStep(delta) {
+    selectedAlturaCm = Math.min(220, Math.max(140, selectedAlturaCm + delta));
+    document.getElementById('height-value-label').value = formatAltura(selectedAlturaCm);
+}
+
+function onHeightType(rawValue) {
+    const n = parseInt(rawValue.replace(/[^\d]/g, ''), 10);
+    if (!isNaN(n)) {
+        selectedAlturaCm = Math.min(220, Math.max(140, n));
+    }
+    document.getElementById('height-value-label').value = formatAltura(selectedAlturaCm);
+}
+
+function goToWelcome2() {
+    const nome = document.getElementById('f-nome').value.trim();
+    if (!nome) { soundError(); alert('Preencha seu nome para continuar.'); return; }
+    if (!selectedApps.length) { soundError(); alert('Selecione ao menos um app que você usa.'); return; }
+    if (!selectedUltimoDate) { soundError(); alert('Selecione a opção de último date.'); return; }
+    show('s-welcome-2');
+}
 
 // ═══════════════════════════════════════
 // ADJUST MODE (URL: ?adjust=1)
@@ -1496,30 +2425,51 @@ function initAdjustMode() {
 // NAVIGATION
 // ═══════════════════════════════════════
 
+// Auto-avanço por inatividade nas telas de intro de fase (s-p1/s-p2/s-p3)
+let phaseAutoTimer = null;
+const PHASE_AUTO_ADVANCE_MS = 10000;
+const PHASE_AUTO_BTN = { 's-p1': 'btn-p1', 's-p2': 'btn-p2', 's-p3': 'btn-p3' };
+
 function show(id) {
+    if (phaseAutoTimer) { clearTimeout(phaseAutoTimer); phaseAutoTimer = null; }
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    document.body.classList.toggle('presell-mode', id === 's-presell');
+    document.body.classList.toggle('presell-mode', id === 's-presell' || id === 's-recover');
     document.querySelector('.main').scrollTo(0,0);
+    updateFunnelProgress(id);
+
+    const autoBtnId = PHASE_AUTO_BTN[id];
+    if (autoBtnId) {
+        phaseAutoTimer = setTimeout(() => {
+            const btn = document.getElementById(autoBtnId);
+            // não dispara de novo se já estiver em animação de processamento (evita clique duplo)
+            if (btn && !btn.classList.contains('scanning') && !btn.classList.contains('ready')) btn.click();
+        }, PHASE_AUTO_ADVANCE_MS);
+    }
 }
 
 function startQuiz() {
-    const nome  = document.getElementById('f-nome').value.trim();
-    const idade = document.getElementById('f-idade').value;
-    if (!nome || !idade) { alert('Preencha nome e idade para continuar.'); return; }
+    const nome = document.getElementById('f-nome').value.trim();
+    if (!nome) { soundError(); alert('Preencha seu nome para continuar.'); return; }
+    if (!selectedSigno) { soundError(); alert('Selecione seu signo para continuar.'); return; }
     userName = nome;
+    quizStartTime = Date.now();
+    fecharFase('perfil');
     userData = {
         nome,
-        idade,
+        idade:      selectedIdade,
+        profissao:  document.getElementById('f-profissao').value.trim(),
         cidade:     document.getElementById('f-cidade').value.trim(),
-        altura:     document.getElementById('f-altura').value.trim(),
+        altura:     formatAltura(selectedAlturaCm),
         apps:       selectedApps.slice(),
-        signo:      document.getElementById('f-signo').value,
-        ultimoDate: document.getElementById('f-ultimo-date').value,
+        signo:      selectedSigno,
+        ultimoDate: selectedUltimoDate,
+        sessionId:  localStorage.getItem('oxy_session_id'),
     };
+    trackFunilStep('RaioX_ComecouPerguntas');
     // Sorteia 20 perguntas balanceadas (2 por eixo MBTI × 4 + 2 por traço ADICAS × 6)
     try {
-        QS = QuizLogic.sortearPerguntas(2, 2);
+        QS = QuizLogic.sortearPerguntas(3, 2);
     } catch (e) {
         QS = QS_FALLBACK; // fallback se banco não carregar
     }
@@ -1529,16 +2479,18 @@ function startQuiz() {
 
 function goQ(index) {
     curQ = index;
+    enviarEventoAlfa('clique_fase', { fase: 'fase' + (PHASES.indexOf(getPhase(index)) + 1) });
     renderQ();
     show('s-quiz');
 }
 
 function goBack() {
     if (curQ === 0)  { show('s-p1'); return; }
-    if (curQ === 7)  { show('s-p2'); return; }
-    if (curQ === 14) { show('s-p3'); return; }
+    if (curQ === 8)  { show('s-p2'); return; }
+    if (curQ === 16) { show('s-p3'); return; }
     curQ--;
     respostas.splice(curQ, 1); // desfaz resposta da pergunta anterior
+    temposPerguntas.splice(curQ, 1);
     renderQ();
 }
 
@@ -1582,23 +2534,37 @@ function renderQ() {
 
     document.getElementById('q-phase-label').textContent = phase.label;
     document.getElementById('q-phase-name').textContent  = phase.name;
-    document.getElementById('q-counter').textContent = `PERGUNTA ${pos+1} DE ${len}`;
-    document.getElementById('q-pct').textContent     = `${pct}%`;
-    document.getElementById('q-bar').style.width     = `${pct}%`;
     document.getElementById('q-text').textContent    = q.q;
+
+    // Sotaque por fase (verde / azul / âmbar) — só muda a cor de destaque
+    const phaseIdx = PHASES.indexOf(phase);
+    const quizScreen = document.getElementById('s-quiz');
+    quizScreen.classList.remove('accent-1', 'accent-2', 'accent-3');
+    quizScreen.classList.add('accent-' + (phaseIdx + 1));
+    updateFunnelProgressQuiz(phaseIdx, pct); // sincroniza barra de 5 etapas
 
     const c = document.getElementById('q-opts');
     c.innerHTML = '';
     // 2 colunas quando todas as opções forem curtas (cabe sem rolar)
     const maxLen = Math.max(...q.opts.map(o => o.t.length));
     c.classList.toggle('grid2', maxLen <= 45);
-    q.opts.forEach(opt => {
+    q.opts.forEach((opt) => {
         const btn = document.createElement('button');
         btn.className = 'option';
-        btn.textContent = opt.t;
+        btn.innerHTML = boldHead(opt.t); // negrito nas 1as palavras; numeração é via CSS
         btn.onclick = () => pick(btn, opt.a);
         c.appendChild(btn);
     });
+    questionShownAt = Date.now();
+}
+
+// Coloca as 2 primeiras palavras em negrito (apresentação; não altera o conteúdo)
+function boldHead(texto) {
+    const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const palavras = texto.trim().split(/\s+/);
+    const head = palavras.slice(0, 2).join(' ');
+    const tail = palavras.slice(2).join(' ');
+    return `<span class="opt-head">${esc(head)}</span>${tail ? ' ' + esc(tail) : ''}`;
 }
 
 function pick(btn, polo) {
@@ -1606,22 +2572,28 @@ function pick(btn, polo) {
     document.querySelectorAll('.option').forEach(o => { o.classList.remove('picked'); o.disabled = true; });
     btn.classList.add('picked');
     respostas[curQ] = { a: polo };
+    temposPerguntas[curQ] = questionShownAt ? Math.round((Date.now() - questionShownAt) / 1000) : null;
+    enviarEventoAlfa('clique_pergunta', { indice_pergunta: curQ });
+    soundClick(); // clique de seleção
 
     if (COMMENTS[curQ]) {
-        setTimeout(() => openComment(COMMENTS[curQ]), 300);
+        const amber = (curQ === 17); // 1 interrupt em tom quente (fase final)
+        setTimeout(() => openComment(COMMENTS[curQ], amber), 300);
     } else {
         setTimeout(nextQ, 480);
     }
 }
 
 function nextQ() {
-    if (curQ >= QS.length - 1) { show('s-gate'); return; }
+    if (curQ >= QS.length - 1) {  doGenerate(); return; }
     curQ++;
     const phase = getPhase(curQ);
     if (curQ === phase.start && curQ > 0) {
-        if (curQ === 7)  { resetPhaseBtn('btn-p2'); show('s-p2'); }
-        if (curQ === 14) { resetPhaseBtn('btn-p3'); show('s-p3'); }
+        soundPhase(); // completou uma fase
+        if (curQ === 8)  { fecharFase('fase1'); resetPhaseBtn('btn-p2'); show('s-p2'); }
+        if (curQ === 16) { fecharFase('fase2'); resetPhaseBtn('btn-p3'); show('s-p3'); }
     } else {
+        soundAdvance(); // avançar de tela
         renderQ();
     }
 }
@@ -1640,9 +2612,10 @@ function getPhase(i) {
 // COMMENT MODAL
 // ═══════════════════════════════════════
 
-function openComment(data) {
+function openComment(data, amber) {
     document.getElementById('c-headline').innerHTML = data.headline;
     document.getElementById('c-body').textContent   = data.body;
+    document.querySelector('#c-overlay .comment-card').classList.toggle('amber', !!amber);
     document.getElementById('c-overlay').classList.add('open');
 }
 
@@ -1652,28 +2625,12 @@ function closeComment() {
 }
 
 // ═══════════════════════════════════════
-// GATE
-// ═══════════════════════════════════════
-
-function selectDelivery(type) {
-    delivery = type;
-    document.getElementById('ch-whats').classList.toggle('selected', type === 'whats');
-    document.getElementById('ch-email').classList.toggle('selected', type === 'email');
-}
-
-// ═══════════════════════════════════════
 // GENERATE
 // ═══════════════════════════════════════
 
 async function doGenerate() {
-    const email    = document.getElementById('f-email').value.trim();
-    const whatsapp = document.getElementById('f-whatsapp').value.trim();
-    if (!email && !whatsapp) { alert('Preencha pelo menos um contato para receber seu relatório.'); return; }
-
-    userData.email    = email;
-    userData.whatsapp = whatsapp;
-    userData.delivery = delivery;
-
+    fecharFase('fase3');
+    trackFunilStep('RaioX_TerminouPerguntas');
     // Calcula MBTI + ADICAS e deriva arquétipo para compatibilidade com ARCHETYPES
     const s        = QuizLogic.calcularScores(respostas);
     const dominant = archetypeFromAdicas(s.adicas, s.mbtiTipo);
@@ -1698,68 +2655,381 @@ async function doGenerate() {
         });
         const data = await res.json();
 
-        fetch('/api/save-lead', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify(userData),
-        }).catch(()=>{});
-
         const perfilAdicas = data.perfil_adicas || 'CA';
         localStorage.setItem('perfil_adicas', perfilAdicas);
         localStorage.setItem('mbti_tipo', s.mbtiTipo);
 
-        showResult(dominant, data.bios);
+        showResult(dominant, data.bios, data.diagnostico);
     } catch {
         // Fallback neutro (sem despejar dados crus do usuário na bio)
         const fallback = { bio: 'Conversa real primeiro. O resto a gente descobre pessoalmente.', estrutura:'', motivo:'' };
-        showResult(dominant, [fallback, fallback, fallback]);
+        showResult(dominant, [fallback, fallback, fallback], '');
     }
 }
 
-function showResult(arch, bios) {
-    const a = ARCHETYPES[arch];
-    document.getElementById('r-badge').textContent = a.badge;
-    document.getElementById('r-name').textContent  = a.name;
-    document.getElementById('r-desc').textContent  = a.desc;
-
-    const c = document.getElementById('r-bios');
-    c.innerHTML = '';
-
-    bios.slice(0,3).forEach((item, i) => {
-        const bioTexto = (typeof item === 'string') ? item : (item.bio || '');
-        const bioEstrutura = (typeof item === 'object' && item.estrutura) ? item.estrutura : '';
-        const bioMotivo    = (typeof item === 'object' && item.motivo)    ? item.motivo    : '';
-        const meta = a.bios[i] || {version:`Versão ${i+1}`, style:'', effect:''};
-        const card = document.createElement('div');
-        card.className = 'bio-card';
-        const metaHtml = (bioEstrutura || bioMotivo) ? `
-            <div class="bio-divider"></div>
-            <div style="font-size:12px;color:#3d6a8a;margin-bottom:4px;">Estrutura: <span style="color:#00c8a0">${bioEstrutura}</span></div>
-            <div style="font-size:12px;color:#3d6a8a;">Por que funciona: <span style="color:#deeaf8">${bioMotivo}</span></div>` : '';
-        card.innerHTML = `
-            <div class="bio-type-header">
-                <div class="bio-type-info">
-                    <div class="bio-version">${meta.version}</div>
-                    <div class="bio-style">${meta.style}</div>
-                </div>
-                <div class="bio-effect">${meta.effect}</div>
-            </div>
-            <div class="bio-divider"></div>
-            <div class="bio-text" id="bio-${i}">${bioTexto}</div>
-            ${metaHtml}
-            <button class="copy-btn" onclick="copyBio(this,${i})">Copiar bio</button>`;
-        c.appendChild(card);
-    });
-
-    show('s-result');
+// Guarda as bios + diagnóstico gerados e abre direto o relatório (tela final única)
+function showResult(arch, bios, relatorio) {
+    soundSuccess(); // relatório pronto — arpejo de conquista (1x)
+    lastReportBios = bios;
+    lastReportArch = arch;
+    lastReportDiagnostico = relatorio || '';
+    openReport();
 }
 
-function copyBio(btn, i) {
-    navigator.clipboard.writeText(document.getElementById(`bio-${i}`).textContent).then(() => {
-        btn.textContent = '✓ Copiada!';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'Copiar bio'; btn.classList.remove('copied'); }, 2000);
+// ═══════════════════════════════════════
+// RELATÓRIO FINAL — abrir, timer 9min
+// ═══════════════════════════════════════
+let repTimerId = null;
+let lastReportBios = []; // mesmas bios geradas em showResult (reuso no #s-report)
+let lastReportArch = '';
+let lastReportDiagnostico = ''; // diagnóstico real gerado pela IA
+
+// Email capturado no relatório (usado no save-lead e, futuramente, nas entregas)
+window.leadEmail = null;
+
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// Pixel Meta próprio por avatar (Gerenciador de Eventos) — disparado além do pixel fixo do <head>
+const pixelMap = {
+    niceguy:    '1714652139808724', // Grupo Temperamental SJ
+    direto:     '1803284211086923', // Grupo Temperamental NT
+    alfa:       '2172591689970088', // Grupo Temperamental SP
+    provocador: '4453266091667409'  // Grupo Temperamental NF
+};
+let avatarPixelFired = false; // evita disparo duplo se confirmReportEmail() rodar mais de uma vez
+
+// Valida o email, libera as opções de recebimento e envia o lead com o email
+function confirmReportEmail() {
+    const input = document.getElementById('f-report-email');
+    const email = input.value.trim();
+    if (!isValidEmail(email)) { soundError(); alert('Digite um email válido.'); return; }
+
+    fetch('/api/track-evento', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tipo: 'email_fornecido' }),
+    }).catch(()=>{});
+
+    window.leadEmail = email;
+    if (typeof fbq === 'function') {
+        fbq('track', 'Lead');
+        if (!avatarPixelFired) {
+            const pixelId = pixelMap[userData.arquetipo];
+            if (pixelId) {
+                fbq('init', pixelId);
+                fbq('track', 'PageView');
+                avatarPixelFired = true;
+            }
+        }
+    }
+
+    if (typeof gtag === 'function') {
+        gtag('event', 'arquetipo_identificado', {
+            arquetipo: userData.arquetipo
+        });
+    }
+
+    // Dados do relatório já estão prontos em memória neste ponto (bios + diagnóstico + scores)
+    let adicasScores = null;
+    try { adicasScores = QuizLogic.calcularScores(respostas).adicas; } catch (e) {}
+    const duracaoQuiz = quizStartTime ? Math.round((Date.now() - quizStartTime) / 1000) : null;
+    const tempoAteEmailSegundos = reportShownTime ? Math.round((Date.now() - reportShownTime) / 1000) : null;
+    fetch('/api/save-lead', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+            ...userData,
+            email: window.leadEmail,
+            adicas:      adicasScores,
+            diagnostico: lastReportDiagnostico,
+            bios:        lastReportBios,
+            duracaoQuiz,
+            respostasQuiz: respostas,
+            temposPerguntas,
+            temposFase,
+            velocidadeCarregamentoQuizMs,
+            tempoAteEmailSegundos,
+        }),
+    })
+    .then(r => r.json())
+    .then(data => { if (data && data.alfaId) window.__oxyAlfaId = data.alfaId; })
+    .catch(()=>{});
+
+    fetch('https://oxy-message.vercel.app/api/auth/quiz-signup', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ email: window.leadEmail, nome: userData.nome }),
+    }).catch(()=>{});
+
+    document.getElementById('rep-email-capture').style.display = 'none';
+    const offersSection = document.getElementById('rep-offers-section');
+    offersSection.style.display = 'block';
+    setTimeout(() => offersSection.scrollIntoView({ behavior:'smooth', block:'center' }), 100);
+}
+
+// Renderiza as 3 bios já geradas dentro do #s-report (sem nova chamada de API)
+function renderReportBios() {
+    const list = document.getElementById('rep-bios-list');
+    if (!list) return;
+    const a = ARCHETYPES[lastReportArch] || { bios: [] };
+    list.innerHTML = '';
+    (lastReportBios || []).slice(0,3).forEach((item, i) => {
+        const bioTexto = (typeof item === 'string') ? item : (item.bio || '');
+        const meta = (a.bios && a.bios[i]) || { version:`Versão ${i+1}`, style:'' };
+        const card = document.createElement('div');
+        card.className = 'rep-card accent';
+        // Bio 1 legível; Bios 2 e 3 com blur médio
+        const textCls = (i >= 1) ? 'rep-a rep-blur' : 'rep-a';
+        card.innerHTML = `
+            <div class="rep-card-title">${meta.version}${meta.style ? ' · <span style="font-weight:400;color:var(--r-muted)">'+meta.style+'</span>' : ''}</div>
+            <p class="${textCls}" id="rbio-${i}">${bioTexto}</p>`;
+        list.appendChild(card);
     });
+}
+
+// Timer regressivo genérico (mm:ss) para um elemento por id
+function startTimer(elId, totalSec) {
+    if (repTimerId) clearInterval(repTimerId);
+    let s = totalSec;
+    const el = document.getElementById(elId);
+    const render = () => {
+        const m = Math.floor(s / 60), ss = s % 60;
+        if (el) el.textContent = `${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+    };
+    render();
+    repTimerId = setInterval(() => {
+        s--;
+        if (s <= 0) { s = 0; render(); clearInterval(repTimerId); if (el) el.textContent = 'EXPIRADO'; return; }
+        render();
+    }, 1000);
+}
+
+// ─────────────────────────────────────────
+// LOOKUP MBTI → dados do relatório
+// ─────────────────────────────────────────
+
+const MBTI_REP = {
+    ENTJ: { titulo: 'ENTJ — O Comandante',       tags: ['Decisivo','Ambicioso','Direto','Estratégico','Líder'] },
+    ENTP: { titulo: 'ENTP — O Provocador',        tags: ['Criativo','Debatedor','Ágil','Imprevisível','Curioso'] },
+    ENFJ: { titulo: 'ENFJ — O Magnetizador',      tags: ['Empático','Carismático','Inspirador','Inclusivo','Presente'] },
+    ENFP: { titulo: 'ENFP — A Faísca',            tags: ['Espontâneo','Entusiasmado','Criativo','Curioso','Adaptável'] },
+    ESTJ: { titulo: 'ESTJ — O Executor',          tags: ['Organizado','Confiável','Direto','Estruturado','Responsável'] },
+    ESTP: { titulo: 'ESTP — O Caçador',           tags: ['Ágil','Presente','Corajoso','Prático','Intenso'] },
+    ESFJ: { titulo: 'ESFJ — O Anfitrião',         tags: ['Atencioso','Social','Harmonioso','Leal','Prestativo'] },
+    ESFP: { titulo: 'ESFP — O Festeiro',          tags: ['Divertido','Energético','Presente','Espontâneo','Popular'] },
+    INTJ: { titulo: 'INTJ — O Estrategista',      tags: ['Analítico','Estratégico','Independente','Perfeccionista','Reservado'] },
+    INTP: { titulo: 'INTP — O Analista',          tags: ['Lógico','Curioso','Conceitual','Independente','Preciso'] },
+    INFJ: { titulo: 'INFJ — O Místico',           tags: ['Profundo','Empático','Visionário','Reservado','Intuitivo'] },
+    INFP: { titulo: 'INFP — O Sonhador',          tags: ['Autêntico','Sensível','Criativo','Idealista','Leal'] },
+    ISTJ: { titulo: 'ISTJ — A Rocha',             tags: ['Confiável','Disciplinado','Sólido','Honesto','Consistente'] },
+    ISTP: { titulo: 'ISTP — O Especialista',      tags: ['Competente','Silencioso','Prático','Intenso','Fascinante'] },
+    ISFJ: { titulo: 'ISFJ — O Protetor',          tags: ['Cuidadoso','Confiável','Atencioso','Paciente','Leal'] },
+    ISFP: { titulo: 'ISFP — O Artista',           tags: ['Sensorial','Espontâneo','Autêntico','Gentil','Presente'] },
+};
+
+// Mapa arquétipo (ADICAS dominante) → tipo dos 9
+// Baseado nos padrões de bloqueio naturais conforme VAULT-MBTI
+const ARQUETIPO_TIPO9 = {
+    niceguy:    '02', // Amigo Legal Demais — agradável, sem tensão
+    direto:     '03', // Cara da Conversa — inteligente mas não fecha
+    alfa:       '08', // Aventureiro Calibrado — ambicioso + confiável
+    provocador: '07', // Bad Boy Instável — atração sem consistência
+};
+
+// Nome de cada um dos 9 tipos (para o título dinâmico do diagnóstico)
+const TIPO9_NOME = {
+    '01':'O Invisível', '02':'O Amigo Legal Demais', '03':'O Cara da Conversa',
+    '04':'O Provider Ansioso', '05':'O Fantasma Digital', '06':'O Predatório Óbvio',
+    '07':'O Bad Boy Instável', '08':'O Aventureiro Calibrado', '09':'O Homem de Alto Valor',
+};
+
+/**
+ * preencherReportMBTI(scores)
+ * Atualiza: título MBTI, tags, barras ADICAS, destaque do tipo 9.
+ */
+function preencherReportMBTI(scores) {
+    const tipo   = scores.mbtiTipo || 'INTJ';
+    const adicas = scores.adicas   || {};
+    const rep    = MBTI_REP[tipo]  || MBTI_REP['INTJ'];
+
+    // 1. Título
+    const elTitulo = document.getElementById('rep-mbti-titulo');
+    if (elTitulo) elTitulo.textContent = rep.titulo;
+
+    // 2. Tags
+    const elTags = document.getElementById('rep-mbti-tags');
+    if (elTags) {
+        elTags.innerHTML = rep.tags
+            .map(t => `<span class="rep-tag">${t}</span>`)
+            .join('');
+    }
+
+    // 3. Barras ADICAS — normalização proporcional para faixa 20%–95%
+    const BARRAS = [
+        { traco: 'inteligente', fillId: 'bar-fill-inteligente', valId: 'bar-val-inteligente', corAlta: 'var(--r-primary)', corBaixa: 'var(--r-primary)' },
+        { traco: 'confiavel',   fillId: 'bar-fill-confiavel',   valId: 'bar-val-confiavel',   corAlta: 'var(--r-primary)', corBaixa: 'var(--r-primary)' },
+        { traco: 'ambicioso',   fillId: 'bar-fill-ambicioso',   valId: 'bar-val-ambicioso',   corAlta: 'var(--r-primary)', corBaixa: 'var(--r-purple)'  },
+        { traco: 'divertido',   fillId: 'bar-fill-divertido',   valId: 'bar-val-divertido',   corAlta: 'var(--r-primary)', corBaixa: 'var(--r-orange)'  },
+        { traco: 'sexual',      fillId: 'bar-fill-sexual',      valId: 'bar-val-sexual',      corAlta: 'var(--r-primary)', corBaixa: 'var(--r-red)'     },
+    ];
+    const rawScores = BARRAS.map(b => adicas[b.traco] || 0);
+    const maxRaw    = Math.max(...rawScores, 1); // evita divisão por zero
+
+    BARRAS.forEach((b, i) => {
+        const raw = rawScores[i];
+        const pct = Math.round(20 + (raw / maxRaw) * 75); // [20, 95]
+        const cor = pct >= 60 ? b.corAlta : b.corBaixa;
+        const fill = document.getElementById(b.fillId);
+        const val  = document.getElementById(b.valId);
+        if (fill) { fill.style.width = pct + '%'; fill.style.background = cor; }
+        if (val)  { val.textContent = pct + '%'; val.style.color = cor; }
+    });
+
+    // 4. Destaque no grid dos 9 tipos
+    const arch   = lastReportArch || 'direto';
+    const tipoId = ARQUETIPO_TIPO9[arch] || '03';
+    for (let n = 1; n <= 9; n++) {
+        const numStr = String(n).padStart(2, '0');
+        const card   = document.getElementById('rep-tipo-' + numStr);
+        if (!card) continue;
+        const isActive = numStr === tipoId;
+        card.classList.toggle('current', isActive);
+        const badgeExist = card.querySelector('.rep-type-badge');
+        if (isActive && !badgeExist) {
+            const badge = document.createElement('div');
+            badge.className   = 'rep-type-badge';
+            badge.textContent = 'SEU TIPO ATUAL';
+            card.insertBefore(badge, card.firstChild);
+        } else if (!isActive && badgeExist) {
+            badgeExist.remove();
+        }
+    }
+
+    // 5. Diagnóstico real da IA — título coerente com o tipo destacado no grid
+    const elDiagT = document.getElementById('rep-diag-titulo');
+    const elDiag  = document.getElementById('rep-diagnostico');
+    if (elDiagT) elDiagT.textContent = `Análise do seu tipo — ${TIPO9_NOME[tipoId] || ''} (Tipo ${tipoId})`;
+    if (elDiag)  elDiag.textContent  = lastReportDiagnostico
+        || 'Seu diagnóstico personalizado aparece aqui assim que a análise é gerada.';
+
+    // 6. Topo (hero) — personalizado: título = tipo destacado, subtítulo = descrição do
+    //    arquétipo, e a linha de identificação com os dados REAIS do usuário.
+    const elPill = document.getElementById('rep-pill');
+    if (elPill && TIPO9_NOME[tipoId]) elPill.textContent = TIPO9_NOME[tipoId];
+    const elHeroSub = document.getElementById('rep-hero-sub');
+    const arqDesc = (ARCHETYPES[arch] || {}).desc;
+    if (elHeroSub && arqDesc) elHeroSub.textContent = arqDesc;
+    const elMeta = document.getElementById('rep-meta');
+    if (elMeta) {
+        const partes = [
+            userData.nome,
+            userData.idade ? `${userData.idade} anos` : null,
+            userData.cidade,
+            `Perfil ${tipo}`,
+        ].filter(Boolean);
+        elMeta.textContent = partes.join(' · ');
+    }
+}
+
+function openReport() {
+    reportShownTime = Date.now();
+    reportVisible = true;
+    localStorage.setItem('oxyquiz_result_seen', 'true');
+    renderReportBios(); // injeta as 3 bios já geradas no fim do relatório
+    // Preenche elementos dinâmicos (MBTI + ADICAS) com os scores reais do avatar
+    const scores = QuizLogic.calcularScores(respostas);
+    preencherReportMBTI(scores);
+    startTimer('bio-timer', 9 * 60); // escassez no topo do relatório
+    show('s-report');
+    // Sem auto-scroll: a pessoa entra e lê o aviso de escassez no topo primeiro
+}
+
+// Máscara e validação de WhatsApp BR — (DD) 9XXXX-XXXX
+function maskPhoneBR(el) {
+    let d = el.value.replace(/\D/g, '').slice(0, 11);
+    let out = d;
+    if (d.length > 2) out = '(' + d.slice(0, 2) + ') ' + d.slice(2);
+    if (d.length > 7) out = '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
+    el.value = out;
+}
+function isValidPhoneBR(v) {
+    return String(v).replace(/\D/g, '').length === 11;
+}
+
+function chooseOffer(type) {
+    // WhatsApp exige telefone válido antes de tudo
+    let waFull = null;
+    if (type === 'whats') {
+        const waInput = document.getElementById('f-report-whatsapp');
+        const fone = waInput ? waInput.value.trim() : '';
+        if (!isValidPhoneBR(fone)) {
+            soundError();
+            alert('Digite um WhatsApp válido com DDD. Ex: (21) 99999-9999');
+            if (waInput) waInput.focus();
+            return;
+        }
+        waFull = '55' + fone.replace(/\D/g, ''); // 55 + DDD + número
+    }
+
+    soundClick();
+    userData.oferta = type; // 'whats' (grátis) ou 'paid' (R$9)
+    localStorage.setItem('oxyquiz_converted', 'true');
+    console.log('[oferta escolhida]', type);
+
+    const duracaoFreereport = reportShownTime ? Math.round((Date.now() - reportShownTime) / 1000) : null;
+    fetch('/api/update-caminho', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ email: window.leadEmail, caminho: type, duracaoFreereport }),
+    }).catch(()=>{});
+
+    // Arquivo Alfa (Sessão 3): fecha a fase "raiox" (relatório aberto → saída da oferta)
+    // e manda só essa atualização pro /api/save-lead, sem repetir o save de lead/oxyreport.
+    temposFase.raiox = duracaoFreereport;
+    fetch('/api/save-lead', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+            soAtualizarAlfa: true,
+            alfaId: window.__oxyAlfaId || null,
+            temposFase,
+        }),
+    }).catch(()=>{});
+
+    if (typeof fbq === 'function') {
+        if (type === 'paid') fbq('track', 'InitiateCheckout');
+        if (type === 'whats') fbq('trackCustom', 'RaioX_EscolheuGratis');
+    }
+
+    if (type === 'whats') {
+        // Salva o telefone no lead (server-side) antes de abrir o WhatsApp
+        fetch('/api/update-whatsapp', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ email: window.leadEmail, whatsapp: waFull }),
+        }).catch(()=>{});
+
+        // Dispara a geração do PDF em paralelo, sem esperar terminar (Puppeteer é lento —
+        // não pode travar o clique). Fica pronto no Storage a tempo do webhook (Parte 3) responder.
+        fetch('/api/gerar-pdf-relatorio', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ tel: waFull }),
+        }).catch(()=>{});
+
+        // Número de TESTE do WhatsApp Cloud API (Meta) — trocar pelo número real de produção quando o webhook (Parte 3) estiver ativo.
+        // ID na mensagem = waFull (mesmo valor gravado em leads.whatsapp acima), a chave que /api/meu-relatorio já usa pra achar o lead.
+        const numero  = '15556753179';
+        const mensagem = `Quero meu relatório - ID:${waFull}`;
+        window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`, '_blank');
+    }
+
+    if (type === 'paid') {
+        const emailParam = window.leadEmail ? `?email=${encodeURIComponent(window.leadEmail)}` : '';
+        window.open(`https://payfast.greenn.com.br/e8kjnav${emailParam}`, '_blank');
+    }
 }
 </script>
 </body>
