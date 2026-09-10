@@ -2,6 +2,8 @@
   "name": "breno-atitude-quiz",
   "version": "1.0.0",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0"
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@sparticuz/chromium": "149.0.0",
+    "puppeteer-core": "25.7.0"
   }
 }
