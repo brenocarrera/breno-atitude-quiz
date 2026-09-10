@@ -93,7 +93,7 @@ module.exports = async function handler(req, res) {
         return res.status(200).json({ ok: true });
     }
 
-    const { nome, idade, altura, peso, profissao, email, whatsapp, arquetipo, mbtiTipo, adicas, diagnostico, bios, apps, cidade, signo, ultimoDate, duracaoQuiz, respostasQuiz, temposPerguntas, temposFase, velocidadeCarregamentoQuizMs, tempoAteEmailSegundos } = req.body;
+    const { nome, idade, altura, peso, profissao, email, whatsapp, arquetipo, mbtiTipo, adicas, diagnostico, bios, apps, cidade, signo, ultimoDate, duracaoQuiz, respostasQuiz, temposPerguntas, temposFase, velocidadeCarregamentoQuizMs, tempoAteEmailSegundos, utm } = req.body;
     const dispositivo = parseDispositivo(req.headers['user-agent']);
 
     const key = process.env.SUPABASE_ANON_KEY;
@@ -146,6 +146,7 @@ module.exports = async function handler(req, res) {
             velocidade_carregamento_quiz_ms: velocidadeCarregamentoQuizMs || null,
             dispositivo_user_agent: req.headers['user-agent'] || null,
             tempo_ate_email_segundos: tempoAteEmailSegundos || null,
+            utm: utm || undefined,
         });
         // Seta/corrige o cookie quando o id final é diferente do que veio na requisição:
         // quem entrou direto no quiz (sem land) ainda não tinha cookie, ou o cookie
