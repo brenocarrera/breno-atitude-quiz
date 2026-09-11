@@ -2885,6 +2885,24 @@ const TIPO9_NOME = {
     '07':'O Bad Boy Instável', '08':'O Aventureiro Calibrado', '09':'O Homem de Alto Valor',
 };
 
+// Perfil característico das 5 dimensões da Seção 2 por tipo MBTI (valores-base
+// ajustáveis). Substitui a normalização proporcional-ao-máximo (que faz a dimensão
+// mais alta da PRÓPRIA pessoa sempre virar 95%, mascarando diferença real entre
+// pessoas) por um valor direto por tipo — mesma ideia da correção de 10/jun/2026
+// (branch 03-jun), adaptada aqui pras 5 barras que existem hoje (antes eram 7,
+// incluíam velocidade/pipeline que não existem mais nessa versão do relatório).
+function dimensoesPorMBTI(tipo) {
+    const t = (tipo && tipo.length === 4) ? tipo.toUpperCase() : 'INTJ';
+    const E = t[0] === 'E', N = t[1] === 'N', T = t[2] === 'T', J = t[3] === 'J';
+    return [
+        45 + (N?30:0) + (T?20:5),           // inteligente — capacidade de gerar interesse intelectual
+        40 + (T?22:0) + (J?16:0) + (E?6:0), // confiavel — frame de confiança e alto valor
+        30 + (T?25:0) + (J?6:0),            // ambicioso — resistência a testes femininos
+        32 + (E?28:0) + (!J?20:0) + (!T?8:0), // divertido — leveza e humor espontâneo
+        21 + (E?22:0) + (!N?20:0) + (!J?16:0), // sexual — criação de tensão sexual via texto
+    ];
+}
+
 /**
  * preencherReportMBTI(scores)
  * Atualiza: título MBTI, tags, barras ADICAS, destaque do tipo 9.
@@ -2914,12 +2932,10 @@ function preencherReportMBTI(scores) {
         { traco: 'divertido',   fillId: 'bar-fill-divertido',   valId: 'bar-val-divertido',   corAlta: 'var(--r-primary)', corBaixa: 'var(--r-orange)'  },
         { traco: 'sexual',      fillId: 'bar-fill-sexual',      valId: 'bar-val-sexual',      corAlta: 'var(--r-primary)', corBaixa: 'var(--r-red)'     },
     ];
-    const rawScores = BARRAS.map(b => adicas[b.traco] || 0);
-    const maxRaw    = Math.max(...rawScores, 1); // evita divisão por zero
+    const dimVals = dimensoesPorMBTI(tipo);
 
     BARRAS.forEach((b, i) => {
-        const raw = rawScores[i];
-        const pct = Math.round(20 + (raw / maxRaw) * 75); // [20, 95]
+        const pct = Math.max(15, Math.min(96, Math.round(dimVals[i] || 0)));
         const cor = pct >= 60 ? b.corAlta : b.corBaixa;
         const fill = document.getElementById(b.fillId);
         const val  = document.getElementById(b.valId);
