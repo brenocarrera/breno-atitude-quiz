@@ -2020,6 +2020,24 @@ window.addEventListener('pagehide', enviarScrollFreereportFinal);
 function fecharFase(nome) {
     temposFase[nome] = Math.round((Date.now() - faseStartTime) / 1000);
     faseStartTime = Date.now();
+    salvarProgressoAlfa({ temposFase });
+}
+
+// Salva o progresso do quiz (tempos_fase, tempos_perguntas, respostas_quiz) no arquivo_alfa
+// a cada pergunta respondida e a cada fase fechada — não só no final — pra capturar quem
+// abandona no meio. Mesmo endpoint leve já usado em chooseOffer() pra fechar a fase "raiox".
+// Cria o arquivo_alfa cedo se ainda não existir (ex: quem entra direto no quiz sem land) e
+// guarda o id retornado, pra próximas chamadas atualizarem o mesmo registro.
+function salvarProgressoAlfa(campos) {
+    const payload = Object.assign({ soAtualizarAlfa: true, alfaId: window.__oxyAlfaId || null }, campos);
+    fetch('/api/save-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+    })
+        .then(r => r.json())
+        .then(data => { if (data && data.alfaId) window.__oxyAlfaId = data.alfaId; })
+        .catch(() => {});
 }
 
 function medirVelocidadeCarregamentoQuiz() {
@@ -2028,9 +2046,12 @@ function medirVelocidadeCarregamentoQuiz() {
         if (nav && nav.loadEventEnd > 0) velocidadeCarregamentoQuizMs = Math.round(nav.loadEventEnd);
     } catch (e) {}
 }
+// loadEventEnd só fica finalizado DEPOIS que todos os listeners de load rodarem -
+// ler na hora sempre da 0 (mesmo bug já corrigido em LANDS-ALL/arquivo-alfa.js).
+// setTimeout(0) espera esse ciclo terminar antes de ler.
 // Se o script rodar depois do "load" (documento já completo), mede direto — o evento já passou e nunca dispararia.
 if (document.readyState === 'complete') medirVelocidadeCarregamentoQuiz();
-else window.addEventListener('load', medirVelocidadeCarregamentoQuiz);
+else window.addEventListener('load', function () { setTimeout(medirVelocidadeCarregamentoQuiz, 0); });
 
 // ─────────────────────────────────────────
 // SOM (Web Audio API — gerado por código, sem arquivos)
@@ -2605,6 +2626,7 @@ function pick(btn, polo) {
     btn.classList.add('picked');
     respostas[curQ] = { a: polo };
     temposPerguntas[curQ] = questionShownAt ? Math.round((Date.now() - questionShownAt) / 1000) : null;
+    salvarProgressoAlfa({ respostasQuiz: respostas, temposPerguntas });
     enviarEventoAlfa('clique_pergunta', { indice_pergunta: curQ });
     soundClick(); // clique de seleção
 

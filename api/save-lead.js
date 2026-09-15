@@ -77,20 +77,31 @@ module.exports = async function handler(req, res) {
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const cookieAlfaId = getCookieValue(req.headers.cookie, 'oxy_alfa_id');
 
-    // Chamada leve disparada em chooseOffer() (quiz.html) só pra fechar a fase "raiox"
-    // do arquivo_alfa (tempo relatório → saída da oferta) — não toca em leads/oxyreport.
+    // Chamada leve disparada em chooseOffer() (quiz.html) pra fechar a fase "raiox", e
+    // progressivamente durante o quiz (a cada pergunta/fase, via pick()/fecharFase()) —
+    // não toca em leads/oxyreport. Também cria o arquivo_alfa cedo (se ainda não existir,
+    // ex: quem entra direto no quiz sem passar por land) e devolve o id pro front-end
+    // reusar nas próximas chamadas progressivas, em vez de criar um registro novo a cada vez.
     if (req.body && req.body.soAtualizarAlfa) {
+        const alfaIdRecebido = req.body.alfaId || cookieAlfaId;
+        let alfaId = alfaIdRecebido || null;
         try {
-            await upsertArquivoAlfa(url, serviceKey, req.body.alfaId || cookieAlfaId, {
+            alfaId = await upsertArquivoAlfa(url, serviceKey, alfaIdRecebido, {
                 tempos_fase: req.body.temposFase || undefined,
+                tempos_perguntas: req.body.temposPerguntas || undefined,
+                respostas_quiz: req.body.respostasQuiz || undefined,
                 scroll_maximo_freereport_percentual: (typeof req.body.scrollMaximoFreereportPercentual === 'number')
                     ? req.body.scrollMaximoFreereportPercentual
                     : undefined,
             });
+            if (alfaId && alfaId !== alfaIdRecebido) {
+                const doisAnos = 60 * 60 * 24 * 365 * 2;
+                res.setHeader('Set-Cookie', `oxy_alfa_id=${alfaId}; Max-Age=${doisAnos}; Path=/; Domain=.breno-atitude.com; Secure; SameSite=Lax`);
+            }
         } catch (err) {
-            console.error('[save-lead] Falha ao atualizar arquivo_alfa (raiox):', err);
+            console.error('[save-lead] Falha ao atualizar arquivo_alfa (progressivo):', err);
         }
-        return res.status(200).json({ ok: true });
+        return res.status(200).json({ ok: true, alfaId });
     }
 
     const { nome, idade, altura, peso, profissao, email, whatsapp, arquetipo, mbtiTipo, adicas, diagnostico, bios, apps, cidade, signo, ultimoDate, duracaoQuiz, respostasQuiz, temposPerguntas, temposFase, velocidadeCarregamentoQuizMs, tempoAteEmailSegundos, utm } = req.body;
