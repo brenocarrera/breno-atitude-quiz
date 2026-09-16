@@ -43,19 +43,22 @@ src="https://www.facebook.com/tr?id=2027250401407462&ev=PageView&noscript=1"
 <!-- End Meta Pixel Code -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-    --bg:      #06101e;
-    --card:    #0b1829;
-    --border:  #152a42;
-    --primary: #00c8a0;
-    --blue:    #0066cc;
-    --text:    #deeaf8;
-    --muted:   #3d6a8a;
-    --muted2:  #2e5470;
+    --bg:      #060b14;
+    --card:    #0c1524;
+    --border:  #1b2c42;
+    --primary: #22d3ee;
+    --blue:    #0ea5c4;
+    --text:    #e6eef8;
+    --muted:   #4d6a85;
+    --muted2:  #33475e;
     --danger:  #ff6b6b;
     --amber:   #ffb020;
+    --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+    --font-mono: 'DM Mono', 'Courier New', monospace;
+    --font-body: 'Manrope', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -64,9 +67,13 @@ html { height:100%; }
 
 body {
     height: 100dvh;
-    background: var(--bg);
+    background:
+        linear-gradient(rgba(34,211,238,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,211,238,0.05) 1px, transparent 1px),
+        var(--bg);
+    background-size: 34px 34px, 34px 34px, auto;
     color: var(--text);
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: var(--font-body);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -176,20 +183,24 @@ body.presell-mode .expert-header { display: block; }
 ══════════════════════════════════════ */
 .badge {
     display: inline-block;
-    background: linear-gradient(135deg, var(--primary), var(--blue));
-    color: #fff;
-    padding: 4px 13px;
-    border-radius: 20px;
-    font-size: 11px;
-    letter-spacing: 3px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--primary);
+    padding: 5px 13px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
-    font-weight: 700;
-    margin-bottom: 10px;
+    font-weight: 500;
+    margin-bottom: 12px;
 }
 
 .screen-title {
-    font-size: 26px;
-    font-weight: 800;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 28px;
+    font-weight: 600;
     line-height: 1.2;
     margin-bottom: 6px;
 }
@@ -251,22 +262,23 @@ select.form-input option { background: var(--card); color: var(--text); }
 .form-label {
     display: block;
     color: var(--muted2);
-    font-size: 13px;
-    letter-spacing: 1.2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     margin-bottom: 5px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .form-input {
     width: 100%;
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 6px;
     padding: 12px 13px;
     color: var(--text);
     font-size: 17px;
-    font-family: inherit;
+    font-family: var(--font-body);
     outline: none;
     transition: border-color 0.2s;
     -webkit-appearance: none;
@@ -280,8 +292,10 @@ select.form-input option { background: var(--card); color: var(--text); }
 ══════════════════════════════════════ */
 .progress-title {
     color: var(--text);
-    font-size: 26px;
-    font-weight: 800;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 27px;
+    font-weight: 600;
     line-height: 1.2;
     margin-bottom: 10px;
 }
@@ -380,17 +394,18 @@ select.form-input option { background: var(--card); color: var(--text); }
     border-radius: 999px;
     padding: 9px 16px;
     color: var(--text);
-    font-size: 14px;
-    font-family: inherit;
+    font-size: 13px;
+    font-family: var(--font-mono);
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
     -webkit-tap-highlight-color: transparent;
 }
 .chip.selected {
-    background: var(--primary);
+    background: rgba(34,211,238,0.12);
     border-color: var(--primary);
-    color: #06101e;
-    font-weight: 700;
+    color: var(--primary);
+    font-weight: 500;
+    box-shadow: 0 0 14px rgba(34,211,238,0.25);
 }
 .chip:active { transform: scale(0.97); }
 
@@ -480,23 +495,26 @@ select.form-input option { background: var(--card); color: var(--text); }
    BUTTONS
 ══════════════════════════════════════ */
 .btn {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--blue) 100%);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
+    background: rgba(34,211,238,0.08);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 999px;
     padding: 14px 24px;
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 2px;
     cursor: pointer;
     width: 100%;
-    font-family: inherit;
-    letter-spacing: 0.3px;
-    transition: opacity 0.2s, transform 0.15s;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 0 0 rgba(34,211,238,0);
 }
 
-.btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.btn::after { content: '→'; margin-left: 8px; font-family: var(--font-body); }
+.btn:hover:not(:disabled) { background: rgba(34,211,238,0.16); box-shadow: 0 0 24px rgba(34,211,238,0.35); transform: translateY(-1px); }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .presell-consent {
@@ -560,16 +578,18 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .phase-number {
-    font-size: clamp(0.75rem, 2.6vw, 0.95rem);
+    font-family: var(--font-mono);
+    font-size: clamp(0.7rem, 2.4vw, 0.82rem);
     color: var(--primary);
     letter-spacing: 3px;
     text-transform: uppercase;
-    font-weight: 700;
+    font-weight: 500;
     margin-bottom: 10px;
 }
 
 .phase-number-top {
     display: block;
+    font-family: var(--font-mono);
     color: var(--muted2);
     font-size: 0.7em;
     letter-spacing: 4px;
@@ -577,8 +597,10 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .phase-title {
-    font-size: clamp(1.8rem, 6vw, 2.6rem);
-    font-weight: 800;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.9rem, 6vw, 2.7rem);
+    font-weight: 600;
     line-height: 1.2;
     margin-bottom: 10px;
 }
@@ -617,11 +639,12 @@ select.form-input option { background: var(--card); color: var(--text); }
    QUIZ
 ══════════════════════════════════════ */
 .phase-label {
-    font-size: 13px;
+    font-family: var(--font-mono);
+    font-size: 11px;
     color: var(--accent, var(--primary));
     letter-spacing: 3px;
     text-transform: uppercase;
-    font-weight: 700;
+    font-weight: 500;
     margin-bottom: 4px;
 }
 
@@ -640,6 +663,7 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .p-counter {
+    font-family: var(--font-mono);
     font-size: 13px;
     color: var(--muted2);
     letter-spacing: 1.5px;
@@ -647,9 +671,10 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .p-pct {
+    font-family: var(--font-mono);
     font-size: 11px;
     color: var(--primary);
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .progress-bar {
@@ -683,10 +708,12 @@ select.form-input option { background: var(--card); color: var(--text); }
 .progress-fill.hot::after { background: var(--amber); box-shadow: 0 0 10px var(--amber); }
 
 .question-text {
-    font-size: 24px;
-    font-weight: 700;
-    line-height: 1.4;
-    margin-bottom: 14px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 16px;
 }
 
 .options { display: flex; flex-direction: column; gap: 10px; counter-reset: option-num; }
@@ -699,17 +726,16 @@ select.form-input option { background: var(--card); color: var(--text); }
     position: relative;
     background: var(--card);
     border: 1px solid var(--border);
-    border-left: 3px solid var(--pos-color, var(--border));
-    border-radius: 11px;
-    padding: 13px 14px 13px 42px;
+    border-radius: 8px;
+    padding: 16px 16px 16px 46px;
     cursor: pointer;
-    font-size: 17px;
+    font-size: 16px;
     line-height: 1.55;
     text-align: left;
-    color: #7aacc8;
-    transition: all 0.18s;
+    color: #90a8c0;
+    transition: border-color 0.18s, box-shadow 0.18s, background 0.18s, color 0.18s;
     width: 100%;
-    font-family: inherit;
+    font-family: var(--font-body);
     opacity: 0;
     transform: translateY(8px);
     animation: up 0.28s ease forwards;
@@ -720,32 +746,27 @@ select.form-input option { background: var(--card); color: var(--text); }
     overflow: hidden;
 }
 
-/* Badge numérico (numeração automática via CSS counter) */
+/* Badge de letra (A/B/C/D via CSS counter em upper-alpha) */
 .option::before {
-    content: counter(option-num);
+    content: counter(option-num, upper-alpha);
     position: absolute;
-    left: 10px;
+    left: 12px;
     /* Ancorado perto da 1a linha (não centralizado no bloco) — evita
        sobrepor o texto quando a opção quebra em 3+ linhas em telas estreitas */
-    top: 15px;
-    width: 22px; height: 22px;
+    top: 16px;
+    width: 20px; height: 20px;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 6px;
-    font-size: 12px; font-weight: 800;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 500;
     color: var(--accent, var(--primary));
-    border: 1px solid var(--accent, var(--primary));
-    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    background: rgba(34,211,238,0.04);
 }
 .options.grid2 .option::before { left: 8px; top: 12px; width: 20px; height: 20px; }
 
 /* Negrito automático nas 1as palavras (via JS) */
 .option .opt-head { color: var(--text); font-weight: 700; }
-
-/* Cores fixas por posição (stripe lateral esquerda) */
-.option:nth-child(1) { --pos-color: var(--primary); }
-.option:nth-child(2) { --pos-color: var(--blue); }
-.option:nth-child(3) { --pos-color: var(--amber); }
-.option:nth-child(4) { --pos-color: var(--danger); }
 
 .option:nth-child(1) { animation-delay: 0.04s; }
 .option:nth-child(2) { animation-delay: 0.10s; }
@@ -754,8 +775,8 @@ select.form-input option { background: var(--card); color: var(--text); }
 
 @keyframes up { to { opacity:1; transform:translateY(0); } }
 
-.option:hover  { border-color: var(--accent, var(--primary)); background: #071e30; color: var(--text); }
-.option.picked { border-color: var(--accent, var(--primary)); background: #071e30; color: var(--text); pointer-events: none; }
+.option:hover  { border-color: var(--accent, var(--primary)); background: #0e1c30; color: var(--text); box-shadow: 0 0 20px rgba(34,211,238,0.12); }
+.option.picked { border-color: var(--accent, var(--primary)); background: #0e1c30; color: var(--text); pointer-events: none; box-shadow: 0 0 20px rgba(34,211,238,0.18); }
 .option.picked::before { content: '✓'; color: #06101e; background: var(--accent, var(--primary)); border-color: var(--accent, var(--primary)); }
 
 /* Sotaque por fase (muda só a cor de destaque) */
@@ -887,8 +908,8 @@ select.form-input option { background: var(--card); color: var(--text); }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.loading-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-.loading-sub   { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+.loading-title { font-family: var(--font-display); font-style: italic; font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+.loading-sub   { color: var(--muted); font-family: var(--font-mono); font-size: 12px; margin-bottom: 20px; }
 
 .lsteps { text-align: left; width: 100%; }
 
@@ -950,9 +971,10 @@ body.presell-mode .expert-header { height: 300px; }
 }
 
 .presell-headline {
-    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
-    font-size: 28px;
-    font-weight: 700;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 30px;
+    font-weight: 600;
     line-height: 1.32;
     margin-bottom: 14px;
     color: var(--text);
@@ -1187,16 +1209,16 @@ body.presell-mode .expert-header { height: 300px; }
 <div class="wrap">
 
 <!-- ── PRÉ-SELL ── -->
-<div id="s-presell" class="screen active">
+<div id="s-presell" class="screen">
     <div class="presell-wrap">
         <h1 class="presell-headline">
             COMECE SEU RAIO-X
         </h1>
         <label class="presell-consent">
-            <input type="checkbox" id="lgpd-consent" onchange="document.getElementById('btn-presell').disabled = !this.checked">
+            <input type="checkbox" id="lgpd-consent">
             Concordo em seguir nos termos de privacidade da Lei LGPD e termos próprios.
         </label>
-        <button class="btn" id="btn-presell" onclick="trackFunilStep('RaioX_IniciouIdentificacao'); show('s-welcome-1')" disabled>Começar Meu RAIO-X</button>
+        <button class="btn" id="btn-presell" onclick="trackFunilStep('RaioX_IniciouIdentificacao'); show('s-welcome-1')">Começar Meu RAIO-X</button>
     </div>
 </div>
 
@@ -1213,7 +1235,7 @@ body.presell-mode .expert-header { height: 300px; }
 </div>
 
 <!-- ── WELCOME PARTE 1 (Nome, Apps, Cidade, Último Date) ── -->
-<div id="s-welcome-1" class="screen">
+<div id="s-welcome-1" class="screen active">
     <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
         <div class="badge">Personalizando Seu Raio-X</div>
 
@@ -1716,6 +1738,18 @@ function obterUtmSalvo() {
     try { return JSON.parse(localStorage.getItem('oxy_utm') || 'null'); } catch (e) { return null; }
 }
 
+// Recebe o alfaId da Land via URL (mesmo motivo do sid/utm: o cookie oxy_alfa_id
+// e Domain=.breno-atitude.com so persiste quando land e quiz estao nesse dominio -
+// em breno-atitude-quiz.vercel.app, lands-all.vercel.app etc o cookie nunca chega).
+// Guarda em localStorage pra sobreviver a navegacao dentro do proprio quiz.
+(function garantirAlfaIdDaUrl() {
+    const alfaId = new URLSearchParams(window.location.search).get('alfaId');
+    if (alfaId) localStorage.setItem('oxy_alfa_id_url', alfaId);
+})();
+function obterAlfaIdDaUrl() {
+    return localStorage.getItem('oxy_alfa_id_url') || null;
+}
+
 // ═══════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════
@@ -1963,14 +1997,15 @@ let temposFase        = {}; // { perfil, fase1, fase2, fase3, raiox } em segundo
 let temposPerguntas   = []; // paralelo a "respostas": segundos gastos em cada pergunta
 let questionShownAt   = null;
 let velocidadeCarregamentoQuizMs = null;
-window.__oxyAlfaId = null; // preenchido com o id do arquivo_alfa após o 1º /api/save-lead
+window.__oxyAlfaId = obterAlfaIdDaUrl(); // preenchido pela Land via URL, ou depois pelo 1º /api/save-lead
 
 // ── Cliques por pergunta/fase (mesmo padrão de LANDS-ALL/arquivo-alfa.js): usa o
 // cookie oxy_alfa_id já setado pela land, sem depender do save-lead do fim do quiz ──
 const ALFA_EVENTO_URL = 'https://kyzecbqeeybnjtmxuljg.supabase.co/functions/v1/arquivo-alfa-evento';
 function getAlfaCookie() {
     const m = document.cookie.match(/(?:^|; )oxy_alfa_id=([^;]*)/);
-    return m ? decodeURIComponent(m[1]) : null;
+    if (m) return decodeURIComponent(m[1]);
+    return obterAlfaIdDaUrl();
 }
 function enviarEventoAlfa(tipoEvento, metadata) {
     const id = getAlfaCookie();
@@ -2198,7 +2233,7 @@ window.onload = () => {
     }).catch(()=>{});
 
     updateMuteBtn(); // reflete preferência de som salva
-    document.body.classList.add('presell-mode'); // pré-sell começa ativa
+    updateFunnelProgress('s-welcome-1'); // quiz agora comeca direto no Perfil (sem a tela de pre-sell/LGPD)
     const p = new URLSearchParams(window.location.search);
     userName = p.get('nome') || p.get('name') || p.get('first_name') || '';
     if (userName) {
@@ -2815,6 +2850,7 @@ function confirmReportEmail() {
         body: JSON.stringify({
             ...userData,
             email: window.leadEmail,
+            alfaId: window.__oxyAlfaId || null,
             adicas:      adicasScores,
             diagnostico: lastReportDiagnostico,
             bios:        lastReportBios,
