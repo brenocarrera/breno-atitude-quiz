@@ -293,15 +293,79 @@ body.presell-mode .wrap { max-width: 960px; }
     display: block;
     font-family: var(--font-display);
     font-style: italic;
-    font-size: clamp(1.5rem, 5.5vw, 2rem);
+    font-size: clamp(1.25rem, 4.6vw, 1.6rem);
     font-weight: 600;
     color: var(--text);
     line-height: 1.25;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     text-transform: none;
     letter-spacing: 0;
 }
 .wz-label .form-required { font-size: 0.5em; vertical-align: super; }
+
+/* Campos agrupados dentro do mesmo passo */
+.wz-field + .wz-field { margin-top: 22px; }
+@media (min-width: 640px) {
+    /* .on é obrigatório aqui: sem ele, o display:grid reativaria passos ocultos */
+    .wz-step.duo.on { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+    .wz-step.duo.on .wz-field + .wz-field { margin-top: 0; }
+}
+
+/* ══════════════════════════════════════
+   CARDS DE ESCOLHA (gamificação)
+══════════════════════════════════════ */
+.pick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+}
+.pick-card {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 12px;
+    color: #90a8c0;
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.3;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.12s;
+    -webkit-tap-highlight-color: transparent;
+}
+.pick-card:hover {
+    border-color: var(--primary);
+    background: #0e1c30;
+    color: var(--text);
+    box-shadow: 0 0 18px rgba(34,211,238,0.12);
+}
+.pick-card:active { transform: scale(0.97); }
+.pick-card.selected {
+    border-color: var(--primary);
+    background: rgba(34,211,238,0.1);
+    color: var(--text);
+    font-weight: 600;
+    box-shadow: 0 0 20px rgba(34,211,238,0.22);
+}
+/* Selo de check no canto do card escolhido */
+.pick-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: -7px; right: -7px;
+    width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--bg);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+/* Grade dos signos — cards menores, símbolo em destaque */
+.pick-grid.signos { grid-template-columns: repeat(auto-fit, minmax(82px, 1fr)); }
+.pick-card.signo { padding: 10px 6px; font-size: 12px; }
+.signo-ico { display: block; font-size: 20px; margin-bottom: 4px; color: var(--primary); }
 
 .wz-nav { display: flex; align-items: center; gap: 12px; }
 .wz-nav .btn { flex: 1; }
@@ -323,45 +387,6 @@ body.presell-mode .wrap { max-width: 960px; }
 /* Select com a mesma cara do form-input */
 select.form-input { cursor: pointer; padding-right: 28px; }
 select.form-input option { background: var(--card); color: var(--text); }
-
-/* Multi-seleção compacta (apps) — caixa única igual aos selects */
-.ms { position: relative; }
-.ms-box {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    text-align: left;
-    cursor: pointer;
-    gap: 8px;
-}
-.ms-box .ms-label { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ms-box .ms-label.placeholder { color: var(--muted2); }
-.ms-box .ms-caret { color: var(--muted2); flex-shrink: 0; font-size: 11px; }
-.ms-panel {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0; right: 0;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 5px;
-    z-index: 50;
-    display: none;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.55);
-}
-.ms-panel.open { display: block; }
-.ms-option {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 10px;
-    border-radius: 8px;
-    font-size: 14px;
-    color: var(--text);
-    cursor: pointer;
-}
-.ms-option:hover { background: #071e30; }
-.ms-option input { accent-color: var(--primary); width: 16px; height: 16px; }
 
 .form-label {
     display: block;
@@ -491,28 +516,6 @@ select.form-input option { background: var(--card); color: var(--text); }
 /* ══════════════════════════════════════
    CHIPS (low-friction select)
 ══════════════════════════════════════ */
-.chip-group { display:flex; flex-wrap:wrap; gap:8px; }
-.chip {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 9px 16px;
-    color: var(--text);
-    font-size: 13px;
-    font-family: var(--font-mono);
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
-    -webkit-tap-highlight-color: transparent;
-}
-.chip.selected {
-    background: rgba(34,211,238,0.12);
-    border-color: var(--primary);
-    color: var(--primary);
-    font-weight: 500;
-    box-shadow: 0 0 14px rgba(34,211,238,0.25);
-}
-.chip:active { transform: scale(0.97); }
-
 .form-required { color: var(--danger); margin-left: 3px; }
 
 /* ══════════════════════════════════════
@@ -1472,41 +1475,43 @@ body.presell-mode .expert-header { height: 300px; }
     <div class="wz">
         <div class="wz-head">
             <div class="badge">Personalizando Seu Raio-X</div>
-            <span class="wz-counter" id="wz-counter-1">01 / 04</span>
+            <span class="wz-counter" id="wz-counter-1">01 / 02</span>
         </div>
 
         <div id="funnel-progress-1"></div>
 
         <div class="wz-steps" id="wz-1">
-            <div class="wz-step" data-req="nome">
-                <label class="wz-label" for="f-nome">Nome<span class="form-required">*</span></label>
-                <input type="text" id="f-nome" class="form-input" placeholder="Seu nome">
-            </div>
-
-            <div class="wz-step" data-req="apps">
-                <label class="wz-label">Apps que usa<span class="form-required">*</span></label>
-                <div class="chip-group" id="chips-apps">
-                    <button type="button" class="chip" data-value="Tinder" onclick="toggleChipMulti(this,'apps')">Tinder</button>
-                    <button type="button" class="chip" data-value="Bumble" onclick="toggleChipMulti(this,'apps')">Bumble</button>
-                    <button type="button" class="chip" data-value="Badoo" onclick="toggleChipMulti(this,'apps')">Badoo</button>
-                    <button type="button" class="chip" data-value="Inner Circle" onclick="toggleChipMulti(this,'apps')">Inner Circle</button>
-                    <button type="button" class="chip" data-value="Happn" onclick="toggleChipMulti(this,'apps')">Happn</button>
+            <div class="wz-step duo" data-req="nome">
+                <div class="wz-field">
+                    <label class="wz-label" for="f-nome">Nome<span class="form-required">*</span></label>
+                    <input type="text" id="f-nome" class="form-input" placeholder="Seu nome">
+                </div>
+                <div class="wz-field">
+                    <label class="wz-label" for="f-cidade">Cidade</label>
+                    <input type="text" id="f-cidade" class="form-input" placeholder="Ex: São Paulo">
                 </div>
             </div>
 
-            <div class="wz-step">
-                <label class="wz-label" for="f-cidade">Cidade</label>
-                <input type="text" id="f-cidade" class="form-input" placeholder="Ex: São Paulo">
-            </div>
-
-            <div class="wz-step" data-req="ultimoDate">
-                <label class="wz-label">Último date<span class="form-required">*</span></label>
-                <div class="chip-group" id="chips-ultimo-date">
-                    <button type="button" class="chip" data-value="menos de 1 mês" onclick="toggleChipSingle(this,'ultimoDate')">Menos de 1 mês</button>
-                    <button type="button" class="chip" data-value="1 a 6 meses" onclick="toggleChipSingle(this,'ultimoDate')">1 a 6 meses</button>
-                    <button type="button" class="chip" data-value="6 meses a 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">6 meses a 1 ano</button>
-                    <button type="button" class="chip" data-value="mais de 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">Mais de 1 ano</button>
-                    <button type="button" class="chip" data-value="nunca tive" onclick="toggleChipSingle(this,'ultimoDate')">Nunca tive</button>
+            <div class="wz-step" data-req="apps,ultimoDate">
+                <div class="wz-field">
+                    <label class="wz-label">Apps que usa<span class="form-required">*</span></label>
+                    <div class="pick-grid" id="chips-apps">
+                        <button type="button" class="pick-card" data-value="Tinder" onclick="toggleChipMulti(this,'apps')">Tinder</button>
+                        <button type="button" class="pick-card" data-value="Bumble" onclick="toggleChipMulti(this,'apps')">Bumble</button>
+                        <button type="button" class="pick-card" data-value="Badoo" onclick="toggleChipMulti(this,'apps')">Badoo</button>
+                        <button type="button" class="pick-card" data-value="Inner Circle" onclick="toggleChipMulti(this,'apps')">Inner Circle</button>
+                        <button type="button" class="pick-card" data-value="Happn" onclick="toggleChipMulti(this,'apps')">Happn</button>
+                    </div>
+                </div>
+                <div class="wz-field">
+                    <label class="wz-label">Último date<span class="form-required">*</span></label>
+                    <div class="pick-grid" id="chips-ultimo-date">
+                        <button type="button" class="pick-card" data-value="menos de 1 mês" onclick="toggleChipSingle(this,'ultimoDate')">Menos de 1 mês</button>
+                        <button type="button" class="pick-card" data-value="1 a 6 meses" onclick="toggleChipSingle(this,'ultimoDate')">1 a 6 meses</button>
+                        <button type="button" class="pick-card" data-value="6 meses a 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">6 meses a 1 ano</button>
+                        <button type="button" class="pick-card" data-value="mais de 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">Mais de 1 ano</button>
+                        <button type="button" class="pick-card" data-value="nunca tive" onclick="toggleChipSingle(this,'ultimoDate')">Nunca tive</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1524,57 +1529,53 @@ body.presell-mode .expert-header { height: 300px; }
     <div class="wz">
         <div class="wz-head">
             <div class="badge">Deixando Exclusivo Seu Raio-X</div>
-            <span class="wz-counter" id="wz-counter-2">01 / 04</span>
+            <span class="wz-counter" id="wz-counter-2">01 / 02</span>
         </div>
 
         <div id="funnel-progress-2"></div>
 
         <div class="wz-steps" id="wz-2">
-            <div class="wz-step">
-                <label class="wz-label">Idade<span class="form-required">*</span></label>
-                <div class="age-value" id="age-value-label">32 anos</div>
-                <input type="range" id="f-idade" class="age-slider" min="18" max="70" value="32" oninput="onAgeSlide(this.value)">
+            <div class="wz-step duo">
+                <div class="wz-field">
+                    <label class="wz-label">Idade<span class="form-required">*</span></label>
+                    <div class="age-value" id="age-value-label">32 anos</div>
+                    <input type="range" id="f-idade" class="age-slider" min="18" max="70" value="32" oninput="onAgeSlide(this.value)">
+                </div>
+                <div class="wz-field">
+                    <label class="wz-label">Altura<span class="form-required">*</span></label>
+                    <div class="stepper">
+                        <button type="button" class="stepper-btn" onclick="onHeightStep(-1)">−</button>
+                        <input type="text" class="stepper-value stepper-input" id="height-value-label"
+                               value="1,70m" inputmode="numeric"
+                               onfocus="this.value = String(selectedAlturaCm)"
+                               onblur="onHeightType(this.value)">
+                        <button type="button" class="stepper-btn" onclick="onHeightStep(1)">+</button>
+                    </div>
+                </div>
             </div>
 
             <div class="wz-step" data-req="signo">
-                <label class="wz-label">Signo<span class="form-required">*</span></label>
-                <div class="ms" id="ms-signo">
-                <button type="button" class="form-input ms-box" onclick="toggleSignoPanel(event)">
-                    <span class="ms-label placeholder" id="ms-signo-label">Selecione</span>
-                    <span class="ms-caret">▾</span>
-                </button>
-                <div class="ms-panel" id="ms-signo-panel">
-                    <div class="ms-option" onclick="selectSigno('Áries','♈')">♈ Áries</div>
-                    <div class="ms-option" onclick="selectSigno('Touro','♉')">♉ Touro</div>
-                    <div class="ms-option" onclick="selectSigno('Gêmeos','♊')">♊ Gêmeos</div>
-                    <div class="ms-option" onclick="selectSigno('Câncer','♋')">♋ Câncer</div>
-                    <div class="ms-option" onclick="selectSigno('Leão','♌')">♌ Leão</div>
-                    <div class="ms-option" onclick="selectSigno('Virgem','♍')">♍ Virgem</div>
-                    <div class="ms-option" onclick="selectSigno('Libra','♎')">♎ Libra</div>
-                    <div class="ms-option" onclick="selectSigno('Escorpião','♏')">♏ Escorpião</div>
-                    <div class="ms-option" onclick="selectSigno('Sagitário','♐')">♐ Sagitário</div>
-                    <div class="ms-option" onclick="selectSigno('Capricórnio','♑')">♑ Capricórnio</div>
-                    <div class="ms-option" onclick="selectSigno('Aquário','♒')">♒ Aquário</div>
-                    <div class="ms-option" onclick="selectSigno('Peixes','♓')">♓ Peixes</div>
+                <div class="wz-field">
+                    <label class="wz-label">Signo<span class="form-required">*</span></label>
+                    <div class="pick-grid signos" id="grid-signo">
+                        <button type="button" class="pick-card signo" onclick="selectSigno('Áries','♈')"><span class="signo-ico">♈</span>Áries</button>
+                        <button type="button" class="pick-card signo" onclick="selectSigno('Touro','♉')"><span class="signo-ico">♉</span>Touro</button>
+                        <button type="button" class="pick-card signo" onclick="selectSigno('Gêmeos','♊')"><span class="signo-ico">♊</span>Gêmeos</button>
+                        <button type="button" class="pick-card signo" onclick="selectSigno('Câncer','♋')"><span class="signo-ico">♋</span>Câncer</button>
+                        <button type="button" class="pick-card signo" onclick="selectSigno('Leão','♌')"><span class="signo-ico">♌</span>Leão</button>
+                        <button type="button" class="pick-card signo" onclick="selectSigno('Virgem','♍')"><span class="signo-ico">♍</span>Virgem</button>
+                        <button type="button" class="pick-card signo" onclick="selectSigno('Libra','♎')"><span class="signo-ico">♎</span>Libra</button>
+                        <button type="button" class="pick-card signo" onclick="selectSigno('Escorpião','♏')"><span class="signo-ico">♏</span>Escorpião</button>
+                        <button type="button" class="pick-card signo" onclick="selectSigno('Sagitário','♐')"><span class="signo-ico">♐</span>Sagitário</button>
+                        <button type="button" class="pick-card signo" onclick="selectSigno('Capricórnio','♑')"><span class="signo-ico">♑</span>Capricórnio</button>
+                        <button type="button" class="pick-card signo" onclick="selectSigno('Aquário','♒')"><span class="signo-ico">♒</span>Aquário</button>
+                        <button type="button" class="pick-card signo" onclick="selectSigno('Peixes','♓')"><span class="signo-ico">♓</span>Peixes</button>
+                    </div>
                 </div>
-            </div>
-        </div>
-
-            <div class="wz-step">
-                <label class="wz-label">Altura<span class="form-required">*</span></label>
-                <div class="stepper">
-                    <button type="button" class="stepper-btn" onclick="onHeightStep(-1)">−</button>
-                    <input type="text" class="stepper-value stepper-input" id="height-value-label"
-                           value="1,70m" inputmode="numeric"
-                           onfocus="this.value = String(selectedAlturaCm)"
-                           onblur="onHeightType(this.value)">
-                    <button type="button" class="stepper-btn" onclick="onHeightStep(1)">+</button>
+                <div class="wz-field">
+                    <label class="wz-label" for="f-profissao">Profissão</label>
+                    <input type="text" id="f-profissao" class="form-input" placeholder="Ex: Engenheiro">
                 </div>
-            </div>
-
-            <div class="wz-step">
-                <label class="wz-label" for="f-profissao">Profissão</label>
-                <input type="text" id="f-profissao" class="form-input" placeholder="Ex: Engenheiro">
             </div>
         </div>
 
@@ -2621,39 +2622,30 @@ let selectedAlturaCm = 170;
 function toggleChipMulti(btn, group) {
     btn.classList.toggle('selected');
     if (group === 'apps') {
-        const active = document.querySelectorAll('#chips-apps .chip.selected');
+        const active = document.querySelectorAll('#chips-apps .pick-card.selected');
         selectedApps = Array.from(active).map(c => c.dataset.value);
     }
 }
 
 function toggleChipSingle(btn, group) {
     const container = btn.parentElement;
-    container.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    container.querySelectorAll('.pick-card').forEach(c => c.classList.remove('selected'));
     btn.classList.add('selected');
     if (group === 'ultimoDate') selectedUltimoDate = btn.dataset.value;
-    wzAutoAdvance(btn); // escolha única → segue sozinho pro próximo campo
-}
-
-function toggleSignoPanel(e) {
-    if (e) e.stopPropagation();
-    document.getElementById('ms-signo-panel').classList.toggle('open');
+    wzAutoAdvance(btn); // só avança se o passo inteiro já estiver completo
 }
 
 function selectSigno(nome, emoji) {
     selectedSigno = nome;
-    const label = document.getElementById('ms-signo-label');
-    label.textContent = emoji + ' ' + nome;
-    label.classList.remove('placeholder');
-    document.getElementById('ms-signo-panel').classList.remove('open');
-    wzAutoAdvance(label); // escolha única → segue sozinho pro próximo campo
-}
-
-document.addEventListener('click', (e) => {
-    const ms = document.getElementById('ms-signo');
-    if (ms && !ms.contains(e.target)) {
-        document.getElementById('ms-signo-panel').classList.remove('open');
+    const grid = document.getElementById('grid-signo');
+    if (grid) {
+        grid.querySelectorAll('.pick-card').forEach(c => c.classList.remove('selected'));
+        const escolhido = Array.from(grid.querySelectorAll('.pick-card'))
+            .find(c => c.textContent.trim().endsWith(nome));
+        if (escolhido) escolhido.classList.add('selected');
+        wzAutoAdvance(grid); // só avança se o passo inteiro já estiver completo
     }
-});
+}
 
 function onAgeSlide(value) {
     selectedIdade = parseInt(value, 10);
@@ -2724,23 +2716,30 @@ function wzInit(wzId) {
     wzRender(wzId);
 }
 
-/** Valida só o campo obrigatório do passo atual (mensagens iguais às do fluxo original) */
+// Regras obrigatórias por campo — mesmas verificações e mensagens do fluxo original
+const WZ_RULES = {
+    nome:       { ok: () => !!document.getElementById('f-nome').value.trim(), msg: 'Preencha seu nome para continuar.' },
+    apps:       { ok: () => selectedApps.length > 0,  msg: 'Selecione ao menos um app que você usa.' },
+    ultimoDate: { ok: () => !!selectedUltimoDate,     msg: 'Selecione a opção de último date.' },
+    signo:      { ok: () => !!selectedSigno,          msg: 'Selecione seu signo para continuar.' },
+};
+
+function wzReqs(step) {
+    return (step.dataset.req || '').split(',').map(s => s.trim()).filter(Boolean);
+}
+
+/** Valida os obrigatórios do passo atual e avisa no primeiro que faltar */
 function wzValidateStep(step) {
-    const req = step.dataset.req;
-    if (!req) return true;
-    if (req === 'nome' && !document.getElementById('f-nome').value.trim()) {
-        soundError(); alert('Preencha seu nome para continuar.'); return false;
-    }
-    if (req === 'apps' && !selectedApps.length) {
-        soundError(); alert('Selecione ao menos um app que você usa.'); return false;
-    }
-    if (req === 'ultimoDate' && !selectedUltimoDate) {
-        soundError(); alert('Selecione a opção de último date.'); return false;
-    }
-    if (req === 'signo' && !selectedSigno) {
-        soundError(); alert('Selecione seu signo para continuar.'); return false;
+    for (const req of wzReqs(step)) {
+        const rule = WZ_RULES[req];
+        if (rule && !rule.ok()) { soundError(); alert(rule.msg); return false; }
     }
     return true;
+}
+
+/** Mesma checagem, porém silenciosa — usada para decidir o auto-avanço */
+function wzStepComplete(step) {
+    return wzReqs(step).every(req => !WZ_RULES[req] || WZ_RULES[req].ok());
 }
 
 function wzNext(wzId) {
@@ -2760,13 +2759,17 @@ function wzPrev(wzId) {
     wzRender(wzId);
 }
 
-/** Avança sozinho depois de uma escolha de opção única (chip/signo) */
+/**
+ * Avança sozinho depois de uma escolha de opção única — mas só quando o passo
+ * inteiro já está completo (com 2 campos por passo, não pode pular o outro).
+ */
 function wzAutoAdvance(el) {
     const wz = el.closest('.wz-steps');
     if (!wz) return;
     const steps = wzSteps(wz.id);
-    const isLast = WZ_STATE[wz.id] === steps.length - 1;
-    if (isLast) return;
+    const i = WZ_STATE[wz.id];
+    if (i === steps.length - 1) return;      // último passo: quem conclui é o botão original
+    if (!wzStepComplete(steps[i])) return;   // ainda falta campo obrigatório neste passo
     setTimeout(() => wzNext(wz.id), 320);
 }
 
