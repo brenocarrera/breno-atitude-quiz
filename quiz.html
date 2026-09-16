@@ -271,6 +271,55 @@ body.presell-mode .wrap { max-width: 960px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .form-group { margin-bottom: 9px; }
 
+/* ══════════════════════════════════════
+   WIZARD DO FORMULÁRIO (um campo por vez)
+══════════════════════════════════════ */
+.wz { display: flex; flex-direction: column; flex: 1; justify-content: center; }
+.wz-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wz-counter { font-family: var(--font-mono); font-size: 13px; color: var(--primary); letter-spacing: 1px; flex-shrink: 0; }
+
+.wz-steps { position: relative; margin: 6px 0 18px; }
+.wz-step { display: none; }
+.wz-step.on {
+    display: block;
+    animation: wzIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes wzIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.wz-label {
+    display: block;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.5rem, 5.5vw, 2rem);
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.25;
+    margin-bottom: 16px;
+    text-transform: none;
+    letter-spacing: 0;
+}
+.wz-label .form-required { font-size: 0.5em; vertical-align: super; }
+
+.wz-nav { display: flex; align-items: center; gap: 12px; }
+.wz-nav .btn { flex: 1; }
+.wz-back {
+    background: none;
+    border: none;
+    color: var(--muted2);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    padding: 6px 4px;
+    flex-shrink: 0;
+    transition: color 0.2s;
+}
+.wz-back:hover { color: var(--primary); }
+.wz-back.hidden { visibility: hidden; }
+
 /* Select com a mesma cara do form-input */
 select.form-input { cursor: pointer; padding-right: 28px; }
 select.form-input option { background: var(--card); color: var(--text); }
@@ -1370,7 +1419,7 @@ body.presell-mode .expert-header { height: 300px; }
 <div class="wrap">
 
 <!-- ── PRÉ-SELL ── -->
-<div id="s-presell" class="screen hero-screen">
+<div id="s-presell" class="screen hero-screen active">
     <div class="hero-grid">
         <div class="presell-wrap hero-col-text">
             <div class="hero-eyebrow"><span class="hero-eyebrow-line"></span>Protocolo // Autopercepção</div>
@@ -1419,64 +1468,77 @@ body.presell-mode .expert-header { height: 300px; }
 </div>
 
 <!-- ── WELCOME PARTE 1 (Nome, Apps, Cidade, Último Date) ── -->
-<div id="s-welcome-1" class="screen active">
-    <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
-        <div class="badge">Personalizando Seu Raio-X</div>
+<div id="s-welcome-1" class="screen">
+    <div class="wz">
+        <div class="wz-head">
+            <div class="badge">Personalizando Seu Raio-X</div>
+            <span class="wz-counter" id="wz-counter-1">01 / 04</span>
+        </div>
 
         <div id="funnel-progress-1"></div>
 
-        <div class="form-group">
-            <label class="form-label">Nome<span class="form-required">*</span></label>
-            <input type="text" id="f-nome" class="form-input" placeholder="Seu nome">
-        </div>
+        <div class="wz-steps" id="wz-1">
+            <div class="wz-step" data-req="nome">
+                <label class="wz-label" for="f-nome">Nome<span class="form-required">*</span></label>
+                <input type="text" id="f-nome" class="form-input" placeholder="Seu nome">
+            </div>
 
-        <div class="form-group">
-            <label class="form-label">Apps que usa<span class="form-required">*</span></label>
-            <div class="chip-group" id="chips-apps">
-                <button type="button" class="chip" data-value="Tinder" onclick="toggleChipMulti(this,'apps')">Tinder</button>
-                <button type="button" class="chip" data-value="Bumble" onclick="toggleChipMulti(this,'apps')">Bumble</button>
-                <button type="button" class="chip" data-value="Badoo" onclick="toggleChipMulti(this,'apps')">Badoo</button>
-                <button type="button" class="chip" data-value="Inner Circle" onclick="toggleChipMulti(this,'apps')">Inner Circle</button>
-                <button type="button" class="chip" data-value="Happn" onclick="toggleChipMulti(this,'apps')">Happn</button>
+            <div class="wz-step" data-req="apps">
+                <label class="wz-label">Apps que usa<span class="form-required">*</span></label>
+                <div class="chip-group" id="chips-apps">
+                    <button type="button" class="chip" data-value="Tinder" onclick="toggleChipMulti(this,'apps')">Tinder</button>
+                    <button type="button" class="chip" data-value="Bumble" onclick="toggleChipMulti(this,'apps')">Bumble</button>
+                    <button type="button" class="chip" data-value="Badoo" onclick="toggleChipMulti(this,'apps')">Badoo</button>
+                    <button type="button" class="chip" data-value="Inner Circle" onclick="toggleChipMulti(this,'apps')">Inner Circle</button>
+                    <button type="button" class="chip" data-value="Happn" onclick="toggleChipMulti(this,'apps')">Happn</button>
+                </div>
+            </div>
+
+            <div class="wz-step">
+                <label class="wz-label" for="f-cidade">Cidade</label>
+                <input type="text" id="f-cidade" class="form-input" placeholder="Ex: São Paulo">
+            </div>
+
+            <div class="wz-step" data-req="ultimoDate">
+                <label class="wz-label">Último date<span class="form-required">*</span></label>
+                <div class="chip-group" id="chips-ultimo-date">
+                    <button type="button" class="chip" data-value="menos de 1 mês" onclick="toggleChipSingle(this,'ultimoDate')">Menos de 1 mês</button>
+                    <button type="button" class="chip" data-value="1 a 6 meses" onclick="toggleChipSingle(this,'ultimoDate')">1 a 6 meses</button>
+                    <button type="button" class="chip" data-value="6 meses a 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">6 meses a 1 ano</button>
+                    <button type="button" class="chip" data-value="mais de 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">Mais de 1 ano</button>
+                    <button type="button" class="chip" data-value="nunca tive" onclick="toggleChipSingle(this,'ultimoDate')">Nunca tive</button>
+                </div>
             </div>
         </div>
 
-        <div class="form-group">
-            <label class="form-label">Cidade</label>
-            <input type="text" id="f-cidade" class="form-input" placeholder="Ex: São Paulo">
+        <div class="wz-nav">
+            <button class="wz-back" id="wz-back-1" onclick="wzPrev('wz-1')">← Voltar</button>
+            <button class="btn wz-next" id="wz-next-1" onclick="wzNext('wz-1')">Continuar</button>
+            <button class="btn" id="btn-welcome-1" onclick="goToWelcome2()" style="display:none;">Continuar</button>
         </div>
-
-        <div class="form-group">
-            <label class="form-label">Último date<span class="form-required">*</span></label>
-            <div class="chip-group" id="chips-ultimo-date">
-                <button type="button" class="chip" data-value="menos de 1 mês" onclick="toggleChipSingle(this,'ultimoDate')">Menos de 1 mês</button>
-                <button type="button" class="chip" data-value="1 a 6 meses" onclick="toggleChipSingle(this,'ultimoDate')">1 a 6 meses</button>
-                <button type="button" class="chip" data-value="6 meses a 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">6 meses a 1 ano</button>
-                <button type="button" class="chip" data-value="mais de 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">Mais de 1 ano</button>
-                <button type="button" class="chip" data-value="nunca tive" onclick="toggleChipSingle(this,'ultimoDate')">Nunca tive</button>
-            </div>
-        </div>
-
-        <button class="btn" id="btn-welcome-1" onclick="goToWelcome2()">Continuar</button>
     </div>
 </div>
 
 <!-- ── WELCOME PARTE 2 (Idade, Signo, Altura, Profissão) ── -->
 <div id="s-welcome-2" class="screen">
-    <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
-        <div class="badge">Deixando Exclusivo Seu Raio-X</div>
+    <div class="wz">
+        <div class="wz-head">
+            <div class="badge">Deixando Exclusivo Seu Raio-X</div>
+            <span class="wz-counter" id="wz-counter-2">01 / 04</span>
+        </div>
 
         <div id="funnel-progress-2"></div>
 
-        <div class="form-group">
-            <label class="form-label">Idade<span class="form-required">*</span></label>
-            <div class="age-value" id="age-value-label">32 anos</div>
-            <input type="range" id="f-idade" class="age-slider" min="18" max="70" value="32" oninput="onAgeSlide(this.value)">
-        </div>
+        <div class="wz-steps" id="wz-2">
+            <div class="wz-step">
+                <label class="wz-label">Idade<span class="form-required">*</span></label>
+                <div class="age-value" id="age-value-label">32 anos</div>
+                <input type="range" id="f-idade" class="age-slider" min="18" max="70" value="32" oninput="onAgeSlide(this.value)">
+            </div>
 
-        <div class="form-group">
-            <label class="form-label">Signo<span class="form-required">*</span></label>
-            <div class="ms" id="ms-signo">
+            <div class="wz-step" data-req="signo">
+                <label class="wz-label">Signo<span class="form-required">*</span></label>
+                <div class="ms" id="ms-signo">
                 <button type="button" class="form-input ms-box" onclick="toggleSignoPanel(event)">
                     <span class="ms-label placeholder" id="ms-signo-label">Selecione</span>
                     <span class="ms-caret">▾</span>
@@ -1498,24 +1560,29 @@ body.presell-mode .expert-header { height: 300px; }
             </div>
         </div>
 
-        <div class="form-group">
-            <label class="form-label">Altura<span class="form-required">*</span></label>
-            <div class="stepper">
-                <button type="button" class="stepper-btn" onclick="onHeightStep(-1)">−</button>
-                <input type="text" class="stepper-value stepper-input" id="height-value-label"
-                       value="1,70m" inputmode="numeric"
-                       onfocus="this.value = String(selectedAlturaCm)"
-                       onblur="onHeightType(this.value)">
-                <button type="button" class="stepper-btn" onclick="onHeightStep(1)">+</button>
+            <div class="wz-step">
+                <label class="wz-label">Altura<span class="form-required">*</span></label>
+                <div class="stepper">
+                    <button type="button" class="stepper-btn" onclick="onHeightStep(-1)">−</button>
+                    <input type="text" class="stepper-value stepper-input" id="height-value-label"
+                           value="1,70m" inputmode="numeric"
+                           onfocus="this.value = String(selectedAlturaCm)"
+                           onblur="onHeightType(this.value)">
+                    <button type="button" class="stepper-btn" onclick="onHeightStep(1)">+</button>
+                </div>
+            </div>
+
+            <div class="wz-step">
+                <label class="wz-label" for="f-profissao">Profissão</label>
+                <input type="text" id="f-profissao" class="form-input" placeholder="Ex: Engenheiro">
             </div>
         </div>
 
-        <div class="form-group">
-            <label class="form-label">Profissão</label>
-            <input type="text" id="f-profissao" class="form-input" placeholder="Ex: Engenheiro">
+        <div class="wz-nav">
+            <button class="wz-back" id="wz-back-2" onclick="wzPrev('wz-2')">← Voltar</button>
+            <button class="btn wz-next" id="wz-next-2" onclick="wzNext('wz-2')">Continuar</button>
+            <button class="btn" id="btn-start" onclick="startQuiz()" style="display:none;">Continuar</button>
         </div>
-
-        <button class="btn" id="btn-start" onclick="startQuiz()">Continuar</button>
     </div>
 </div>
 
@@ -2420,8 +2487,7 @@ window.onload = () => {
     }).catch(()=>{});
 
     updateMuteBtn(); // reflete preferência de som salva
-    updateFunnelProgress('s-welcome-1'); // quiz agora comeca direto no Perfil (sem a tela de pre-sell/LGPD)
-    updateStageNav('s-welcome-1');
+    show('s-presell'); // pre-sell é a porta de entrada: o criativo joga direto aqui
     const p = new URLSearchParams(window.location.search);
     userName = p.get('nome') || p.get('name') || p.get('first_name') || '';
     if (userName) {
@@ -2565,6 +2631,7 @@ function toggleChipSingle(btn, group) {
     container.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
     btn.classList.add('selected');
     if (group === 'ultimoDate') selectedUltimoDate = btn.dataset.value;
+    wzAutoAdvance(btn); // escolha única → segue sozinho pro próximo campo
 }
 
 function toggleSignoPanel(e) {
@@ -2578,6 +2645,7 @@ function selectSigno(nome, emoji) {
     label.textContent = emoji + ' ' + nome;
     label.classList.remove('placeholder');
     document.getElementById('ms-signo-panel').classList.remove('open');
+    wzAutoAdvance(label); // escolha única → segue sozinho pro próximo campo
 }
 
 document.addEventListener('click', (e) => {
@@ -2609,6 +2677,115 @@ function onHeightType(rawValue) {
     }
     document.getElementById('height-value-label').value = formatAltura(selectedAlturaCm);
 }
+
+// ═══════════════════════════════════════
+// WIZARD DO FORMULÁRIO (um campo por vez)
+// ═══════════════════════════════════════
+// Só controla a APRESENTAÇÃO dos campos. Os dados continuam vindo dos mesmos
+// ids/handlers de antes (f-nome, selectedApps, selectedSigno, etc.) e a
+// validação final segue em goToWelcome2()/startQuiz(), intactas.
+const WZ_STATE = { 'wz-1': 0, 'wz-2': 0 };
+
+// Botão original de cada tela (roda a validação + avanço que já existiam)
+const WZ_SUBMIT_BTN = { 'wz-1': 'btn-welcome-1', 'wz-2': 'btn-start' };
+
+function wzSteps(wzId) {
+    return Array.from(document.querySelectorAll('#' + wzId + ' .wz-step'));
+}
+
+function wzRender(wzId) {
+    const steps = wzSteps(wzId);
+    const i = WZ_STATE[wzId];
+    steps.forEach((s, idx) => s.classList.toggle('on', idx === i));
+
+    const n = wzId.split('-')[1]; // '1' ou '2'
+    const counter = document.getElementById('wz-counter-' + n);
+    if (counter) {
+        counter.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(steps.length).padStart(2, '0');
+    }
+
+    const back = document.getElementById('wz-back-' + n);
+    if (back) back.classList.toggle('hidden', i === 0);
+
+    // No último campo, mostra o botão original (que já tem a validação completa)
+    const isLast   = i === steps.length - 1;
+    const nextBtn  = document.getElementById('wz-next-' + n);
+    const finalBtn = document.getElementById(WZ_SUBMIT_BTN[wzId]);
+    if (nextBtn)  nextBtn.style.display  = isLast ? 'none' : '';
+    if (finalBtn) finalBtn.style.display = isLast ? '' : 'none';
+
+    // Foco automático em campos de texto — deixa o preenchimento mais fluido
+    const input = steps[i] && steps[i].querySelector('input[type="text"]');
+    if (input) setTimeout(() => input.focus(), 120);
+}
+
+function wzInit(wzId) {
+    WZ_STATE[wzId] = 0;
+    wzRender(wzId);
+}
+
+/** Valida só o campo obrigatório do passo atual (mensagens iguais às do fluxo original) */
+function wzValidateStep(step) {
+    const req = step.dataset.req;
+    if (!req) return true;
+    if (req === 'nome' && !document.getElementById('f-nome').value.trim()) {
+        soundError(); alert('Preencha seu nome para continuar.'); return false;
+    }
+    if (req === 'apps' && !selectedApps.length) {
+        soundError(); alert('Selecione ao menos um app que você usa.'); return false;
+    }
+    if (req === 'ultimoDate' && !selectedUltimoDate) {
+        soundError(); alert('Selecione a opção de último date.'); return false;
+    }
+    if (req === 'signo' && !selectedSigno) {
+        soundError(); alert('Selecione seu signo para continuar.'); return false;
+    }
+    return true;
+}
+
+function wzNext(wzId) {
+    const steps = wzSteps(wzId);
+    const i = WZ_STATE[wzId];
+    if (!wzValidateStep(steps[i])) return;
+    if (i >= steps.length - 1) return;
+    WZ_STATE[wzId] = i + 1;
+    soundAdvance();
+    wzRender(wzId);
+}
+
+function wzPrev(wzId) {
+    const i = WZ_STATE[wzId];
+    if (i <= 0) return;
+    WZ_STATE[wzId] = i - 1;
+    wzRender(wzId);
+}
+
+/** Avança sozinho depois de uma escolha de opção única (chip/signo) */
+function wzAutoAdvance(el) {
+    const wz = el.closest('.wz-steps');
+    if (!wz) return;
+    const steps = wzSteps(wz.id);
+    const isLast = WZ_STATE[wz.id] === steps.length - 1;
+    if (isLast) return;
+    setTimeout(() => wzNext(wz.id), 320);
+}
+
+// Enter nos campos de texto avança o passo
+document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    const step = e.target.closest && e.target.closest('.wz-step.on');
+    if (!step) return;
+    const wz = step.closest('.wz-steps');
+    if (!wz) return;
+    e.preventDefault();
+    const steps = wzSteps(wz.id);
+    if (WZ_STATE[wz.id] === steps.length - 1) {
+        const btn = document.getElementById(WZ_SUBMIT_BTN[wz.id]);
+        if (btn) btn.click();
+    } else {
+        wzNext(wz.id);
+    }
+});
 
 function goToWelcome2() {
     const nome = document.getElementById('f-nome').value.trim();
@@ -2729,6 +2906,8 @@ function show(id) {
     document.querySelector('.main').scrollTo(0,0);
     updateFunnelProgress(id);
     updateStageNav(id);
+    if (id === 's-welcome-1') wzInit('wz-1');
+    if (id === 's-welcome-2') wzInit('wz-2');
 
     const autoBtnId = PHASE_AUTO_BTN[id];
     if (autoBtnId) {
