@@ -174,7 +174,7 @@ body.presell-mode .expert-header { display: block; }
 }
 
 .wrap { max-width: 520px; width: 100%; flex: 1; display: flex; flex-direction: column; }
-body.presell-mode .wrap { max-width: 960px; }
+body.wide-mode .wrap { max-width: 960px; }
 
 /* ══════════════════════════════════════
    FOOTER
@@ -1420,102 +1420,138 @@ body.presell-mode .expert-header { height: 300px; }
 
 <!-- ── WELCOME PARTE 1 (Nome, Apps, Cidade, Último Date) ── -->
 <div id="s-welcome-1" class="screen active">
-    <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
-        <div class="badge">Personalizando Seu Raio-X</div>
+    <div class="hero-grid">
+        <div class="hero-col-text" style="display:flex;flex-direction:column;justify-content:center;">
+            <div class="badge">Personalizando Seu Raio-X</div>
 
-        <div id="funnel-progress-1"></div>
+            <div id="funnel-progress-1"></div>
 
-        <div class="form-group">
-            <label class="form-label">Nome<span class="form-required">*</span></label>
-            <input type="text" id="f-nome" class="form-input" placeholder="Seu nome">
+            <div class="form-group">
+                <label class="form-label">Nome<span class="form-required">*</span></label>
+                <input type="text" id="f-nome" class="form-input" placeholder="Seu nome">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Apps que usa<span class="form-required">*</span></label>
+                <div class="chip-group" id="chips-apps">
+                    <button type="button" class="chip" data-value="Tinder" onclick="toggleChipMulti(this,'apps')">Tinder</button>
+                    <button type="button" class="chip" data-value="Bumble" onclick="toggleChipMulti(this,'apps')">Bumble</button>
+                    <button type="button" class="chip" data-value="Badoo" onclick="toggleChipMulti(this,'apps')">Badoo</button>
+                    <button type="button" class="chip" data-value="Inner Circle" onclick="toggleChipMulti(this,'apps')">Inner Circle</button>
+                    <button type="button" class="chip" data-value="Happn" onclick="toggleChipMulti(this,'apps')">Happn</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Cidade</label>
+                <input type="text" id="f-cidade" class="form-input" placeholder="Ex: São Paulo">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Último date<span class="form-required">*</span></label>
+                <div class="chip-group" id="chips-ultimo-date">
+                    <button type="button" class="chip" data-value="menos de 1 mês" onclick="toggleChipSingle(this,'ultimoDate')">Menos de 1 mês</button>
+                    <button type="button" class="chip" data-value="1 a 6 meses" onclick="toggleChipSingle(this,'ultimoDate')">1 a 6 meses</button>
+                    <button type="button" class="chip" data-value="6 meses a 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">6 meses a 1 ano</button>
+                    <button type="button" class="chip" data-value="mais de 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">Mais de 1 ano</button>
+                    <button type="button" class="chip" data-value="nunca tive" onclick="toggleChipSingle(this,'ultimoDate')">Nunca tive</button>
+                </div>
+            </div>
+
+            <button class="btn" id="btn-welcome-1" onclick="goToWelcome2()">Continuar</button>
         </div>
-
-        <div class="form-group">
-            <label class="form-label">Apps que usa<span class="form-required">*</span></label>
-            <div class="chip-group" id="chips-apps">
-                <button type="button" class="chip" data-value="Tinder" onclick="toggleChipMulti(this,'apps')">Tinder</button>
-                <button type="button" class="chip" data-value="Bumble" onclick="toggleChipMulti(this,'apps')">Bumble</button>
-                <button type="button" class="chip" data-value="Badoo" onclick="toggleChipMulti(this,'apps')">Badoo</button>
-                <button type="button" class="chip" data-value="Inner Circle" onclick="toggleChipMulti(this,'apps')">Inner Circle</button>
-                <button type="button" class="chip" data-value="Happn" onclick="toggleChipMulti(this,'apps')">Happn</button>
+        <div class="hero-col-visual">
+            <div class="scanner">
+                <div class="scanner-corner tl"></div>
+                <div class="scanner-corner tr"></div>
+                <div class="scanner-corner bl"></div>
+                <div class="scanner-corner br"></div>
+                <svg class="scanner-rings" viewBox="0 0 200 200">
+                    <circle cx="100" cy="100" r="88" class="ring ring-outer"/>
+                    <circle cx="100" cy="100" r="60" class="ring ring-inner"/>
+                    <circle cx="100" cy="100" r="88" class="ring ring-arc"/>
+                    <circle class="scanner-dot dot-1" cx="100" cy="12" r="3"/>
+                    <circle class="scanner-dot dot-2" cx="188" cy="100" r="3"/>
+                </svg>
+                <span class="scanner-caption">Sessão Privada</span>
             </div>
         </div>
-
-        <div class="form-group">
-            <label class="form-label">Cidade</label>
-            <input type="text" id="f-cidade" class="form-input" placeholder="Ex: São Paulo">
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Último date<span class="form-required">*</span></label>
-            <div class="chip-group" id="chips-ultimo-date">
-                <button type="button" class="chip" data-value="menos de 1 mês" onclick="toggleChipSingle(this,'ultimoDate')">Menos de 1 mês</button>
-                <button type="button" class="chip" data-value="1 a 6 meses" onclick="toggleChipSingle(this,'ultimoDate')">1 a 6 meses</button>
-                <button type="button" class="chip" data-value="6 meses a 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">6 meses a 1 ano</button>
-                <button type="button" class="chip" data-value="mais de 1 ano" onclick="toggleChipSingle(this,'ultimoDate')">Mais de 1 ano</button>
-                <button type="button" class="chip" data-value="nunca tive" onclick="toggleChipSingle(this,'ultimoDate')">Nunca tive</button>
-            </div>
-        </div>
-
-        <button class="btn" id="btn-welcome-1" onclick="goToWelcome2()">Continuar</button>
     </div>
 </div>
 
 <!-- ── WELCOME PARTE 2 (Idade, Signo, Altura, Profissão) ── -->
 <div id="s-welcome-2" class="screen">
-    <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
-        <div class="badge">Deixando Exclusivo Seu Raio-X</div>
+    <div class="hero-grid">
+        <div class="hero-col-text" style="display:flex;flex-direction:column;justify-content:center;">
+            <div class="badge">Deixando Exclusivo Seu Raio-X</div>
 
-        <div id="funnel-progress-2"></div>
+            <div id="funnel-progress-2"></div>
 
-        <div class="form-group">
-            <label class="form-label">Idade<span class="form-required">*</span></label>
-            <div class="age-value" id="age-value-label">32 anos</div>
-            <input type="range" id="f-idade" class="age-slider" min="18" max="70" value="32" oninput="onAgeSlide(this.value)">
-        </div>
+            <div class="form-group">
+                <label class="form-label">Idade<span class="form-required">*</span></label>
+                <div class="age-value" id="age-value-label">32 anos</div>
+                <input type="range" id="f-idade" class="age-slider" min="18" max="70" value="32" oninput="onAgeSlide(this.value)">
+            </div>
 
-        <div class="form-group">
-            <label class="form-label">Signo<span class="form-required">*</span></label>
-            <div class="ms" id="ms-signo">
-                <button type="button" class="form-input ms-box" onclick="toggleSignoPanel(event)">
-                    <span class="ms-label placeholder" id="ms-signo-label">Selecione</span>
-                    <span class="ms-caret">▾</span>
-                </button>
-                <div class="ms-panel" id="ms-signo-panel">
-                    <div class="ms-option" onclick="selectSigno('Áries','♈')">♈ Áries</div>
-                    <div class="ms-option" onclick="selectSigno('Touro','♉')">♉ Touro</div>
-                    <div class="ms-option" onclick="selectSigno('Gêmeos','♊')">♊ Gêmeos</div>
-                    <div class="ms-option" onclick="selectSigno('Câncer','♋')">♋ Câncer</div>
-                    <div class="ms-option" onclick="selectSigno('Leão','♌')">♌ Leão</div>
-                    <div class="ms-option" onclick="selectSigno('Virgem','♍')">♍ Virgem</div>
-                    <div class="ms-option" onclick="selectSigno('Libra','♎')">♎ Libra</div>
-                    <div class="ms-option" onclick="selectSigno('Escorpião','♏')">♏ Escorpião</div>
-                    <div class="ms-option" onclick="selectSigno('Sagitário','♐')">♐ Sagitário</div>
-                    <div class="ms-option" onclick="selectSigno('Capricórnio','♑')">♑ Capricórnio</div>
-                    <div class="ms-option" onclick="selectSigno('Aquário','♒')">♒ Aquário</div>
-                    <div class="ms-option" onclick="selectSigno('Peixes','♓')">♓ Peixes</div>
+            <div class="form-group">
+                <label class="form-label">Signo<span class="form-required">*</span></label>
+                <div class="ms" id="ms-signo">
+                    <button type="button" class="form-input ms-box" onclick="toggleSignoPanel(event)">
+                        <span class="ms-label placeholder" id="ms-signo-label">Selecione</span>
+                        <span class="ms-caret">▾</span>
+                    </button>
+                    <div class="ms-panel" id="ms-signo-panel">
+                        <div class="ms-option" onclick="selectSigno('Áries','♈')">♈ Áries</div>
+                        <div class="ms-option" onclick="selectSigno('Touro','♉')">♉ Touro</div>
+                        <div class="ms-option" onclick="selectSigno('Gêmeos','♊')">♊ Gêmeos</div>
+                        <div class="ms-option" onclick="selectSigno('Câncer','♋')">♋ Câncer</div>
+                        <div class="ms-option" onclick="selectSigno('Leão','♌')">♌ Leão</div>
+                        <div class="ms-option" onclick="selectSigno('Virgem','♍')">♍ Virgem</div>
+                        <div class="ms-option" onclick="selectSigno('Libra','♎')">♎ Libra</div>
+                        <div class="ms-option" onclick="selectSigno('Escorpião','♏')">♏ Escorpião</div>
+                        <div class="ms-option" onclick="selectSigno('Sagitário','♐')">♐ Sagitário</div>
+                        <div class="ms-option" onclick="selectSigno('Capricórnio','♑')">♑ Capricórnio</div>
+                        <div class="ms-option" onclick="selectSigno('Aquário','♒')">♒ Aquário</div>
+                        <div class="ms-option" onclick="selectSigno('Peixes','♓')">♓ Peixes</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label class="form-label">Altura<span class="form-required">*</span></label>
-            <div class="stepper">
-                <button type="button" class="stepper-btn" onclick="onHeightStep(-1)">−</button>
-                <input type="text" class="stepper-value stepper-input" id="height-value-label"
-                       value="1,70m" inputmode="numeric"
-                       onfocus="this.value = String(selectedAlturaCm)"
-                       onblur="onHeightType(this.value)">
-                <button type="button" class="stepper-btn" onclick="onHeightStep(1)">+</button>
+            <div class="form-group">
+                <label class="form-label">Altura<span class="form-required">*</span></label>
+                <div class="stepper">
+                    <button type="button" class="stepper-btn" onclick="onHeightStep(-1)">−</button>
+                    <input type="text" class="stepper-value stepper-input" id="height-value-label"
+                           value="1,70m" inputmode="numeric"
+                           onfocus="this.value = String(selectedAlturaCm)"
+                           onblur="onHeightType(this.value)">
+                    <button type="button" class="stepper-btn" onclick="onHeightStep(1)">+</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Profissão</label>
+                <input type="text" id="f-profissao" class="form-input" placeholder="Ex: Engenheiro">
+            </div>
+
+            <button class="btn" id="btn-start" onclick="startQuiz()">Continuar</button>
+        </div>
+        <div class="hero-col-visual">
+            <div class="scanner">
+                <div class="scanner-corner tl"></div>
+                <div class="scanner-corner tr"></div>
+                <div class="scanner-corner bl"></div>
+                <div class="scanner-corner br"></div>
+                <svg class="scanner-rings" viewBox="0 0 200 200">
+                    <circle cx="100" cy="100" r="88" class="ring ring-outer"/>
+                    <circle cx="100" cy="100" r="60" class="ring ring-inner"/>
+                    <circle cx="100" cy="100" r="88" class="ring ring-arc"/>
+                    <circle class="scanner-dot dot-1" cx="100" cy="12" r="3"/>
+                    <circle class="scanner-dot dot-2" cx="188" cy="100" r="3"/>
+                </svg>
+                <span class="scanner-caption">Calibrando Perfil</span>
             </div>
         </div>
-
-        <div class="form-group">
-            <label class="form-label">Profissão</label>
-            <input type="text" id="f-profissao" class="form-input" placeholder="Ex: Engenheiro">
-        </div>
-
-        <button class="btn" id="btn-start" onclick="startQuiz()">Continuar</button>
     </div>
 </div>
 
@@ -2422,6 +2458,7 @@ window.onload = () => {
     updateMuteBtn(); // reflete preferência de som salva
     updateFunnelProgress('s-welcome-1'); // quiz agora comeca direto no Perfil (sem a tela de pre-sell/LGPD)
     updateStageNav('s-welcome-1');
+    document.body.classList.add('wide-mode');
     const p = new URLSearchParams(window.location.search);
     userName = p.get('nome') || p.get('name') || p.get('first_name') || '';
     if (userName) {
@@ -2721,11 +2758,15 @@ function updateStageNav(screenId) {
     });
 }
 
+// Telas com o layout "hero" de 2 colunas (form/texto + círculo scanner decorativo)
+const WIDE_SCREENS = ['s-presell', 's-recover', 's-welcome-1', 's-welcome-2'];
+
 function show(id) {
     if (phaseAutoTimer) { clearTimeout(phaseAutoTimer); phaseAutoTimer = null; }
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.body.classList.toggle('presell-mode', id === 's-presell' || id === 's-recover');
+    document.body.classList.toggle('wide-mode', WIDE_SCREENS.includes(id));
     document.querySelector('.main').scrollTo(0,0);
     updateFunnelProgress(id);
     updateStageNav(id);
