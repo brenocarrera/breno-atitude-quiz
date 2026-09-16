@@ -248,7 +248,9 @@ body.presell-mode .wrap { max-width: 960px; }
 .back-btn:hover { color: var(--primary); }
 .back-btn svg { width:14px; height:14px; fill:currentColor; }
 
-.q-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+/* padding-right abre espaço pro botão de mudo fixo, que fica bem em cima
+   do contador nesta tela (é a única tela onde os dois disputam a mesma linha) */
+.q-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; padding-right: 44px; }
 .q-top-row .back-btn { margin-bottom: 0; }
 .q-counter { font-family: var(--font-mono); font-size: 13px; color: var(--primary); letter-spacing: 1px; }
 
@@ -467,8 +469,9 @@ select.form-input option { background: var(--card); color: var(--text); }
 ══════════════════════════════════════ */
 .age-value {
     color: var(--primary);
-    font-size: 28px;
-    font-weight: 700;
+    font-family: var(--font-mono);
+    font-size: 26px;
+    font-weight: 500;
     text-align: center;
     margin-bottom: 8px;
 }
@@ -527,8 +530,9 @@ select.form-input option { background: var(--card); color: var(--text); }
 .stepper-btn:active { transform: scale(0.94); }
 .stepper-value {
     color: var(--text);
-    font-size: 24px;
-    font-weight: 700;
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 500;
     min-width: 90px;
     text-align: center;
 }
@@ -568,25 +572,32 @@ select.form-input option { background: var(--card); color: var(--text); }
 .btn:hover:not(:disabled) { background: rgba(34,211,238,0.16); box-shadow: 0 0 24px rgba(34,211,238,0.35); transform: translateY(-1px); }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
-/* Scanning/processing state */
+/* Processando (fases 2 e 3): varredura de luz dentro do próprio botão-pílula,
+   no lugar do gradiente cheio do layout antigo */
 .btn.scanning {
-    background: linear-gradient(90deg, var(--card) 0%, #1a3a5c 30%, var(--primary) 50%, #1a3a5c 70%, var(--card) 100%);
-    background-size: 300% 100%;
+    background:
+        linear-gradient(90deg, transparent 0%, rgba(34,211,238,0.28) 45%, rgba(34,211,238,0.05) 60%, transparent 100%),
+        rgba(34,211,238,0.05);
+    background-size: 280% 100%, 100% 100%;
+    background-repeat: no-repeat;
     animation: scanGlow 1.8s linear infinite;
+    border-color: rgba(34,211,238,0.45);
     color: var(--muted);
     cursor: not-allowed;
     pointer-events: none;
 }
 
 @keyframes scanGlow {
-    0%   { background-position: 200% center; }
-    100% { background-position: -200% center; }
+    0%   { background-position: 200% center, center; }
+    100% { background-position: -200% center, center; }
 }
 
-/* Ready state (after scanning) */
+/* Pronto (depois da varredura) */
 .btn.ready {
-    background: linear-gradient(135deg, var(--primary), var(--blue));
-    box-shadow: 0 0 20px rgba(0,200,160,0.35);
+    background: rgba(34,211,238,0.16);
+    border-color: var(--primary);
+    color: var(--primary);
+    box-shadow: 0 0 26px rgba(34,211,238,0.4);
     animation: pulse-btn 0.6s ease;
 }
 
@@ -685,59 +696,6 @@ select.form-input option { background: var(--card); color: var(--text); }
     margin-bottom: 12px;
 }
 
-.progress-wrap { margin-bottom: 16px; }
-
-.progress-meta {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-}
-
-.p-counter {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    color: var(--muted2);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-}
-
-.p-pct {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--primary);
-    font-weight: 500;
-}
-
-.progress-bar {
-    height: 5px;
-    background: #0d2035;
-    border-radius: 4px;
-    position: relative;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--blue));
-    border-radius: 4px;
-    transition: width 0.55s cubic-bezier(0.4,0,0.2,1);
-    position: relative;
-}
-
-.progress-fill::after {
-    content: '';
-    position: absolute;
-    right: -4px; top: 50%;
-    transform: translateY(-50%);
-    width: 11px; height: 11px;
-    background: var(--primary);
-    border-radius: 50%;
-    box-shadow: 0 0 10px var(--primary);
-}
-
-/* Barra "esquenta" ao passar de 70% */
-.progress-fill.hot { background: linear-gradient(90deg, var(--amber), var(--danger)); }
-.progress-fill.hot::after { background: var(--amber); box-shadow: 0 0 10px var(--amber); }
-
 .question-text {
     font-family: var(--font-display);
     font-style: italic;
@@ -810,10 +768,11 @@ select.form-input option { background: var(--card); color: var(--text); }
 .option.picked { border-color: var(--accent, var(--primary)); background: #0e1c30; color: var(--text); pointer-events: none; box-shadow: 0 0 20px rgba(34,211,238,0.18); }
 .option.picked::before { content: '✓'; color: #06101e; background: var(--accent, var(--primary)); border-color: var(--accent, var(--primary)); }
 
-/* Sotaque por fase (muda só a cor de destaque) */
+/* Sotaque por fase — três tons dentro da mesma família ciano do template,
+   em vez do verde/azul/âmbar do layout antigo (que destoava na fase 2 e 3) */
 #s-quiz.accent-1 { --accent: var(--primary); }
-#s-quiz.accent-2 { --accent: var(--blue); }
-#s-quiz.accent-3 { --accent: var(--amber); }
+#s-quiz.accent-2 { --accent: #38bdf8; }
+#s-quiz.accent-3 { --accent: #7dd3fc; }
 #s-quiz .phase-number-top { color: var(--accent, var(--primary)); }
 
 /* ══════════════════════════════════════
@@ -839,38 +798,53 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .comment-card {
-    background: #071828;
-    border: 1px solid var(--primary);
-    border-radius: 16px;
+    position: relative;
+    background: var(--card);
+    border: 1px solid rgba(34,211,238,0.5);
+    border-radius: 8px;
     padding: 24px 22px;
     max-width: 420px;
     width: 100%;
-    box-shadow: 0 0 40px rgba(0,200,160,0.25), 0 20px 60px rgba(0,0,0,0.6);
-    transform: scale(0.92) translateY(20px);
-    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 0 40px rgba(34,211,238,0.18), 0 20px 60px rgba(0,0,0,0.6);
+    transform: scale(0.94) translateY(16px);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+/* Cantos do template, mesma linguagem do scanner e da foto */
+.comment-card::before,
+.comment-card::after {
+    content: '';
+    position: absolute;
+    width: 14px; height: 14px;
+    border: 1px solid var(--primary);
+}
+.comment-card::before { top: 7px; left: 7px; border-right: none; border-bottom: none; }
+.comment-card::after  { bottom: 7px; right: 7px; border-left: none; border-top: none; }
 
 .comment-overlay.open .comment-card {
     transform: scale(1) translateY(0);
 }
 
-/* Variante âmbar (1 dos interrupts) */
-.comment-card.amber { border-color: var(--amber); box-shadow: 0 0 40px rgba(255,176,32,0.28), 0 20px 60px rgba(0,0,0,0.6); }
-.comment-card.amber .comment-chip { background: linear-gradient(135deg, var(--amber), var(--danger)); }
+/* Variante de alerta (1 dos interrupts) — mesma paleta, só mais quente */
+.comment-card.amber { border-color: rgba(255,176,32,0.55); box-shadow: 0 0 40px rgba(255,176,32,0.2), 0 20px 60px rgba(0,0,0,0.6); }
+.comment-card.amber::before, .comment-card.amber::after { border-color: var(--amber); }
+.comment-card.amber .comment-chip { color: var(--amber); border-color: rgba(255,176,32,0.5); }
 .comment-card.amber .comment-headline span { color: var(--amber); }
 
 .comment-chip {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: linear-gradient(135deg, var(--primary), var(--blue));
-    color: #fff;
-    padding: 4px 12px;
-    border-radius: 20px;
+    background: rgba(34,211,238,0.08);
+    border: 1px solid rgba(34,211,238,0.4);
+    color: var(--primary);
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
     font-size: 9px;
-    letter-spacing: 3px;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
-    font-weight: 700;
+    font-weight: 500;
     margin-bottom: 14px;
 }
 
@@ -880,9 +854,11 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .comment-headline {
-    font-size: 18px;
-    font-weight: 800;
-    line-height: 1.35;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 1.3;
     margin-bottom: 10px;
     color: var(--text);
 }
@@ -900,20 +876,24 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 .btn-comment {
-    background: linear-gradient(135deg, var(--primary), var(--blue));
-    color: #fff;
-    border: none;
-    border-radius: 9px;
+    background: rgba(34,211,238,0.08);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 999px;
     padding: 13px 20px;
-    font-size: 15px;
-    font-weight: 700;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 500;
     cursor: pointer;
     width: 100%;
-    font-family: inherit;
-    transition: opacity 0.2s;
+    transition: background 0.2s, box-shadow 0.2s;
 }
 
-.btn-comment:hover { opacity: 0.88; }
+.btn-comment:hover { background: rgba(34,211,238,0.16); box-shadow: 0 0 24px rgba(34,211,238,0.3); }
+.comment-card.amber .btn-comment { color: var(--amber); border-color: var(--amber); background: rgba(255,176,32,0.08); }
+.comment-card.amber .btn-comment:hover { background: rgba(255,176,32,0.16); box-shadow: 0 0 24px rgba(255,176,32,0.3); }
 
 /* ══════════════════════════════════════
    LOADING
@@ -1287,15 +1267,14 @@ select.form-input option { background: var(--card); color: var(--text); }
 .sp-bubble {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-left: 2px solid rgba(34,211,238,0.5);
+    border-radius: 6px;
     padding: 9px 13px;
     font-size: 13px;
     line-height: 1.4;
-    color: #7aacc8;
+    color: #90a8c0;
     max-width: 46%;
 }
-.sp-bubble:nth-child(odd)  { border-left: 3px solid var(--primary); }
-.sp-bubble:nth-child(even) { border-left: 3px solid var(--blue); }
 
 @media (max-height: 680px) {
     .social-proof { margin-top: 12px; }
@@ -1659,7 +1638,7 @@ select.form-input option { background: var(--card); color: var(--text); }
         <div class="analyzing-row">
             <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
-        <button class="btn" id="btn-p1" onclick="goQ(0)">Prosseguir Meu Raio-X →</button>
+        <button class="btn" id="btn-p1" onclick="goQ(0)">Prosseguir Meu Raio-X</button>
     </div>
 </div>
 
@@ -1672,7 +1651,7 @@ select.form-input option { background: var(--card); color: var(--text); }
         <div class="analyzing-row">
             <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
-        <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 2000, function(){ goQ(8); })">Prosseguir Meu Raio-X →</button>
+        <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 2000, function(){ goQ(8); })">Prosseguir Meu Raio-X</button>
     </div>
 </div>
 
@@ -1685,7 +1664,7 @@ select.form-input option { background: var(--card); color: var(--text); }
         <div class="analyzing-row">
             <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
-        <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 2000, function(){ goQ(16); })">Prosseguir Meu Raio-X →</button>
+        <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 2000, function(){ goQ(16); })">Prosseguir Meu Raio-X</button>
     </div>
 </div>
 
