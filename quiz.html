@@ -163,36 +163,6 @@ body.nav-livre .stage-item:hover { color: var(--text); border-color: var(--prima
 body { padding-top: 40px; }
 
 /* ══════════════════════════════════════
-   EXPERT HEADER
-══════════════════════════════════════ */
-.expert-header {
-    width: 100%;
-    height: 190px;
-    flex-shrink: 0;
-    position: relative;
-    background: #071828;
-    overflow: hidden;
-    display: none; /* visível só na pré-sell */
-}
-body.presell-mode .expert-header { display: block; }
-
-.expert-header img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center top;
-    display: block;
-}
-
-.expert-header::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, transparent 78%, var(--bg) 100%);
-    pointer-events: none;
-}
-
-/* ══════════════════════════════════════
    MAIN
 ══════════════════════════════════════ */
 .main {
@@ -215,24 +185,28 @@ body.presell-mode .wrap { max-width: 960px; }
 .brand-footer {
     flex-shrink: 0;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    gap: 12px;
+    padding: 10px 16px;
     border-top: 1px solid var(--border);
     background: var(--bg);
 }
 
-.brand-footer img {
-    height: 76px;
-    opacity: 0.9;
-}
-
-.logo-fallback {
-    font-size: 13px;
-    font-weight: 700;
+.foot-item {
+    font-family: var(--font-mono);
+    font-size: 9px;
     letter-spacing: 2px;
-    color: var(--muted);
     text-transform: uppercase;
+    color: var(--muted2);
+    white-space: nowrap;
+}
+.foot-item.center { color: var(--muted); }
+
+/* No celular, só a marca no centro — as laterais viram ruído */
+@media (max-width: 520px) {
+    .brand-footer { justify-content: center; }
+    .foot-item:not(.center) { display: none; }
 }
 
 /* ══════════════════════════════════════
@@ -999,7 +973,6 @@ select.form-input option { background: var(--card); color: var(--text); }
    RESPONSIVE
 ══════════════════════════════════════ */
 @media (max-height: 680px) {
-    .expert-header { height: 140px; }
     .screen-title  { font-size: 20px; }
     .question-text { font-size: 18px; }
     /* fontes de fase/sub seguem o clamp() — aqui só reduz a margem p/ caber */
@@ -1099,7 +1072,6 @@ select.form-input option { background: var(--card); color: var(--text); }
 /* ══════════════════════════════════════
    PRÉ-SELL (tela inicial de boas-vindas)
 ══════════════════════════════════════ */
-body.presell-mode .expert-header { height: 300px; }
 
 .presell-wrap {
     display: flex;
@@ -1133,7 +1105,6 @@ body.presell-mode .expert-header { height: 300px; }
 }
 
 @media (max-height: 680px) {
-    body.presell-mode .expert-header { height: 220px; }
     .presell-headline { font-size: 23px; margin-bottom: 10px; }
     .presell-sub { font-size: 17px; margin-bottom: 16px; }
 }
@@ -1362,12 +1333,6 @@ body.presell-mode .expert-header { height: 300px; }
 
 <!-- ═══ BOTÃO DE MUDO ═══ -->
 <button class="mute-btn" id="mute-btn" onclick="toggleMute()" aria-label="Som" title="Som ligado/desligado">🔊</button>
-
-<!-- ═══ EXPERT HEADER ═══ -->
-<header class="expert-header">
-    <img src="/expert.png" alt="Breno Carrera"
-         onerror="this.style.display='none'">
-</header>
 
 <!-- ═══ MAIN ═══ -->
 <main class="main">
@@ -1882,11 +1847,11 @@ body.presell-mode .expert-header { height: 300px; }
 </div><!-- /wrap -->
 </main>
 
-<!-- ═══ FOOTER ═══ -->
+<!-- ═══ FOOTER (linha de status, no formato do template) ═══ -->
 <footer class="brand-footer">
-    <img src="/logo.png" alt="Breno Carrera"
-         onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-    <span class="logo-fallback" style="display:none">BRENO CARRERA</span>
+    <span class="foot-item">BC // Intelligence Unit</span>
+    <span class="foot-item center">Breno Carrera</span>
+    <span class="foot-item">Sessão privada</span>
 </footer>
 
 <!-- ═══ COMMENT MODAL ═══ -->
@@ -2441,7 +2406,6 @@ window.onload = () => {
         const fn = document.getElementById('f-nome');
         if (fn) fn.value = userName; // pré-preenche o campo Nome
     }
-    if (p.get('adjust') === '1') initAdjustMode();
     if (p.get('nav') === '1') initNavLivre(); // navegação livre pela barra do topo (teste)
 
     // Já viu o resultado antes e nunca converteu (nem WhatsApp nem Greenn) → pede email antes de liberar o quiz
@@ -2698,85 +2662,6 @@ function goToWelcome2() {
     if (!selectedApps.length) { soundError(); alert('Selecione ao menos um app que você usa.'); return; }
     if (!selectedUltimoDate) { soundError(); alert('Selecione a opção de último date.'); return; }
     show('s-welcome-2');
-}
-
-// ═══════════════════════════════════════
-// ADJUST MODE (URL: ?adjust=1)
-// ═══════════════════════════════════════
-function initAdjustMode() {
-    const header = document.querySelector('.expert-header');
-    const img    = header.querySelector('img');
-
-    // Inject UI
-    const ui = document.createElement('div');
-    ui.style.cssText = `
-        position:absolute;inset:0;z-index:999;cursor:grab;
-        display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px;
-    `;
-    const badge = document.createElement('div');
-    badge.style.cssText = `
-        background:rgba(0,0,0,0.75);color:#00c8a0;font-size:12px;font-weight:700;
-        padding:6px 14px;border-radius:20px;border:1px solid #00c8a0;
-        display:flex;align-items:center;gap:10px;font-family:monospace;
-        backdrop-filter:blur(4px);
-    `;
-    const label = document.createElement('span');
-    const copyBtn = document.createElement('button');
-    copyBtn.textContent = 'Copiar';
-    copyBtn.style.cssText = `
-        background:#00c8a0;color:#000;border:none;border-radius:12px;
-        padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;
-    `;
-    badge.appendChild(label);
-    badge.appendChild(copyBtn);
-    ui.appendChild(badge);
-    header.appendChild(ui);
-
-    // Read current position
-    let posX = 50, posY = 22;
-    const updateLabel = () => {
-        label.textContent = `object-position: ${posX}% ${posY}%`;
-        img.style.objectPosition = `${posX}% ${posY}%`;
-    };
-    updateLabel();
-
-    // Drag logic
-    let dragging = false, startX, startY, startPX, startPY;
-    const rect = () => header.getBoundingClientRect();
-
-    const onStart = e => {
-        dragging = true;
-        ui.style.cursor = 'grabbing';
-        const t = e.touches ? e.touches[0] : e;
-        startX = t.clientX; startY = t.clientY;
-        startPX = posX; startPY = posY;
-        e.preventDefault();
-    };
-    const onMove = e => {
-        if (!dragging) return;
-        const t = e.touches ? e.touches[0] : e;
-        const r = rect();
-        const dx = ((t.clientX - startX) / r.width)  * -100;
-        const dy = ((t.clientY - startY) / r.height) * -100;
-        posX = Math.round(Math.min(100, Math.max(0, startPX + dx)));
-        posY = Math.round(Math.min(100, Math.max(0, startPY + dy)));
-        updateLabel();
-        e.preventDefault();
-    };
-    const onEnd = () => { dragging = false; ui.style.cursor = 'grab'; };
-
-    ui.addEventListener('mousedown',  onStart);
-    ui.addEventListener('touchstart', onStart, {passive:false});
-    window.addEventListener('mousemove',  onMove);
-    window.addEventListener('touchmove',  onMove, {passive:false});
-    window.addEventListener('mouseup',   onEnd);
-    window.addEventListener('touchend',  onEnd);
-
-    copyBtn.onclick = e => {
-        e.stopPropagation();
-        navigator.clipboard.writeText(`object-position: ${posX}% ${posY}%;`)
-            .then(() => { copyBtn.textContent = '✓ Copiado!'; setTimeout(() => copyBtn.textContent = 'Copiar', 2000); });
-    };
 }
 
 // ═══════════════════════════════════════
