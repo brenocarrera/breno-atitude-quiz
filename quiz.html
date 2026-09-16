@@ -302,7 +302,8 @@ body.presell-mode .wrap { max-width: 960px; }
    WIZARD DO FORMULÁRIO (um campo por vez)
 ══════════════════════════════════════ */
 .wz { display: flex; flex-direction: column; flex: 1; justify-content: center; }
-.wz-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wz-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.wz-head .badge { white-space: nowrap; }
 .wz-counter { font-family: var(--font-mono); font-size: 13px; color: var(--primary); letter-spacing: 1px; flex-shrink: 0; }
 
 .wz-steps { position: relative; margin: 6px 0 18px; }
@@ -554,12 +555,15 @@ select.form-input option { background: var(--card); color: var(--text); }
     color: var(--primary);
     border: 1px solid var(--primary);
     border-radius: 999px;
-    padding: 14px 24px;
-    font-size: 14px;
+    padding: 14px 20px;
+    /* clamp evita quebra de linha nos botões com texto mais longo
+       (ex: "Prosseguir Meu Raio-X") dentro do panel-card mais estreito */
+    font-size: clamp(11.5px, 3.4vw, 14px);
     font-weight: 600;
     font-family: var(--font-mono);
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
+    white-space: nowrap;
     cursor: pointer;
     width: 100%;
     transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
@@ -1180,6 +1184,26 @@ select.form-input option { background: var(--card); color: var(--text); }
     .hero-foto { margin: 0 0 4px; max-width: 260px; }
 }
 
+/* Cantos de moldura reutilizáveis — mesma linguagem do scanner e da foto */
+.frame-corner { position: absolute; width: 14px; height: 14px; border: 1px solid var(--primary); }
+.frame-corner.tl { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+.frame-corner.tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
+.frame-corner.bl { bottom: 8px; left: 8px; border-right: none; border-top: none; }
+.frame-corner.br { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+
+/* Card genérico com moldura — usado nas telas que antes eram texto solto
+   flutuando no vazio (recuperação, formulário, intro de fase), destoando
+   da riqueza visual do resto do template (scanner, cards de pergunta) */
+.panel-card {
+    position: relative;
+    width: 100%;
+    padding: 32px 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(34,211,238,0.08);
+}
+
 /* ══════════════════════════════════════
    PRÉ-SELL (tela inicial de boas-vindas)
 ══════════════════════════════════════ */
@@ -1501,18 +1525,30 @@ select.form-input option { background: var(--card); color: var(--text); }
 <!-- ── RECUPERAÇÃO (viu o resultado antes e não converteu) ── -->
 <div id="s-recover" class="screen">
     <div class="presell-wrap">
-        <h1 class="presell-headline">Que bom que você voltou! 🎉</h1>
-        <p class="presell-sub">Coloque seu email aqui para refazer o Quiz</p>
-        <div class="form-group">
-            <input type="email" id="f-recover-email" class="form-input" placeholder="Seu email" required>
+        <div class="panel-card">
+            <span class="frame-corner tl"></span>
+            <span class="frame-corner tr"></span>
+            <span class="frame-corner bl"></span>
+            <span class="frame-corner br"></span>
+            <div class="hero-eyebrow" style="justify-content:center;"><span class="hero-eyebrow-line"></span>Sessão reconhecida</div>
+            <h1 class="presell-headline">Que bom que você voltou! 🎉</h1>
+            <p class="presell-sub">Coloque seu email aqui para refazer o Quiz</p>
+            <div class="form-group">
+                <input type="email" id="f-recover-email" class="form-input" placeholder="Seu email" required>
+            </div>
+            <button class="btn" onclick="submitRecoverEmail()">Refazer o quiz agora</button>
         </div>
-        <button class="btn" onclick="submitRecoverEmail()">Refazer o quiz agora</button>
     </div>
 </div>
 
 <!-- ── WELCOME PARTE 1 (Nome, Apps, Cidade, Último Date) ── -->
 <div id="s-welcome-1" class="screen">
     <div class="wz">
+      <div class="panel-card">
+        <span class="frame-corner tl"></span>
+        <span class="frame-corner tr"></span>
+        <span class="frame-corner bl"></span>
+        <span class="frame-corner br"></span>
         <div class="wz-head">
             <div class="badge">Personalizando Seu Raio-X</div>
             <span class="wz-counter" id="wz-counter-1">01 / 02</span>
@@ -1560,12 +1596,18 @@ select.form-input option { background: var(--card); color: var(--text); }
             <button class="btn wz-next" id="wz-next-1" onclick="wzNext('wz-1')">Continuar</button>
             <button class="btn" id="btn-welcome-1" onclick="goToWelcome2()" style="display:none;">Continuar</button>
         </div>
+      </div>
     </div>
 </div>
 
 <!-- ── WELCOME PARTE 2 (Idade, Signo, Altura, Profissão) ── -->
 <div id="s-welcome-2" class="screen">
     <div class="wz">
+      <div class="panel-card">
+        <span class="frame-corner tl"></span>
+        <span class="frame-corner tr"></span>
+        <span class="frame-corner bl"></span>
+        <span class="frame-corner br"></span>
         <div class="wz-head">
             <div class="badge">Deixando Exclusivo Seu Raio-X</div>
             <span class="wz-counter" id="wz-counter-2">01 / 02</span>
@@ -1622,6 +1664,7 @@ select.form-input option { background: var(--card); color: var(--text); }
             <button class="btn wz-next" id="wz-next-2" onclick="wzNext('wz-2')">Continuar</button>
             <button class="btn" id="btn-start" onclick="startQuiz()" style="display:none;">Continuar</button>
         </div>
+      </div>
     </div>
 </div>
 
@@ -1632,6 +1675,11 @@ select.form-input option { background: var(--card); color: var(--text); }
         Voltar
     </button>
     <div class="phase-intro">
+      <div class="panel-card">
+        <span class="frame-corner tl"></span>
+        <span class="frame-corner tr"></span>
+        <span class="frame-corner bl"></span>
+        <span class="frame-corner br"></span>
         <div class="phase-number"><span class="phase-number-top">Raio X</span>Fase 1 de 3</div>
         <h2 class="phase-title">O Jeito Que Você Passa Sem Perceber</h2>
         <p class="phase-sub">E Faz Ela Te Por na Gaveta Errada: "Provedor Torcendo Por Um SIM Dela..."</p>
@@ -1639,12 +1687,18 @@ select.form-input option { background: var(--card); color: var(--text); }
             <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
         <button class="btn" id="btn-p1" onclick="goQ(0)">Prosseguir Meu Raio-X</button>
+      </div>
     </div>
 </div>
 
 <!-- ── PHASE 2 INTRO ── -->
 <div id="s-p2" class="screen">
     <div class="phase-intro">
+      <div class="panel-card">
+        <span class="frame-corner tl"></span>
+        <span class="frame-corner tr"></span>
+        <span class="frame-corner bl"></span>
+        <span class="frame-corner br"></span>
         <div class="phase-number"><span class="phase-number-top">Raio X</span>Fase 2 de 3</div>
         <h2 class="phase-title">O que está te travando</h2>
         <p class="phase-sub">Fase 1 concluída. Já identificamos padrões muito específicos no seu perfil. Agora vamos ao que está entre você e os resultados que merece.</p>
@@ -1652,12 +1706,18 @@ select.form-input option { background: var(--card); color: var(--text); }
             <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
         <button class="btn" id="btn-p2" onclick="processBtn('btn-p2', 2000, function(){ goQ(8); })">Prosseguir Meu Raio-X</button>
+      </div>
     </div>
 </div>
 
 <!-- ── PHASE 3 INTRO ── -->
 <div id="s-p3" class="screen">
     <div class="phase-intro">
+      <div class="panel-card">
+        <span class="frame-corner tl"></span>
+        <span class="frame-corner tr"></span>
+        <span class="frame-corner bl"></span>
+        <span class="frame-corner br"></span>
         <div class="phase-number"><span class="phase-number-top">Raio X</span>Fase 3 de 3</div>
         <h2 class="phase-title">Seu arquétipo real</h2>
         <p class="phase-sub">Ponto crítico identificado. Seu perfil tem uma característica específica que a maioria dos homens nunca descobre. A fase final confirma tudo.</p>
@@ -1665,6 +1725,7 @@ select.form-input option { background: var(--card); color: var(--text); }
             <div class="a-dot"></div><div class="a-dot"></div><div class="a-dot"></div>
         </div>
         <button class="btn" id="btn-p3" onclick="processBtn('btn-p3', 2000, function(){ goQ(16); })">Prosseguir Meu Raio-X</button>
+      </div>
     </div>
 </div>
 
