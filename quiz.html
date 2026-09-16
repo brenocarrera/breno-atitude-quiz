@@ -160,6 +160,24 @@ body {
 /* Navegação livre entre etapas — só no modo de teste (?nav=1) */
 body.nav-livre .stage-item { cursor: pointer; }
 body.nav-livre .stage-item:hover { color: var(--text); border-color: var(--primary); }
+
+/* No celular as 4 etapas precisam caber na largura da tela: a marca sai e os
+   rótulos encolhem, senão a barra vira scroll horizontal e corta "04 Dossiê". */
+@media (max-width: 560px) {
+    .stage-nav { overflow-x: hidden; }
+    .stage-nav-inner { padding: 0 8px; gap: 0; justify-content: center; }
+    .stage-nav-brand { display: none; }
+    .stage-nav-steps { gap: 4px; width: 100%; }
+    .stage-item {
+        flex: 1;
+        text-align: center;
+        font-size: 8.5px;
+        letter-spacing: 0.5px;
+        padding: 6px 4px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
 body { padding-top: 40px; }
 
 /* ══════════════════════════════════════
@@ -549,26 +567,6 @@ select.form-input option { background: var(--card); color: var(--text); }
 .btn::after { content: '→'; margin-left: 8px; font-family: var(--font-body); }
 .btn:hover:not(:disabled) { background: rgba(34,211,238,0.16); box-shadow: 0 0 24px rgba(34,211,238,0.35); transform: translateY(-1px); }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-
-.presell-consent {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    text-align: left;
-    font-size: 13px;
-    color: var(--text-dim, #a0a8c0);
-    margin: 16px 0;
-    line-height: 1.4;
-    cursor: pointer;
-}
-.presell-consent input[type="checkbox"] {
-    margin-top: 2px;
-    width: 16px;
-    height: 16px;
-    accent-color: var(--primary);
-    flex-shrink: 0;
-    cursor: pointer;
-}
 
 /* Scanning/processing state */
 .btn.scanning {
@@ -1020,10 +1018,46 @@ select.form-input option { background: var(--card); color: var(--text); }
     border-radius: 999px;
     padding: 5px 12px;
 }
-.hero-col-visual { display: flex; align-items: center; justify-content: center; }
+.hero-col-visual { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+
+/* ── Retrato do expert dissolvido no fundo ──
+   Não é uma foto "colada por cima": entra como camada de ambiente atrás de
+   tudo, dessaturada, puxada pro ciano e com as bordas desmanchando no navy. */
+/* Quadro do retrato: caixa contida, mas com as bordas dissolvendo no fundo
+   (sem moldura dura em volta — é isso que faz parecer "colado por cima"). */
+.hero-foto {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    aspect-ratio: 16 / 10;
+    margin: 0 auto;
+    flex-shrink: 0;
+    background-image:
+        linear-gradient(180deg, rgba(34,211,238,0.08) 0%, rgba(6,11,20,0.15) 45%, rgba(6,11,20,0.85) 92%),
+        url('/expert.png');
+    background-repeat: no-repeat;
+    /* altura 132% deixa de fora a faixa do arquivo com texto gravado */
+    background-size: 100% 100%, auto 132%;
+    background-position: center, 38% 0%;
+    filter: grayscale(1) contrast(1.05) brightness(0.78);
+    opacity: 0.8;
+    /* Núcleo opaco pequeno e queda longa: a imagem "termina" sem linha de corte */
+    -webkit-mask-image: radial-gradient(ellipse 66% 64% at 50% 40%, #000 8%, rgba(0,0,0,0.75) 34%, rgba(0,0,0,0.3) 66%, transparent 92%);
+    mask-image: radial-gradient(ellipse 66% 64% at 50% 40%, #000 8%, rgba(0,0,0,0.75) 34%, rgba(0,0,0,0.3) 66%, transparent 92%);
+}
+/* Cantos no estilo do template, marcando o "sujeito em análise" */
+.hero-foto .foto-corner {
+    position: absolute;
+    width: 16px; height: 16px;
+    border: 1px solid rgba(34,211,238,0.45);
+}
+.hero-foto .foto-corner.tl { top: 6px; left: 6px; border-right: none; border-bottom: none; }
+.hero-foto .foto-corner.tr { top: 6px; right: 6px; border-left: none; border-bottom: none; }
+#s-presell .hero-grid { position: relative; z-index: 1; }
+
 .scanner {
     position: relative;
-    width: 200px; height: 200px;
+    width: min(66vw, 210px); height: min(66vw, 210px);
     display: flex; align-items: center; justify-content: center;
 }
 .scanner-corner {
@@ -1051,15 +1085,110 @@ select.form-input option { background: var(--card); color: var(--text); }
 .scanner-dot { fill: var(--primary); filter: drop-shadow(0 0 4px var(--primary)); }
 .dot-1 { animation: scannerSpin 6s linear infinite; transform-origin: 100px 100px; }
 .dot-2 { animation: scannerSpin 4.5s linear infinite reverse; transform-origin: 100px 100px; }
-.scanner-caption {
+/* ══ NÚCLEO CLICÁVEL DO SCANNER ══
+   O CTA vive dentro do círculo: é o "portal" que a pessoa abre. */
+.scanner-core {
     position: absolute;
-    bottom: -26px;
+    width: 56%; height: 56%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 40%, rgba(34,211,238,0.16), rgba(12,21,36,0.92) 70%);
+    border: 1px solid rgba(34,211,238,0.5);
+    color: var(--primary);
     font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 2px;
+    font-size: clamp(10px, 2.9vw, 12px);
+    letter-spacing: 1.5px;
     text-transform: uppercase;
+    line-height: 1.5;
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    box-shadow: 0 0 26px rgba(34,211,238,0.22), inset 0 0 22px rgba(34,211,238,0.1);
+    transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+    animation: corePulso 2.8s ease-in-out infinite;
+    -webkit-tap-highlight-color: transparent;
+}
+.core-seta { font-family: var(--font-body); font-size: 1.15em; }
+@keyframes corePulso {
+    0%, 100% { box-shadow: 0 0 22px rgba(34,211,238,0.18), inset 0 0 18px rgba(34,211,238,0.08); }
+    50%      { box-shadow: 0 0 34px rgba(34,211,238,0.38), inset 0 0 26px rgba(34,211,238,0.16); }
+}
+.scanner-core:hover {
+    transform: scale(1.05);
+    background: radial-gradient(circle at 50% 40%, rgba(34,211,238,0.26), rgba(12,21,36,0.92) 70%);
+    box-shadow: 0 0 40px rgba(34,211,238,0.45), inset 0 0 28px rgba(34,211,238,0.18);
+}
+.scanner-core:active { transform: scale(0.96); }
+
+/* Ondas que saem do núcleo — reforçam que ali é o ponto de entrada */
+.scanner-onda {
+    position: absolute;
+    width: 56%; height: 56%;
+    border-radius: 50%;
+    border: 1px solid rgba(34,211,238,0.5);
+    pointer-events: none;
+    animation: ondaSai 3s ease-out infinite;
+}
+.scanner-onda.dois { animation-delay: 1.5s; }
+@keyframes ondaSai {
+    0%   { transform: scale(1);   opacity: 0.55; }
+    100% { transform: scale(1.9); opacity: 0; }
+}
+
+/* ══ ABERTURA DA PASSAGEM (no clique) ══ */
+.scanner.abrindo .scanner-core {
+    animation: coreAbre 0.62s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+@keyframes coreAbre {
+    0%   { transform: scale(1);    opacity: 1; }
+    35%  { transform: scale(0.82); opacity: 1; box-shadow: 0 0 60px rgba(34,211,238,0.8); }
+    100% { transform: scale(6);    opacity: 0; }
+}
+.scanner.abrindo .ring,
+.scanner.abrindo .scanner-dot {
+    animation: aneisAbrem 0.62s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+@keyframes aneisAbrem {
+    0%   { transform: scale(1);   opacity: 1; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+.scanner.abrindo .scanner-rings { transform-origin: 50% 50%; }
+.scanner.abrindo .scanner-onda { animation: none; opacity: 0; }
+.scanner.abrindo .scanner-corner {
+    animation: cantosAbrem 0.62s ease-out forwards;
+    border-color: var(--primary);
+}
+@keyframes cantosAbrem {
+    0%   { transform: translate(0, 0); opacity: 1; }
+    100% { transform: translate(var(--dx, 0), var(--dy, 0)); opacity: 0; }
+}
+.scanner.abrindo .scanner-corner.tl { --dx: -22px; --dy: -22px; }
+.scanner.abrindo .scanner-corner.tr { --dx:  22px; --dy: -22px; }
+.scanner.abrindo .scanner-corner.bl { --dx: -22px; --dy:  22px; }
+.scanner.abrindo .scanner-corner.br { --dx:  22px; --dy:  22px; }
+
+/* Clarão que atravessa a tela ao abrir */
+.passagem-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    pointer-events: none;
+    background: radial-gradient(circle at center, rgba(34,211,238,0.5), rgba(34,211,238,0.12) 35%, transparent 70%);
+    opacity: 0;
+    animation: flashPassagem 0.62s ease-out forwards;
+}
+@keyframes flashPassagem {
+    0%   { opacity: 0; transform: scale(0.4); }
+    45%  { opacity: 1; }
+    100% { opacity: 0; transform: scale(1.6); }
+}
+
+/* Aviso LGPD discreto, logo abaixo do círculo */
+.lgpd-aviso {
+    max-width: 280px;
+    text-align: center;
+    font-size: 11px;
+    line-height: 1.5;
     color: var(--muted2);
-    white-space: nowrap;
+    margin: 0;
 }
 
 @media (min-width: 760px) {
@@ -1067,6 +1196,8 @@ select.form-input option { background: var(--card); color: var(--text); }
     .hero-col-text { flex: 1; }
     .hero-col-visual { flex: 1; }
     .scanner { width: 260px; height: 260px; }
+    /* Em telas largas o quadro acompanha a coluna de texto, alinhado à esquerda */
+    .hero-foto { margin: 0 0 4px; max-width: 260px; }
 }
 
 /* ══════════════════════════════════════
@@ -1084,7 +1215,13 @@ select.form-input option { background: var(--card); color: var(--text); }
     margin: 0 auto;
     width: 100%;
 }
-.hero-col-text.presell-wrap { text-align: left; margin: 0; max-width: none; }
+.hero-col-text.presell-wrap { text-align: left; margin: 0; max-width: none; min-width: 0; }
+/* Empilhado (celular), a coluna de texto não pode esticar: senão abre um vão
+   entre ela e o círculo e a tela deixa de caber na dobra. Em linha (desktop)
+   ela volta a dividir o espaço — por isso a regra é só aqui. */
+@media (max-width: 759px) {
+    .hero-col-text.presell-wrap { flex: 0 0 auto; }
+}
 
 .presell-headline {
     font-family: var(--font-display);
@@ -1114,9 +1251,10 @@ select.form-input option { background: var(--card); color: var(--text); }
 ══════════════════════════════════════ */
 .mute-btn {
     position: fixed;
-    top: 10px; right: 10px;
+    /* abaixo da barra de etapas (40px): em cima, tapava a última etapa no celular */
+    top: 48px; right: 10px;
     z-index: 600;
-    width: 38px; height: 38px;
+    width: 34px; height: 34px;
     border-radius: 50%;
     border: 1px solid var(--border);
     background: rgba(11,24,41,0.8);
@@ -1342,6 +1480,11 @@ select.form-input option { background: var(--card); color: var(--text); }
 <div id="s-presell" class="screen hero-screen active">
     <div class="hero-grid">
         <div class="presell-wrap hero-col-text">
+            <!-- Retrato do expert: quadro contido, bordas dissolvendo no fundo -->
+            <div class="hero-foto" aria-hidden="true">
+                <span class="foto-corner tl"></span>
+                <span class="foto-corner tr"></span>
+            </div>
             <div class="hero-eyebrow"><span class="hero-eyebrow-line"></span>Protocolo // Autopercepção</div>
             <h1 class="presell-headline">
                 COMECE SEU RAIO-X
@@ -1350,14 +1493,9 @@ select.form-input option { background: var(--card); color: var(--text); }
                 <span class="hero-chip">Análise Privada</span>
                 <span class="hero-chip">100% Confidencial</span>
             </div>
-            <label class="presell-consent">
-                <input type="checkbox" id="lgpd-consent">
-                Concordo em seguir nos termos de privacidade da Lei LGPD e termos próprios.
-            </label>
-            <button class="btn" id="btn-presell" onclick="trackFunilStep('RaioX_IniciouIdentificacao'); show('s-welcome-1')">Começar Meu RAIO-X</button>
         </div>
         <div class="hero-col-visual">
-            <div class="scanner">
+            <div class="scanner" id="scanner">
                 <div class="scanner-corner tl"></div>
                 <div class="scanner-corner tr"></div>
                 <div class="scanner-corner bl"></div>
@@ -1369,8 +1507,14 @@ select.form-input option { background: var(--card); color: var(--text); }
                     <circle class="scanner-dot dot-1" cx="100" cy="12" r="3"/>
                     <circle class="scanner-dot dot-2" cx="188" cy="100" r="3"/>
                 </svg>
-                <span class="scanner-caption">Sessão Privada</span>
+                <span class="scanner-onda"></span>
+                <span class="scanner-onda dois"></span>
+                <button class="scanner-core" id="btn-presell" onclick="abrirPassagem()">
+                    <span class="core-label">Começar<br>meu Raio-X</span>
+                    <span class="core-seta">→</span>
+                </button>
             </div>
+            <p class="lgpd-aviso">Ao entrar, você concorda com os termos de privacidade (LGPD) e os termos próprios.</p>
         </div>
     </div>
 </div>
@@ -2686,6 +2830,29 @@ function updateStageNav(screenId) {
     document.querySelectorAll('.stage-item').forEach(el => {
         el.classList.toggle('on', el.dataset.stage === stage);
     });
+}
+
+/**
+ * Clique no núcleo do scanner: abre a "passagem" (anéis se expandem, clarão
+ * atravessa a tela) e só então entra no formulário. O tracking é o mesmo
+ * que estava no botão antes.
+ */
+function abrirPassagem() {
+    const scanner = document.getElementById('scanner');
+    if (!scanner || scanner.classList.contains('abrindo')) return; // evita clique duplo
+    scanner.classList.add('abrindo');
+    soundClick();
+
+    const flash = document.createElement('div');
+    flash.className = 'passagem-flash';
+    document.body.appendChild(flash);
+
+    trackFunilStep('RaioX_IniciouIdentificacao');
+    setTimeout(() => {
+        flash.remove();
+        scanner.classList.remove('abrindo'); // deixa a pré-sell pronta caso volte
+        show('s-welcome-1');
+    }, 620);
 }
 
 // ── Navegação livre pela barra do topo (modo de teste: ?nav=1) ──
