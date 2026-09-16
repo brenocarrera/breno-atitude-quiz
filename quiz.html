@@ -80,6 +80,56 @@ body {
 }
 
 /* ══════════════════════════════════════
+   BARRA FIXA DE ETAPAS (topo)
+══════════════════════════════════════ */
+.stage-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 550;
+    height: 40px;
+    background: rgba(6,11,20,0.85);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+}
+.stage-nav-inner {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    white-space: nowrap;
+}
+.stage-nav-brand {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted2);
+    flex-shrink: 0;
+}
+.stage-nav-steps { display: flex; gap: 6px; }
+.stage-item {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted2);
+    padding: 5px 10px;
+    border-radius: 999px;
+    transition: background 0.25s, color 0.25s;
+}
+.stage-item.on {
+    background: rgba(34,211,238,0.12);
+    color: var(--primary);
+}
+body { padding-top: 40px; }
+
+/* ══════════════════════════════════════
    EXPERT HEADER
 ══════════════════════════════════════ */
 .expert-header {
@@ -124,6 +174,7 @@ body.presell-mode .expert-header { display: block; }
 }
 
 .wrap { max-width: 520px; width: 100%; flex: 1; display: flex; flex-direction: column; }
+body.presell-mode .wrap { max-width: 960px; }
 
 /* ══════════════════════════════════════
    FOOTER
@@ -171,6 +222,10 @@ body.presell-mode .expert-header { display: block; }
 
 .back-btn:hover { color: var(--primary); }
 .back-btn svg { width:14px; height:14px; fill:currentColor; }
+
+.q-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.q-top-row .back-btn { margin-bottom: 0; }
+.q-counter { font-family: var(--font-mono); font-size: 13px; color: var(--primary); letter-spacing: 1px; }
 
 /* ══════════════════════════════════════
    SCREENS
@@ -957,6 +1012,87 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 /* ══════════════════════════════════════
+   HERO EM 2 COLUNAS (pré-sell) — layout do template Raio-X
+══════════════════════════════════════ */
+.hero-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    flex: 1;
+    justify-content: center;
+    width: 100%;
+}
+.hero-eyebrow {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+.hero-eyebrow-line { width: 22px; height: 1px; background: var(--primary); display: inline-block; }
+.hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+.hero-chip {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 12px;
+}
+.hero-col-visual { display: flex; align-items: center; justify-content: center; }
+.scanner {
+    position: relative;
+    width: 200px; height: 200px;
+    display: flex; align-items: center; justify-content: center;
+}
+.scanner-corner {
+    position: absolute;
+    width: 22px; height: 22px;
+    border: 1px solid var(--border);
+}
+.scanner-corner.tl { top: -14px; left: -14px; border-right: none; border-bottom: none; }
+.scanner-corner.tr { top: -14px; right: -14px; border-left: none; border-bottom: none; }
+.scanner-corner.bl { bottom: -14px; left: -14px; border-right: none; border-top: none; }
+.scanner-corner.br { bottom: -14px; right: -14px; border-left: none; border-top: none; }
+.scanner-rings { width: 100%; height: 100%; overflow: visible; }
+.ring { fill: none; stroke: var(--border); stroke-width: 1; }
+.ring-inner { stroke: rgba(34,211,238,0.25); }
+.ring-arc {
+    stroke: var(--primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 90 463;
+    transform-origin: 100px 100px;
+    animation: scannerSpin 3.5s linear infinite;
+    filter: drop-shadow(0 0 4px rgba(34,211,238,0.6));
+}
+@keyframes scannerSpin { to { transform: rotate(360deg); } }
+.scanner-dot { fill: var(--primary); filter: drop-shadow(0 0 4px var(--primary)); }
+.dot-1 { animation: scannerSpin 6s linear infinite; transform-origin: 100px 100px; }
+.dot-2 { animation: scannerSpin 4.5s linear infinite reverse; transform-origin: 100px 100px; }
+.scanner-caption {
+    position: absolute;
+    bottom: -26px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted2);
+    white-space: nowrap;
+}
+
+@media (min-width: 760px) {
+    .hero-grid { flex-direction: row; align-items: center; gap: 48px; }
+    .hero-col-text { flex: 1; }
+    .hero-col-visual { flex: 1; }
+    .scanner { width: 260px; height: 260px; }
+}
+
+/* ══════════════════════════════════════
    PRÉ-SELL (tela inicial de boas-vindas)
 ══════════════════════════════════════ */
 body.presell-mode .expert-header { height: 300px; }
@@ -968,7 +1104,11 @@ body.presell-mode .expert-header { height: 300px; }
     justify-content: center;
     text-align: center;
     padding: 6px 0;
+    max-width: 520px;
+    margin: 0 auto;
+    width: 100%;
 }
+.hero-col-text.presell-wrap { text-align: left; margin: 0; max-width: none; }
 
 .presell-headline {
     font-family: var(--font-display);
@@ -1203,6 +1343,19 @@ body.presell-mode .expert-header { height: 300px; }
 </head>
 <body>
 
+<!-- ═══ BARRA FIXA DE ETAPAS (decorativa, espelha o estágio atual) ═══ -->
+<nav class="stage-nav" id="stage-nav">
+    <div class="stage-nav-inner">
+        <span class="stage-nav-brand">BC · RAIO-X</span>
+        <div class="stage-nav-steps">
+            <span class="stage-item" data-stage="inicio">01 Início</span>
+            <span class="stage-item" data-stage="questoes">02 Questões</span>
+            <span class="stage-item" data-stage="analise">03 Análise</span>
+            <span class="stage-item" data-stage="dossie">04 Dossiê</span>
+        </div>
+    </div>
+</nav>
+
 <!-- ═══ BOTÃO DE MUDO ═══ -->
 <button class="mute-btn" id="mute-btn" onclick="toggleMute()" aria-label="Som" title="Som ligado/desligado">🔊</button>
 
@@ -1217,16 +1370,39 @@ body.presell-mode .expert-header { height: 300px; }
 <div class="wrap">
 
 <!-- ── PRÉ-SELL ── -->
-<div id="s-presell" class="screen">
-    <div class="presell-wrap">
-        <h1 class="presell-headline">
-            COMECE SEU RAIO-X
-        </h1>
-        <label class="presell-consent">
-            <input type="checkbox" id="lgpd-consent">
-            Concordo em seguir nos termos de privacidade da Lei LGPD e termos próprios.
-        </label>
-        <button class="btn" id="btn-presell" onclick="trackFunilStep('RaioX_IniciouIdentificacao'); show('s-welcome-1')">Começar Meu RAIO-X</button>
+<div id="s-presell" class="screen hero-screen">
+    <div class="hero-grid">
+        <div class="presell-wrap hero-col-text">
+            <div class="hero-eyebrow"><span class="hero-eyebrow-line"></span>Protocolo // Autopercepção</div>
+            <h1 class="presell-headline">
+                COMECE SEU RAIO-X
+            </h1>
+            <div class="hero-chips">
+                <span class="hero-chip">Análise Privada</span>
+                <span class="hero-chip">100% Confidencial</span>
+            </div>
+            <label class="presell-consent">
+                <input type="checkbox" id="lgpd-consent">
+                Concordo em seguir nos termos de privacidade da Lei LGPD e termos próprios.
+            </label>
+            <button class="btn" id="btn-presell" onclick="trackFunilStep('RaioX_IniciouIdentificacao'); show('s-welcome-1')">Começar Meu RAIO-X</button>
+        </div>
+        <div class="hero-col-visual">
+            <div class="scanner">
+                <div class="scanner-corner tl"></div>
+                <div class="scanner-corner tr"></div>
+                <div class="scanner-corner bl"></div>
+                <div class="scanner-corner br"></div>
+                <svg class="scanner-rings" viewBox="0 0 200 200">
+                    <circle cx="100" cy="100" r="88" class="ring ring-outer"/>
+                    <circle cx="100" cy="100" r="60" class="ring ring-inner"/>
+                    <circle cx="100" cy="100" r="88" class="ring ring-arc"/>
+                    <circle class="scanner-dot dot-1" cx="100" cy="12" r="3"/>
+                    <circle class="scanner-dot dot-2" cx="188" cy="100" r="3"/>
+                </svg>
+                <span class="scanner-caption">Sessão Privada</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1391,10 +1567,13 @@ body.presell-mode .expert-header { height: 300px; }
 
 <!-- ── QUIZ ── -->
 <div id="s-quiz" class="screen">
-    <button class="back-btn" id="back-quiz" onclick="goBack()">
-        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-        Voltar
-    </button>
+    <div class="q-top-row">
+        <button class="back-btn" id="back-quiz" onclick="goBack()">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            Voltar
+        </button>
+        <span class="q-counter" id="q-counter">00 / 00</span>
+    </div>
     <div class="phase-number-top">Raio X</div>
     <div class="phase-label" id="q-phase-label">FASE 1 DE 3</div>
     <div class="phase-name-sm" id="q-phase-name">Como ela te vê hoje</div>
@@ -2242,6 +2421,7 @@ window.onload = () => {
 
     updateMuteBtn(); // reflete preferência de som salva
     updateFunnelProgress('s-welcome-1'); // quiz agora comeca direto no Perfil (sem a tela de pre-sell/LGPD)
+    updateStageNav('s-welcome-1');
     const p = new URLSearchParams(window.location.search);
     userName = p.get('nome') || p.get('name') || p.get('first_name') || '';
     if (userName) {
@@ -2526,6 +2706,21 @@ let phaseAutoTimer = null;
 const PHASE_AUTO_ADVANCE_MS = 10000;
 const PHASE_AUTO_BTN = { 's-p1': 'btn-p1', 's-p2': 'btn-p2', 's-p3': 'btn-p3' };
 
+// Mapa tela → estágio da barra fixa de topo (puramente decorativo)
+const STAGE_NAV_MAP = {
+    's-presell': 'inicio', 's-recover': 'inicio', 's-welcome-1': 'inicio', 's-welcome-2': 'inicio',
+    's-p1': 'inicio', 's-p2': 'inicio', 's-p3': 'inicio',
+    's-quiz': 'questoes',
+    's-loading': 'analise',
+    's-report': 'dossie',
+};
+function updateStageNav(screenId) {
+    const stage = STAGE_NAV_MAP[screenId];
+    document.querySelectorAll('.stage-item').forEach(el => {
+        el.classList.toggle('on', el.dataset.stage === stage);
+    });
+}
+
 function show(id) {
     if (phaseAutoTimer) { clearTimeout(phaseAutoTimer); phaseAutoTimer = null; }
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -2533,6 +2728,7 @@ function show(id) {
     document.body.classList.toggle('presell-mode', id === 's-presell' || id === 's-recover');
     document.querySelector('.main').scrollTo(0,0);
     updateFunnelProgress(id);
+    updateStageNav(id);
 
     const autoBtnId = PHASE_AUTO_BTN[id];
     if (autoBtnId) {
@@ -2631,6 +2827,7 @@ function renderQ() {
     document.getElementById('q-phase-label').textContent = phase.label;
     document.getElementById('q-phase-name').textContent  = phase.name;
     document.getElementById('q-text').textContent    = q.q;
+    document.getElementById('q-counter').textContent = String(curQ + 1).padStart(2, '0') + ' / ' + String(QS.length).padStart(2, '0');
 
     // Sotaque por fase (verde / azul / âmbar) — só muda a cor de destaque
     const phaseIdx = PHASES.indexOf(phase);
