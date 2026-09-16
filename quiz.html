@@ -114,19 +114,52 @@ body {
 }
 .stage-nav-steps { display: flex; gap: 6px; }
 .stage-item {
+    --fill: 0%;
+    position: relative;
+    overflow: hidden;
     font-family: var(--font-mono);
     font-size: 10px;
     letter-spacing: 1px;
     text-transform: uppercase;
     color: var(--muted2);
-    padding: 5px 10px;
-    border-radius: 999px;
-    transition: background 0.25s, color 0.25s;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    transition: color 0.25s, border-color 0.25s;
 }
+/* A luz que enche a etapa conforme o progresso (--fill vem do JS) */
+.stage-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: var(--fill);
+    background: linear-gradient(90deg, rgba(34,211,238,0.28), rgba(34,211,238,0.14));
+    border-right: 1px solid rgba(34,211,238,0.5);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+/* Brilho na ponta da luz enquanto a etapa está em andamento */
+.stage-item.on::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: var(--fill);
+    width: 14px;
+    transform: translateX(-7px);
+    background: radial-gradient(ellipse at center, rgba(34,211,238,0.55), transparent 70%);
+    transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+.stage-item span { position: relative; z-index: 1; }
 .stage-item.on {
-    background: rgba(34,211,238,0.12);
     color: var(--primary);
+    border-color: rgba(34,211,238,0.5);
 }
+.stage-item.done { color: var(--primary); border-color: rgba(34,211,238,0.35); }
+
+/* Navegação livre entre etapas — só no modo de teste (?nav=1) */
+body.nav-livre .stage-item { cursor: pointer; }
+body.nav-livre .stage-item:hover { color: var(--text); border-color: var(--primary); }
 body { padding-top: 40px; }
 
 /* ══════════════════════════════════════
@@ -305,6 +338,10 @@ body.presell-mode .wrap { max-width: 960px; }
 
 /* Campos agrupados dentro do mesmo passo */
 .wz-field + .wz-field { margin-top: 22px; }
+/* Lado a lado, idade e altura precisam de números mais contidos p/ não quebrar */
+.wz-step.duo .age-value { font-size: 22px; }
+.wz-step.duo .stepper { gap: 12px; }
+.wz-step.duo .stepper-value { min-width: 70px; font-size: 20px; }
 @media (min-width: 640px) {
     /* .on é obrigatório aqui: sem ele, o display:grid reativaria passos ocultos */
     .wz-step.duo.on { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
@@ -428,91 +465,6 @@ select.form-input option { background: var(--card); color: var(--text); }
     line-height: 1.2;
     margin-bottom: 10px;
 }
-.wtrack {
-    width: 100%;
-    height: 10px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    overflow: hidden;
-    margin-bottom: 18px;
-}
-.wfill {
-    height: 100%;
-    border-radius: 999px;
-    background: linear-gradient(90deg, var(--primary) 0%, var(--blue) 100%);
-    transition: width 0.4s ease;
-    position: relative;
-    overflow: hidden;
-}
-.wfill::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    height: 100%;
-    width: 40%;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
-    animation: wshine 1.6s ease-in-out infinite;
-}
-@keyframes wshine {
-    0%   { transform: translateX(-100%); }
-    100% { transform: translateX(250%); }
-}
-
-.wsteps {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 18px;
-}
-.wstep {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    flex: 1;
-}
-.wstep-circle {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    color: var(--muted2);
-    transition: all 0.25s ease;
-}
-.wstep-label {
-    font-size: 10px;
-    color: var(--muted2);
-    font-weight: 600;
-    text-align: center;
-    line-height: 1.2;
-}
-.wstep.done .wstep-circle {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: #06101e;
-}
-.wstep.done .wstep-label { color: var(--primary); }
-.wstep.active .wstep-circle {
-    background: linear-gradient(135deg, var(--primary), var(--blue));
-    border-color: var(--primary);
-    color: #fff;
-    box-shadow: 0 0 0 4px rgba(0,200,160,0.18);
-    transform: scale(1.08);
-}
-.wstep.active .wstep-label { color: var(--text); }
-
-/* Anel de progresso do passo ativo (substitui o círculo cheio) */
-.wstep-ring circle:last-child { transition: stroke-dashoffset 0.4s ease; }
-.wstep.active .wstep-ring {
-    transform: scale(1.08);
-    filter: drop-shadow(0 0 3px rgba(0,200,160,0.5));
-}
-
 /* ══════════════════════════════════════
    CHIPS (low-friction select)
 ══════════════════════════════════════ */
@@ -1400,10 +1352,10 @@ body.presell-mode .expert-header { height: 300px; }
     <div class="stage-nav-inner">
         <span class="stage-nav-brand">BC · RAIO-X</span>
         <div class="stage-nav-steps">
-            <span class="stage-item" data-stage="inicio">01 Início</span>
-            <span class="stage-item" data-stage="questoes">02 Questões</span>
-            <span class="stage-item" data-stage="analise">03 Análise</span>
-            <span class="stage-item" data-stage="dossie">04 Dossiê</span>
+            <span class="stage-item" data-stage="inicio"><span>01 Início</span></span>
+            <span class="stage-item" data-stage="questoes"><span>02 Questões</span></span>
+            <span class="stage-item" data-stage="analise"><span>03 Análise</span></span>
+            <span class="stage-item" data-stage="dossie"><span>04 Dossiê</span></span>
         </div>
     </div>
 </nav>
@@ -1478,7 +1430,6 @@ body.presell-mode .expert-header { height: 300px; }
             <span class="wz-counter" id="wz-counter-1">01 / 02</span>
         </div>
 
-        <div id="funnel-progress-1"></div>
 
         <div class="wz-steps" id="wz-1">
             <div class="wz-step duo" data-req="nome">
@@ -1532,7 +1483,6 @@ body.presell-mode .expert-header { height: 300px; }
             <span class="wz-counter" id="wz-counter-2">01 / 02</span>
         </div>
 
-        <div id="funnel-progress-2"></div>
 
         <div class="wz-steps" id="wz-2">
             <div class="wz-step duo">
@@ -1594,7 +1544,6 @@ body.presell-mode .expert-header { height: 300px; }
         Voltar
     </button>
     <div class="phase-intro">
-        <div id="funnel-progress-p1"></div>
         <div class="phase-number"><span class="phase-number-top">Raio X</span>Fase 1 de 3</div>
         <h2 class="phase-title">O Jeito Que Você Passa Sem Perceber</h2>
         <p class="phase-sub">E Faz Ela Te Por na Gaveta Errada: "Provedor Torcendo Por Um SIM Dela..."</p>
@@ -1608,7 +1557,6 @@ body.presell-mode .expert-header { height: 300px; }
 <!-- ── PHASE 2 INTRO ── -->
 <div id="s-p2" class="screen">
     <div class="phase-intro">
-        <div id="funnel-progress-p2"></div>
         <div class="phase-number"><span class="phase-number-top">Raio X</span>Fase 2 de 3</div>
         <h2 class="phase-title">O que está te travando</h2>
         <p class="phase-sub">Fase 1 concluída. Já identificamos padrões muito específicos no seu perfil. Agora vamos ao que está entre você e os resultados que merece.</p>
@@ -1622,7 +1570,6 @@ body.presell-mode .expert-header { height: 300px; }
 <!-- ── PHASE 3 INTRO ── -->
 <div id="s-p3" class="screen">
     <div class="phase-intro">
-        <div id="funnel-progress-p3"></div>
         <div class="phase-number"><span class="phase-number-top">Raio X</span>Fase 3 de 3</div>
         <h2 class="phase-title">Seu arquétipo real</h2>
         <p class="phase-sub">Ponto crítico identificado. Seu perfil tem uma característica específica que a maioria dos homens nunca descobre. A fase final confirma tudo.</p>
@@ -1645,7 +1592,6 @@ body.presell-mode .expert-header { height: 300px; }
     <div class="phase-number-top">Raio X</div>
     <div class="phase-label" id="q-phase-label">FASE 1 DE 3</div>
     <div class="phase-name-sm" id="q-phase-name">Como ela te vê hoje</div>
-    <div id="funnel-progress-quiz"></div>
     <div class="question-text" id="q-text"></div>
     <div class="options" id="q-opts"></div>
 </div>
@@ -2496,6 +2442,7 @@ window.onload = () => {
         if (fn) fn.value = userName; // pré-preenche o campo Nome
     }
     if (p.get('adjust') === '1') initAdjustMode();
+    if (p.get('nav') === '1') initNavLivre(); // navegação livre pela barra do topo (teste)
 
     // Já viu o resultado antes e nunca converteu (nem WhatsApp nem Greenn) → pede email antes de liberar o quiz
     // ?preview_recover=1 força a visualização da tela (só para demonstração, sem precisar mexer no localStorage)
@@ -2521,96 +2468,49 @@ function submitRecoverEmail() {
     show('s-presell');
 }
 
-// Apps selecionados (múltipla escolha em caixa única)
 // ═══════════════════════════════════════
-// FUNNEL PROGRESS (barra + 5 etapas)
+// PROGRESSO — luz preenchendo as etapas da barra do topo
 // ═══════════════════════════════════════
-const FUNNEL_STEPS = [
-    { key:'perfil', label:'Perfil',      icon:'👤' },
-    { key:'fase1',  label:'Fase 1',      icon:'①'  },
-    { key:'fase2',  label:'Fase 2',      icon:'②'  },
-    { key:'fase3',  label:'Fase 3',      icon:'③'  },
-    { key:'raiox',  label:'Seu Raio-X',  icon:'✨' },
-];
+// Não existe mais barra de bolinhas: a própria etapa da barra fixa
+// (01 Início / 02 Questões / 03 Análise / 04 Dossiê) se enche de luz.
+const STAGE_ORDER = ['inicio', 'questoes', 'analise', 'dossie'];
 
-// Mapa tela → { step: índice 0-4, pct: progresso dentro da barra (0-100) }
-const FUNNEL_SCREEN_MAP = {
-    's-welcome-1': { step: 0, pct: 20 },
-    's-welcome-2': { step: 0, pct: 60 },
-    // pct:0 nas telas de aviso de fase — a bolinha começa vazia e só enche
-    // a partir da 1a pergunta de verdade, senão dá a impressão de "reset"
-    's-p1':        { step: 1, pct: 0 },
-    's-p2':        { step: 2, pct: 0 },
-    's-p3':        { step: 3, pct: 0 },
+/**
+ * Pinta a barra do topo: etapas já vencidas ficam cheias, a atual enche
+ * conforme `pct` (0-100) e as seguintes ficam vazias.
+ */
+function setStageProgress(stage, pct) {
+    const atual = STAGE_ORDER.indexOf(stage);
+    if (atual < 0) return;
+    document.querySelectorAll('.stage-item').forEach(el => {
+        const i = STAGE_ORDER.indexOf(el.dataset.stage);
+        const preenchido = i < atual ? 100 : (i === atual ? Math.max(0, Math.min(100, pct)) : 0);
+        el.style.setProperty('--fill', preenchido + '%');
+        el.classList.toggle('done', i < atual);
+    });
+}
+
+// Progresso dentro da etapa 01 Início (pré-sell → formulário em 2 telas)
+const INICIO_PCT = {
+    's-presell':   0,
+    's-recover':   0,
+    's-welcome-1': 25,
+    's-welcome-2': 65,
 };
 
-const WSTEP_RING_R = 15;
-const WSTEP_RING_C = 2 * Math.PI * WSTEP_RING_R; // circunferência do anel (~94.2)
-
-function renderFunnelSteps(slotId, activeStep, fillPct) {
-    const slot = document.getElementById(slotId);
-    if (!slot) return;
-
-    // % de progresso só dentro do passo ativo, derivado do mesmo fillPct que
-    // já alimenta a barra de cima (.wfill) — não é uma segunda fonte de verdade.
-    const segSize = 100 / FUNNEL_STEPS.length;
-    const localPct = Math.max(0, Math.min(100, (fillPct - activeStep * segSize) / segSize * 100));
-    const ringOffset = WSTEP_RING_C - (WSTEP_RING_C * localPct / 100);
-
-    const stepsHtml = FUNNEL_STEPS.map((s, i) => {
-        let cls = 'wstep';
-        if (i < activeStep) cls += ' done';
-        else if (i === activeStep) cls += ' active';
-
-        const circleHtml = i === activeStep
-            ? `<svg class="wstep-ring" width="34" height="34" viewBox="0 0 34 34">
-                <circle cx="17" cy="17" r="${WSTEP_RING_R}" fill="none" stroke="var(--border)" stroke-width="3"></circle>
-                <circle cx="17" cy="17" r="${WSTEP_RING_R}" fill="none" stroke="var(--primary)" stroke-width="3"
-                    stroke-linecap="round"
-                    stroke-dasharray="${WSTEP_RING_C.toFixed(2)}"
-                    stroke-dashoffset="${ringOffset.toFixed(2)}"
-                    transform="rotate(-90 17 17)"></circle>
-            </svg>`
-            : `<div class="wstep-circle">${i < activeStep ? '✓' : s.icon}</div>`;
-
-        return `<div class="${cls}">
-            ${circleHtml}
-            <div class="wstep-label">${s.label}</div>
-        </div>`;
-    }).join('');
-
-    slot.innerHTML = `
-        <div class="wtrack"><div class="wfill" style="width:${fillPct}%"></div></div>
-        <div class="wsteps">${stepsHtml}</div>
-    `;
-}
-
-// Progresso geral (0-100) considerando a etapa ativa + sub-progresso dentro dela
-function overallFunnelPct(step, subPct) {
-    return Math.round(((step + subPct / 100) / FUNNEL_STEPS.length) * 100);
-}
-
 function updateFunnelProgress(screenId) {
-    const map = FUNNEL_SCREEN_MAP[screenId];
-    if (!map) return;
-    const overall = overallFunnelPct(map.step, map.pct);
-
-    const slotByScreen = {
-        's-welcome-1': 'funnel-progress-1',
-        's-welcome-2': 'funnel-progress-2',
-        's-p1': 'funnel-progress-p1',
-        's-p2': 'funnel-progress-p2',
-        's-p3': 'funnel-progress-p3',
-    };
-    const slotId = slotByScreen[screenId];
-    if (slotId) renderFunnelSteps(slotId, map.step, overall);
+    if (screenId in INICIO_PCT)   return setStageProgress('inicio', INICIO_PCT[screenId]);
+    if (screenId === 's-p1')      return setStageProgress('questoes', 0);
+    if (screenId === 's-p2')      return setStageProgress('questoes', 33);
+    if (screenId === 's-p3')      return setStageProgress('questoes', 66);
+    if (screenId === 's-loading') return setStageProgress('analise', 0);
+    if (screenId === 's-report')  return setStageProgress('dossie', 100);
 }
 
-// Chamada de dentro de renderQ() — sincroniza a barra durante as perguntas
-function updateFunnelProgressQuiz(phaseIdx, subPct) {
-    const step = phaseIdx + 1; // fase 1 = step 1, fase 2 = step 2, fase 3 = step 3
-    const overall = overallFunnelPct(step, subPct);
-    renderFunnelSteps('funnel-progress-quiz', step, overall);
+// Chamada de dentro de renderQ() — a luz de "02 Questões" acompanha as perguntas
+function updateFunnelProgressQuiz() {
+    const total = (typeof QS !== 'undefined' && QS.length) ? QS.length : 1;
+    setStageProgress('questoes', Math.round((curQ / total) * 100));
 }
 
 let selectedApps = [];
@@ -2706,8 +2606,10 @@ function wzRender(wzId) {
     if (nextBtn)  nextBtn.style.display  = isLast ? 'none' : '';
     if (finalBtn) finalBtn.style.display = isLast ? '' : 'none';
 
-    // Foco automático em campos de texto — deixa o preenchimento mais fluido
-    const input = steps[i] && steps[i].querySelector('input[type="text"]');
+    // Foco automático em campos de texto — deixa o preenchimento mais fluido.
+    // O stepper de altura fica de fora: ele troca o valor exibido ao receber
+    // foco ("1,70m" vira "170"), o que confundiria logo na entrada do passo.
+    const input = steps[i] && steps[i].querySelector('input[type="text"]:not(.stepper-input)');
     if (input) setTimeout(() => input.focus(), 120);
 }
 
@@ -2901,6 +2803,32 @@ function updateStageNav(screenId) {
     });
 }
 
+// ── Navegação livre pela barra do topo (modo de teste: ?nav=1) ──
+// Fica desligada por padrão: em campanha, o visitante não pode pular
+// o formulário e cair direto no relatório.
+const STAGE_TELA = {
+    inicio:   () => show('s-presell'),
+    questoes: () => {
+        if (!QS.length) {                      // entrou direto nas perguntas, sem passar pelo form
+            try { QS = QuizLogic.sortearPerguntas(3, 2); } catch (e) { QS = QS_FALLBACK; }
+            respostas = [];
+        }
+        show('s-p1');
+    },
+    analise:  () => show('s-loading'),
+    dossie:   () => show('s-report'),
+};
+
+function initNavLivre() {
+    document.body.classList.add('nav-livre');
+    document.querySelectorAll('.stage-item').forEach(el => {
+        el.onclick = () => {
+            const ir = STAGE_TELA[el.dataset.stage];
+            if (ir) ir();
+        };
+    });
+}
+
 function show(id) {
     if (phaseAutoTimer) { clearTimeout(phaseAutoTimer); phaseAutoTimer = null; }
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -3016,7 +2944,7 @@ function renderQ() {
     const quizScreen = document.getElementById('s-quiz');
     quizScreen.classList.remove('accent-1', 'accent-2', 'accent-3');
     quizScreen.classList.add('accent-' + (phaseIdx + 1));
-    updateFunnelProgressQuiz(phaseIdx, pct); // sincroniza barra de 5 etapas
+    updateFunnelProgressQuiz(); // acende a luz de "02 Questões" conforme avança
 
     const c = document.getElementById('q-opts');
     c.innerHTML = '';
