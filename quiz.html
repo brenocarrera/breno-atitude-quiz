@@ -193,17 +193,15 @@ body.presell-mode .expert-header { display: block; }
 .screen-bg-scrim {
     position: fixed;
     inset: 0;
-    background: rgba(5, 10, 20, 0.45);
+    background: rgba(5, 10, 20, 0.55);
     z-index: -1;
 }
-.glass-card {
-    background: rgba(255, 255, 255, 0.90);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 20px;
-    padding: 22px 18px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-}
+/* Texto que fica direto sobre o vídeo (sem caixa) precisa de cor clara */
+#s-welcome-1.has-bg-video .badge { color: #fff; }
+#s-welcome-1.has-bg-video .form-label { color: rgba(255,255,255,0.82); }
+#s-welcome-1.has-bg-video .wstep-label { color: rgba(255,255,255,0.75); }
+#s-welcome-1.has-bg-video .wstep.active .wstep-label,
+#s-welcome-1.has-bg-video .wstep.done .wstep-label { color: var(--primary); }
 
 /* ══════════════════════════════════════
    FORMS
@@ -1238,10 +1236,10 @@ body.presell-mode .expert-header { height: 300px; }
 </div>
 
 <!-- ── WELCOME PARTE 1 (Nome, Apps, Cidade, Último Date) ── -->
-<div id="s-welcome-1" class="screen active">
+<div id="s-welcome-1" class="screen active has-bg-video">
     <video class="screen-bg-video" autoplay muted loop playsinline src="/bg-welcome1.mp4"></video>
     <div class="screen-bg-scrim"></div>
-    <div class="glass-card" style="display:flex;flex-direction:column;flex:1;justify-content:center;">
+    <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
         <div class="badge">Personalizando Seu <span class="badge-accent">Raio-X</span></div>
 
         <div id="funnel-progress-1"></div>
