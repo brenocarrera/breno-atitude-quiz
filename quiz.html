@@ -179,17 +179,16 @@ body.presell-mode .expert-header { display: block; }
    FORMS
 ══════════════════════════════════════ */
 .badge {
-    display: inline-block;
-    background: linear-gradient(135deg, var(--primary), var(--blue));
-    color: #fff;
-    padding: 4px 13px;
-    border-radius: 20px;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin-bottom: 10px;
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.3rem, 5.6vw, 1.7rem);
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 12px;
 }
+
+.badge-accent { color: var(--primary); }
 
 .screen-title {
     font-size: 26px;
@@ -1211,7 +1210,7 @@ body.presell-mode .expert-header { height: 300px; }
 <!-- ── WELCOME PARTE 1 (Nome, Apps, Cidade, Último Date) ── -->
 <div id="s-welcome-1" class="screen active">
     <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
-        <div class="badge">Personalizando Seu Raio-X</div>
+        <div class="badge">Personalizando Seu <span class="badge-accent">Raio-X</span></div>
 
         <div id="funnel-progress-1"></div>
 
@@ -1254,7 +1253,7 @@ body.presell-mode .expert-header { height: 300px; }
 <!-- ── WELCOME PARTE 2 (Idade, Signo, Altura, Profissão) ── -->
 <div id="s-welcome-2" class="screen">
     <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
-        <div class="badge">Deixando Exclusivo Seu Raio-X</div>
+        <div class="badge">Deixando Exclusivo Seu <span class="badge-accent">Raio-X</span></div>
 
         <div id="funnel-progress-2"></div>
 
