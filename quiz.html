@@ -1186,20 +1186,6 @@ body.presell-mode .expert-header { height: 300px; }
 <main class="main">
 <div class="wrap">
 
-<!-- ── PRÉ-SELL ── -->
-<div id="s-presell" class="screen active">
-    <div class="presell-wrap">
-        <h1 class="presell-headline">
-            COMECE SEU RAIO-X
-        </h1>
-        <label class="presell-consent">
-            <input type="checkbox" id="lgpd-consent" onchange="document.getElementById('btn-presell').disabled = !this.checked">
-            Concordo em seguir nos termos de privacidade da Lei LGPD e termos próprios.
-        </label>
-        <button class="btn" id="btn-presell" onclick="trackFunilStep('RaioX_IniciouIdentificacao'); show('s-welcome-1')" disabled>Começar Meu RAIO-X</button>
-    </div>
-</div>
-
 <!-- ── RECUPERAÇÃO (viu o resultado antes e não converteu) ── -->
 <div id="s-recover" class="screen">
     <div class="presell-wrap">
@@ -1213,7 +1199,7 @@ body.presell-mode .expert-header { height: 300px; }
 </div>
 
 <!-- ── WELCOME PARTE 1 (Nome, Apps, Cidade, Último Date) ── -->
-<div id="s-welcome-1" class="screen">
+<div id="s-welcome-1" class="screen active">
     <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
         <div class="badge">Personalizando Seu Raio-X</div>
 
@@ -2198,7 +2184,6 @@ window.onload = () => {
     }).catch(()=>{});
 
     updateMuteBtn(); // reflete preferência de som salva
-    document.body.classList.add('presell-mode'); // pré-sell começa ativa
     const p = new URLSearchParams(window.location.search);
     userName = p.get('nome') || p.get('name') || p.get('first_name') || '';
     if (userName) {
@@ -2228,7 +2213,7 @@ function submitRecoverEmail() {
     }).catch(() => {});
 
     localStorage.setItem('oxyquiz_converted', 'true');
-    show('s-presell');
+    show('s-welcome-1');
 }
 
 // Apps selecionados (múltipla escolha em caixa única)
@@ -2487,7 +2472,7 @@ function show(id) {
     if (phaseAutoTimer) { clearTimeout(phaseAutoTimer); phaseAutoTimer = null; }
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    document.body.classList.toggle('presell-mode', id === 's-presell' || id === 's-recover');
+    document.body.classList.toggle('presell-mode', id === 's-recover');
     document.querySelector('.main').scrollTo(0,0);
     updateFunnelProgress(id);
 
