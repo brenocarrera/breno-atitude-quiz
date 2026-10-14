@@ -180,6 +180,32 @@ body.presell-mode .expert-header { display: block; }
 .screen.active { display: flex; }
 
 /* ══════════════════════════════════════
+   VÍDEO DE FUNDO (teste — tela de captura)
+══════════════════════════════════════ */
+.screen-bg-video {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+}
+.screen-bg-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 10, 20, 0.45);
+    z-index: -1;
+}
+.glass-card {
+    background: rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 22px 18px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+
+/* ══════════════════════════════════════
    FORMS
 ══════════════════════════════════════ */
 .badge {
@@ -1213,7 +1239,9 @@ body.presell-mode .expert-header { height: 300px; }
 
 <!-- ── WELCOME PARTE 1 (Nome, Apps, Cidade, Último Date) ── -->
 <div id="s-welcome-1" class="screen active">
-    <div style="display:flex;flex-direction:column;flex:1;justify-content:center;">
+    <video class="screen-bg-video" autoplay muted loop playsinline src="/bg-welcome1.mp4"></video>
+    <div class="screen-bg-scrim"></div>
+    <div class="glass-card" style="display:flex;flex-direction:column;flex:1;justify-content:center;">
         <div class="badge">Personalizando Seu <span class="badge-accent">Raio-X</span></div>
 
         <div id="funnel-progress-1"></div>
