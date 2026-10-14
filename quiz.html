@@ -690,9 +690,10 @@ select.form-input option { background: var(--card); color: var(--text); }
 .question-text {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: 26px;
-    line-height: 1.3;
-    margin-bottom: 14px;
+    font-size: clamp(1.6rem, 6.5vw, 2.1rem);
+    line-height: 1.25;
+    letter-spacing: 0.2px;
+    margin-bottom: 16px;
 }
 
 .options { display: flex; flex-direction: column; gap: 10px; counter-reset: option-num; }
@@ -928,7 +929,7 @@ select.form-input option { background: var(--card); color: var(--text); }
 @media (max-height: 680px) {
     .expert-header { height: 140px; }
     .screen-title  { font-size: 20px; }
-    .question-text { font-size: 18px; }
+    .question-text { font-size: clamp(1.35rem, 6vw, 1.7rem); }
     /* fontes de fase/sub seguem o clamp() — aqui só reduz a margem p/ caber */
     .phase-sub, .screen-sub { margin-bottom: 10px; }
     .phase-intro { padding: 4px 0; }
@@ -936,7 +937,7 @@ select.form-input option { background: var(--card); color: var(--text); }
 }
 
 @media (max-width: 380px) {
-    .question-text { font-size: 17px; }
+    .question-text { font-size: clamp(1.25rem, 7vw, 1.55rem); }
     /* padding-left mantém espaço pro badge numérico (10px + 22px de largura) — não pode cair pra 13px */
     .option { font-size: 14px; padding: 11px 13px 11px 36px; }
     .option::before { top: 13px; }
@@ -1654,7 +1655,7 @@ body.presell-mode .expert-header { height: 300px; }
 
 <!-- ═══ FOOTER ═══ -->
 <footer class="brand-footer">
-    <img src="/logo.png" alt="Breno Carrera"
+    <img src="/logo-black.jpg" alt="Breno Carrera"
          onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
     <span class="logo-fallback" style="display:none">BRENO CARRERA</span>
 </footer>
