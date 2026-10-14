@@ -112,13 +112,17 @@ body.presell-mode .expert-header { display: block; }
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    padding: 8px 20px 12px;
+    padding: 20px 24px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.wrap { max-width: 520px; width: 100%; flex: 1; display: flex; flex-direction: column; }
+.wrap { max-width: 580px; width: 100%; flex: 1; display: flex; flex-direction: column; }
+
+@media (min-width: 768px) {
+    .main { padding-top: 32px; }
+}
 
 /* ══════════════════════════════════════
    FOOTER
