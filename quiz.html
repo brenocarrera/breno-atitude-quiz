@@ -203,13 +203,21 @@ body.presell-mode .expert-header { display: block; }
 #s-welcome-1.has-bg-video .wstep-label { color: rgba(255,255,255,0.75); }
 #s-welcome-1.has-bg-video .wstep.active .wstep-label,
 #s-welcome-1.has-bg-video .wstep.done .wstep-label { color: var(--primary); }
-/* Caixas (input/chip) bem sólidas, sem deixar o vídeo "vazar" nas bordas */
+/* Caixas (input/chip) translúcidas (vidro fosco), deixando o vídeo aparecer */
 #s-welcome-1.has-bg-video .form-input,
 #s-welcome-1.has-bg-video .chip,
 #s-welcome-1.has-bg-video .ms-box {
-    background: #fff;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    background: rgba(255,255,255,0.14);
+    border-color: rgba(255,255,255,0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #fff;
 }
+#s-welcome-1.has-bg-video .form-input::placeholder { color: rgba(255,255,255,0.65); }
+#s-welcome-1.has-bg-video .chip.selected { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
+#s-welcome-1.has-bg-video .ms-box .ms-label { color: #fff; }
+#s-welcome-1.has-bg-video .ms-box .ms-label.placeholder { color: rgba(255,255,255,0.65); }
+#s-welcome-1.has-bg-video .ms-box .ms-caret { color: rgba(255,255,255,0.65); }
 
 /* ══════════════════════════════════════
    FORMS
