@@ -1,3 +1,5 @@
+const { avisarTelegram } = require('./_telegram');
+
 // ── Arquivo Alfa (Sessão 3): identifica o registro via cookie oxy_alfa_id
 // (Domain=.breno-atitude.com, setado pelas lands em LANDS-ALL/arquivo-alfa.js) ──
 function getCookieValue(cookieHeader, name) {
@@ -70,6 +72,51 @@ function parseDispositivo(userAgent) {
     return `${navegador} no ${sistema}`;
 }
 
+// Grava o lead CONFERINDO a resposta do banco; se o banco recusar, tenta de novo uma vez.
+async function gravarLeadComConferencia(url, key, linha) {
+    let ultimo = { ok: false, status: 0, erro: '' };
+    for (let tentativa = 1; tentativa <= 2; tentativa++) {
+        try {
+            const r = await fetch(`${url}/rest/v1/leads`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': key,
+                    'Authorization': `Bearer ${key}`,
+                    'Prefer': 'return=minimal',
+                },
+                body: JSON.stringify(linha),
+            });
+            if (r.ok) return { ok: true, tentativa };
+            ultimo = { ok: false, status: r.status, erro: (await r.text()).slice(0, 200) };
+        } catch (e) {
+            ultimo = { ok: false, status: 0, erro: String((e && e.message) || e).slice(0, 200) };
+        }
+        if (tentativa === 1) await new Promise(res => setTimeout(res, 800));
+    }
+    console.error('[save-lead] lead NÃO foi salvo:', ultimo.status, ultimo.erro);
+    return ultimo;
+}
+
+// Se o lead não foi salvo: registra no BigData (evento lead_nao_salvo) e avisa no Telegram com o contato,
+// para o lead não se perder.
+async function avisarLeadNaoSalvo(url, key, { nome, email, whatsapp, sessionId, status, erro }) {
+    try {
+        await fetch(`${url}/rest/v1/funil_eventos`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': key, 'Authorization': `Bearer ${key}`, 'Prefer': 'return=minimal' },
+            body: JSON.stringify(sessionId ? { tipo: 'lead_nao_salvo', session_id: String(sessionId).slice(0, 80) } : { tipo: 'lead_nao_salvo' }),
+        });
+    } catch (e) { /* o aviso no Telegram abaixo ainda sai */ }
+    await avisarTelegram([
+        '🚨 QUIZ: um lead NÃO foi salvo no banco',
+        'Nome: ' + (nome || '-'),
+        'E-mail: ' + (email || '-'),
+        'WhatsApp: ' + (whatsapp || '-'),
+        'Motivo: resposta ' + status + ' ' + String(erro || '').slice(0, 150),
+    ].join('\n'));
+}
+
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -112,16 +159,8 @@ module.exports = async function handler(req, res) {
     // Se Supabase não estiver configurado, retorna ok silenciosamente
     if (!url || !key) return res.status(200).json({ ok: true });
 
-    try {
-        await fetch(`${url}/rest/v1/leads`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'apikey': key,
-                'Authorization': `Bearer ${key}`,
-                'Prefer': 'return=minimal',
-            },
-            body: JSON.stringify({
+    const bioVazia = !(Array.isArray(bios) && bios.length); // IA falhou: salva o lead SEM bio inventada
+    const linhaLead = {
                 nome,
                 idade:    idade    ? parseInt(idade)    : null,
                 altura:   altura   ? Math.round(parseFloat(String(altura).replace(',', '.').replace('m', '')) * 100) : null,
@@ -133,7 +172,7 @@ module.exports = async function handler(req, res) {
                 mbti_tipo:   mbtiTipo    || null,
                 adicas:      adicas      || null,
                 diagnostico: diagnostico || null,
-                bios:        bios        || null,
+                bios:        bioVazia ? null : bios,
                 apps:        apps        || null,
                 cidade:      cidade      || null,
                 signo:       signo       || null,
@@ -141,11 +180,12 @@ module.exports = async function handler(req, res) {
                 dispositivo,
                 duracao_quiz_segundos: duracaoQuiz || null,
                 created_at: new Date().toISOString(),
-            }),
-        });
-    } catch (err) {
-        console.error('Supabase error:', err);
-        // Nunca bloqueia o resultado do quiz
+    };
+    const gravado = await gravarLeadComConferencia(url, key, linhaLead);
+    const leadSalvo = !!gravado.ok;
+    if (!leadSalvo) {
+        // Nunca bloqueia o resultado do quiz, mas avisa para o lead não se perder
+        await avisarLeadNaoSalvo(url, key, { nome, email, whatsapp, sessionId: req.body.sessionId, status: gravado.status, erro: gravado.erro });
     }
 
     let alfaId = null;
@@ -190,13 +230,13 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        await gravarOxyreport(url, email, { arquetipo, mbtiTipo, adicas, diagnostico, bios });
+        await gravarOxyreport(url, email, { arquetipo, mbtiTipo, adicas, diagnostico, bios: bioVazia ? null : bios });
     } catch (err) {
         console.error('[save-lead] Falha ao gravar oxyreport:', err);
         // Nunca bloqueia o resultado do quiz
     }
 
-    return res.status(200).json({ ok: true, alfaId });
+    return res.status(200).json({ ok: true, alfaId, leadSalvo });
 };
 
 async function gravarOxyreport(url, email, { arquetipo, mbtiTipo, adicas, diagnostico, bios }) {

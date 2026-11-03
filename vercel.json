@@ -1,20 +1,46 @@
 {
+  "buildCommand": "node testar-quiz.js",
+  "crons": [
+    {
+      "path": "/api/verificar-no-ar",
+      "schedule": "0 11 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
       ]
     }
   ],
   "rewrites": [
-    { "source": "/", "destination": "/quiz.html" },
-    { "source": "/quiz", "destination": "/quiz.html" },
-    { "source": "/mensagens", "destination": "/mensagens.html" },
-    { "source": "/meu-relatorio", "destination": "/meu-relatorio.html" }
+    {
+      "source": "/",
+      "destination": "/quiz.html"
+    },
+    {
+      "source": "/quiz",
+      "destination": "/quiz.html"
+    },
+    {
+      "source": "/mensagens",
+      "destination": "/mensagens.html"
+    },
+    {
+      "source": "/meu-relatorio",
+      "destination": "/meu-relatorio.html"
+    }
   ],
   "functions": {
-    "api/gerar-pdf-relatorio.js": { "maxDuration": 60 },
-    "api/whatsapp-webhook.js": { "maxDuration": 30 }
+    "api/gerar-pdf-relatorio.js": {
+      "maxDuration": 60
+    },
+    "api/whatsapp-webhook.js": {
+      "maxDuration": 30
+    }
   }
 }
