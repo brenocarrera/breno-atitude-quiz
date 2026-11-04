@@ -1,7 +1,5 @@
 // ── Arquivo Alfa (Sessão 3): identifica o registro via cookie oxy_alfa_id
 // (Domain=.breno-atitude.com, setado pelas lands em LANDS-ALL/arquivo-alfa.js) ──
-const { avisarErroMikeAlfa } = require('./_lib/alerta-telegram');
-
 function getCookieValue(cookieHeader, name) {
     if (!cookieHeader) return null;
     const match = cookieHeader.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
@@ -27,12 +25,7 @@ async function upsertArquivoAlfa(url, serviceKey, alfaId, campos) {
             },
             body: JSON.stringify(corpo),
         });
-        if (!res.ok) {
-            const corpoErro = await res.text();
-            console.error('[arquivo_alfa] PATCH falhou:', res.status, corpoErro);
-            avisarErroMikeAlfa('PATCH arquivo_alfa falhou', `status ${res.status}: ${corpoErro}`);
-            return alfaId;
-        }
+        if (!res.ok) { console.error('[arquivo_alfa] PATCH falhou:', res.status, await res.text()); return alfaId; }
         const rows = await res.json();
         if (rows && rows.length > 0) return alfaId;
         // Cookie apontava pra um id que não existe mais (ex: registro de teste apagado) —
@@ -52,12 +45,7 @@ async function upsertArquivoAlfa(url, serviceKey, alfaId, campos) {
         },
         body: JSON.stringify(corpo),
     });
-    if (!res.ok) {
-        const corpoErro = await res.text();
-        console.error('[arquivo_alfa] INSERT falhou:', res.status, corpoErro);
-        avisarErroMikeAlfa('INSERT arquivo_alfa falhou', `status ${res.status}: ${corpoErro}`);
-        return null;
-    }
+    if (!res.ok) { console.error('[arquivo_alfa] INSERT falhou:', res.status, await res.text()); return null; }
     const rows = await res.json();
     return (rows && rows[0]) ? rows[0].id : null;
 }
@@ -112,7 +100,6 @@ module.exports = async function handler(req, res) {
             }
         } catch (err) {
             console.error('[save-lead] Falha ao atualizar arquivo_alfa (progressivo):', err);
-            avisarErroMikeAlfa('Falha ao atualizar arquivo_alfa (progressivo)', String(err));
         }
         return res.status(200).json({ ok: true, alfaId });
     }
@@ -184,7 +171,6 @@ module.exports = async function handler(req, res) {
         }
     } catch (err) {
         console.error('[save-lead] Falha ao atualizar arquivo_alfa:', err);
-        avisarErroMikeAlfa('Falha ao atualizar arquivo_alfa (fim do quiz)', String(err));
         // Nunca bloqueia o resultado do quiz
     }
 
