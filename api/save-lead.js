@@ -27,7 +27,15 @@ async function upsertArquivoAlfa(url, serviceKey, alfaId, campos) {
             },
             body: JSON.stringify(corpo),
         });
-        if (!res.ok) { console.error('[arquivo_alfa] PATCH falhou:', res.status, await res.text()); return alfaId; }
+        if (!res.ok) {
+            console.error('[arquivo_alfa] PATCH falhou:', res.status, await res.text());
+            if (res.status >= 400 && res.status < 500 && NOVAS_COLUNAS.some(k => k in corpo)) {
+                const sem = {};
+                for (const k in campos) if (!NOVAS_COLUNAS.includes(k)) sem[k] = campos[k];
+                return upsertArquivoAlfa(url, serviceKey, alfaId, sem);
+            }
+            return alfaId;
+        }
         const rows = await res.json();
         if (rows && rows.length > 0) return alfaId;
         // Cookie apontava pra um id que não existe mais (ex: registro de teste apagado) —
@@ -47,9 +55,96 @@ async function upsertArquivoAlfa(url, serviceKey, alfaId, campos) {
         },
         body: JSON.stringify(corpo),
     });
-    if (!res.ok) { console.error('[arquivo_alfa] INSERT falhou:', res.status, await res.text()); return null; }
+    if (!res.ok) {
+        console.error('[arquivo_alfa] INSERT falhou:', res.status, await res.text());
+        if (res.status >= 400 && res.status < 500 && NOVAS_COLUNAS.some(k => k in corpo)) {
+            const sem = {};
+            for (const k in campos) if (!NOVAS_COLUNAS.includes(k)) sem[k] = campos[k];
+            return upsertArquivoAlfa(url, serviceKey, null, sem);
+        }
+        return null;
+    }
     const rows = await res.json();
     return (rows && rows[0]) ? rows[0].id : null;
+}
+
+// ── Rastreador de passos do quiz: colunas novas do arquivo_alfa + o que o servidor descobre sozinho ──
+const NOVAS_COLUNAS = ['quiz_versao', 'ultima_etapa', 'concluiu_quiz', 'temperamento_pixel', 'temperamento_decidido_na_pergunta', 'navegador_nome', 'navegador_versao', 'navegador_tipo', 'ip_visitante', 'local_pais', 'local_estado', 'local_cidade', 'local_bairro', 'local_precisao', 'local_latitude', 'local_longitude', 'impressao_digital', 'quiz_contexto'];
+
+function texto(v, max) { return (typeof v === 'string' && v) ? v.slice(0, max) : undefined; }
+
+function camposDoRastro(req, gps) {
+    const b = req.body || {};
+    const h = req.headers || {};
+    const nav = (b.navegador && typeof b.navegador === 'object') ? b.navegador : {};
+    let ctx;
+    try { if (b.quizContexto && typeof b.quizContexto === 'object' && JSON.stringify(b.quizContexto).length <= 8000) ctx = b.quizContexto; } catch (e) { /* contexto grande demais: ignora */ }
+    const decod = v => { try { return v ? decodeURIComponent(String(v)) : undefined; } catch (e) { return texto(String(v), 80); } };
+    const campos = {
+        quiz_versao: texto(b.quizVersao, 20),
+        ultima_etapa: texto(b.ultimaEtapa, 40),
+        concluiu_quiz: typeof b.concluiuQuiz === 'boolean' ? b.concluiuQuiz : undefined,
+        temperamento_pixel: ['NT', 'NF', 'SJ', 'SP'].includes(b.temperamentoPixel) ? b.temperamentoPixel : undefined,
+        temperamento_decidido_na_pergunta: Number.isInteger(b.temperamentoNaPergunta) ? b.temperamentoNaPergunta : undefined,
+        navegador_nome: texto(nav.nome, 60),
+        navegador_versao: texto(nav.versao, 30),
+        navegador_tipo: texto(nav.tipo, 30),
+        impressao_digital: texto(b.impressaoDigital, 60),
+        quiz_contexto: ctx,
+        ip_visitante: texto(String(h['x-forwarded-for'] || h['x-real-ip'] || '').split(',')[0].trim(), 60),
+        local_pais: texto(h['x-vercel-ip-country'], 4),
+        local_estado: texto(h['x-vercel-ip-country-region'], 10),
+        local_cidade: decod(h['x-vercel-ip-city']),
+        local_precisao: h['x-vercel-ip-country'] ? 'ip' : undefined,
+        dispositivo_modelo: texto(b.dispositivoModelo, 80),
+        dispositivo_sistema_operacional: texto(b.dispositivoSistema, 60),
+    };
+    // Se o GPS já foi salvo antes, a localização do IP não pode sobrescrevê-lo.
+    if (b.temGps && !gps) ['local_pais', 'local_estado', 'local_cidade', 'local_precisao'].forEach(k => { delete campos[k]; });
+    if (gps) Object.assign(campos, gps);
+    return campos;
+}
+
+// GPS (só quando a pessoa permitiu): descobre cidade e bairro pelo endereço (OpenStreetMap).
+async function geocodificarGps(gps) {
+    const lat = Number(gps && gps.latitude), lon = Number(gps && gps.longitude);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) return null;
+    const base = { local_latitude: lat, local_longitude: lon, local_precisao: 'gps' };
+    try {
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), 4000);
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&zoom=18&accept-language=pt-BR&lat=${lat}&lon=${lon}`, { headers: { 'User-Agent': 'oxy-quiz/1.0 (breno-atitude.com)' }, signal: ctrl.signal });
+        clearTimeout(t);
+        if (r.ok) {
+            const a = (await r.json()).address || {};
+            const iso = String(a['ISO3166-2-lvl4'] || '');
+            return Object.assign(base, {
+                local_bairro: texto(a.suburb || a.neighbourhood || a.city_district || a.quarter, 80),
+                local_cidade: texto(a.city || a.town || a.village || a.municipality, 80),
+                local_estado: iso.startsWith('BR-') ? iso.slice(3) : texto(a.state, 40),
+                local_pais: texto(String(a.country_code || '').toUpperCase(), 4),
+            });
+        }
+    } catch (e) { /* sem bairro: guarda só as coordenadas */ }
+    return base;
+}
+
+// Cada passo fechado do quiz vira 1 linha em arquivo_alfa_eventos (tipo passo_quiz).
+async function inserirPassos(url, serviceKey, alfaId, passos) {
+    if (!url || !serviceKey || !alfaId || !Array.isArray(passos) || !passos.length) return 0;
+    const linhas = passos.slice(0, 60)
+        .filter(p => p && typeof p === 'object' && typeof p.tela === 'string' && JSON.stringify(p).length <= 2000)
+        .map(p => ({ arquivo_alfa_id: alfaId, tipo_evento: 'passo_quiz', metadata: p }));
+    if (!linhas.length) return 0;
+    try {
+        const r = await fetch(`${url}/rest/v1/arquivo_alfa_eventos`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}`, 'Prefer': 'return=minimal' },
+            body: JSON.stringify(linhas),
+        });
+        if (!r.ok) { console.error('[arquivo_alfa_eventos] passos recusados:', r.status); return 0; }
+        return linhas.length;
+    } catch (e) { console.error('[arquivo_alfa_eventos] erro ao gravar passos'); return 0; }
 }
 
 function parseDispositivo(userAgent) {
@@ -132,8 +227,12 @@ module.exports = async function handler(req, res) {
     if (req.body && req.body.soAtualizarAlfa) {
         const alfaIdRecebido = req.body.alfaId || cookieAlfaId;
         let alfaId = alfaIdRecebido || null;
+        let gpsSalvo = false;
         try {
+            const gps = req.body.gps ? await geocodificarGps(req.body.gps) : null;
+            gpsSalvo = !!gps;
             alfaId = await upsertArquivoAlfa(url, serviceKey, alfaIdRecebido, {
+                ...camposDoRastro(req, gps),
                 tempos_fase: req.body.temposFase || undefined,
                 tempos_perguntas: req.body.temposPerguntas || undefined,
                 respostas_quiz: req.body.respostasQuiz || undefined,
@@ -142,6 +241,7 @@ module.exports = async function handler(req, res) {
                     ? req.body.scrollMaximoFreereportPercentual
                     : undefined,
             });
+            await inserirPassos(url, serviceKey, alfaId, req.body.passosFechados);
             if (alfaId && alfaId !== alfaIdRecebido) {
                 const doisAnos = 60 * 60 * 24 * 365 * 2;
                 res.setHeader('Set-Cookie', `oxy_alfa_id=${alfaId}; Max-Age=${doisAnos}; Path=/; Domain=.breno-atitude.com; Secure; SameSite=Lax`);
@@ -149,7 +249,7 @@ module.exports = async function handler(req, res) {
         } catch (err) {
             console.error('[save-lead] Falha ao atualizar arquivo_alfa (progressivo):', err);
         }
-        return res.status(200).json({ ok: true, alfaId });
+        return res.status(200).json({ ok: true, alfaId, gpsSalvo });
     }
 
     const { nome, idade, altura, peso, profissao, email, whatsapp, arquetipo, mbtiTipo, adicas, diagnostico, bios, apps, cidade, signo, ultimoDate, duracaoQuiz, respostasQuiz, temposPerguntas, temposFase, velocidadeCarregamentoQuizMs, tempoAteEmailSegundos, utm } = req.body;
@@ -199,6 +299,7 @@ module.exports = async function handler(req, res) {
             dispositivo_user_agent: req.headers['user-agent'] || null,
             tempo_ate_email_segundos: tempoAteEmailSegundos || null,
             utm: utm || undefined,
+            ...camposDoRastro(req),
         });
         // Seta/corrige o cookie quando o id final é diferente do que veio na requisição:
         // quem entrou direto no quiz (sem land) ainda não tinha cookie, ou o cookie

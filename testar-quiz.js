@@ -59,7 +59,8 @@ function rodarScriptPrincipal(html, armazenamentoBloqueado) {
         parseInt, parseFloat, encodeURIComponent, decodeURIComponent, fetch: () => Promise.resolve({ json: () => ({}) }),
         performance: { timeOrigin: Date.now(), getEntriesByType: () => [], now: () => 0 }, navigator: { userAgent: 'x', connection: {} },
         location: { search: '', pathname: '/', href: '', origin: 'https://teste.local', replace() {} }, addEventListener() {}, removeEventListener() {}, document: stubDeDocumento(),
-        crypto: { randomUUID: () => 'u-1', getRandomValues: a => a }, PerformanceObserver: function () { this.observe = () => {}; this.disconnect = () => {}; },
+        screen: { width: 390, height: 844 }, TextEncoder, Uint8Array, requestAnimationFrame: fn => { fn(); return 0; },
+        crypto: { randomUUID: () => 'u-1', getRandomValues: a => a, subtle: require('crypto').webcrypto.subtle }, PerformanceObserver: function () { this.observe = () => {}; this.disconnect = () => {}; },
         Blob: function () {}, alert() {}, Audio: function () {}, QuizLogic: {}, BANCO_PERGUNTAS: [],
     };
     g.window = g; g.self = g; g.globalThis = g;
@@ -339,6 +340,47 @@ const SEM_TELEGRAM = { TELEGRAM_BOT_TOKEN: null, TELEGRAM_GROUP_CHAT_ID: null, T
         exigir(rastro.telegram.length === 0, 'não deveria avisar no Telegram quando o lead foi salvo');
     });
 
+    await teste('API do passo a passo: grava os passos, o navegador, o pixel, o IP e a localizacao (IP e GPS) sem perder dados', true, async () => {
+        const handler = require(path.join(RAIZ, 'api', 'save-lead.js'));
+        const env = { SUPABASE_URL: 'https://banco.teste', SUPABASE_ANON_KEY: 'anon', SUPABASE_SERVICE_ROLE_KEY: 'svc', TELEGRAM_BOT_TOKEN: null, TELEGRAM_GROUP_CHAT_ID: null, TELEGRAM_ALERT_THREAD_ID: null };
+        const heads = { 'x-forwarded-for': '189.10.20.30, 10.0.0.1', 'x-vercel-ip-country': 'BR', 'x-vercel-ip-country-region': 'SP', 'x-vercel-ip-city': 'S%C3%A3o%20Paulo' };
+        const base = { soAtualizarAlfa: true, alfaId: 'alfa-1', quizVersao: 'v1', ultimaEtapa: 'q8', concluiuQuiz: false, temperamentoPixel: 'NT', temperamentoNaPergunta: 8, impressaoDigital: 'abc123', navegador: { tipo: 'interno_instagram', nome: 'Instagram (navegador interno)', versao: '300.0' }, quizContexto: { tela: { largura: 390 } }, dispositivoModelo: 'SM-S908B', passosFechados: [{ n: 1, tela: 's-welcome-1', ms_na_tela: 1500 }, { n: 2, tela: 'q1', resposta: 'S' }] };
+        async function chamar(corpo, falharComColunasNovas) {
+            const r = { patches: [], passos: [], mapas: 0 };
+            const res = resFalso();
+            await comAmbienteFalso(env, async (url, opts) => {
+                const u = String(url);
+                if (u.includes('nominatim')) { r.mapas++; return respOk({ address: { suburb: 'Copacabana', city: 'Rio de Janeiro', 'ISO3166-2-lvl4': 'BR-RJ', country_code: 'br' } }); }
+                if (u.includes('/rest/v1/arquivo_alfa_eventos')) { r.passos.push(...JSON.parse(opts.body)); return respOk(); }
+                if (u.includes('/rest/v1/arquivo_alfa') && opts.method === 'PATCH') {
+                    const b = JSON.parse(opts.body); r.patches.push(b);
+                    if (falharComColunasNovas && 'navegador_tipo' in b) return respErro(400);
+                    return respOk([{ id: 'alfa-1' }]);
+                }
+                return respOk([]);
+            }, () => handler({ method: 'POST', headers: heads, body: corpo }, res));
+            r.res = res;
+            return r;
+        }
+        let r = await chamar(base);
+        const p = r.patches[0];
+        exigir(p.navegador_tipo === 'interno_instagram' && p.temperamento_pixel === 'NT' && p.temperamento_decidido_na_pergunta === 8 && p.ultima_etapa === 'q8' && p.concluiu_quiz === false && p.quiz_versao === 'v1' && p.impressao_digital === 'abc123' && p.dispositivo_modelo === 'SM-S908B', 'resumo do passo nao foi gravado nas colunas certas');
+        exigir(p.ip_visitante === '189.10.20.30' && p.local_cidade === 'São Paulo' && p.local_estado === 'SP' && p.local_pais === 'BR' && p.local_precisao === 'ip', 'IP e localizacao por IP incorretos');
+        exigir(r.passos.length === 2 && r.passos[0].tipo_evento === 'passo_quiz' && r.passos[1].metadata.resposta === 'S' && r.passos[0].arquivo_alfa_id === 'alfa-1', 'os passos deveriam virar 1 linha cada em arquivo_alfa_eventos');
+        exigir(r.res.corpo.gpsSalvo === false && r.mapas === 0, 'sem GPS, nao deveria consultar mapa');
+        // com GPS: bairro e cidade pelo mapa, vale mais que o IP
+        r = await chamar(Object.assign({}, base, { gps: { latitude: -22.97, longitude: -43.18, precisao_m: 30 } }));
+        const g = r.patches[0];
+        exigir(g.local_bairro === 'Copacabana' && g.local_cidade === 'Rio de Janeiro' && g.local_estado === 'RJ' && g.local_precisao === 'gps' && g.local_latitude === -22.97 && r.res.corpo.gpsSalvo === true, 'GPS deveria gravar bairro, cidade e coordenadas');
+        // GPS ja salvo antes: a localizacao do IP nao pode sobrescrever
+        r = await chamar(Object.assign({}, base, { temGps: true }));
+        exigir(!('local_cidade' in r.patches[0]) && !('local_precisao' in r.patches[0]), 'o IP nao pode sobrescrever o GPS ja salvo');
+        // colunas novas recusadas pelo banco: o resto dos dados ainda e gravado
+        r = await chamar(Object.assign({}, base, { respostasQuiz: [{ a: 'S' }] }), true);
+        const ultimo = r.patches[r.patches.length - 1];
+        exigir(r.patches.length === 2 && !('navegador_tipo' in ultimo) && JSON.stringify(ultimo.respostas_quiz) === '[{"a":"S"}]', 'se o banco recusar as colunas novas, deveria regravar sem elas (sem perder o resto)');
+    });
+
     await teste('arquivos de publicação: vercel.json roda este teste e agenda a checagem diária', false, () => {
         if (!existe('vercel.json')) return 'sem vercel.json nesta pasta (ignorado)';
         const v = JSON.parse(ler('vercel.json'));
@@ -346,12 +388,54 @@ const SEM_TELEGRAM = { TELEGRAM_BOT_TOKEN: null, TELEGRAM_GROUP_CHAT_ID: null, T
         exigir(Array.isArray(v.crons) && v.crons.some(c => c.path === '/api/verificar-no-ar'), 'vercel.json não agenda a checagem diária (crons)');
     });
 
-    await teste('versao do quiz: /v1 abre o quiz e a versao v1 e gravada junto com os dados', true, () => {
-        exigir(html.includes("const QUIZ_VERSAO = 'v1'"), 'faltou a versao v1 no quiz.html');
-        exigir(html.includes('utm: utmComVersao()'), 'a versao nao esta sendo enviada com os dados');
+    await teste('versao do quiz: /v1 abre o quiz e a versao v1 vai junto com os dados', true, () => {
+        exigir(html.includes("const QUIZ_VERSAO = 'v1'") && html.includes('quizVersao: QUIZ_VERSAO'), 'faltou a versao v1 no quiz.html');
         if (!existe('vercel.json')) return 'sem vercel.json nesta pasta (rota nao conferida)';
         const v = JSON.parse(ler('vercel.json'));
         exigir(v.rewrites.some(r => r.source === '/v1' && r.destination === '/quiz.html'), 'vercel.json nao abre o quiz em /v1');
+    });
+
+    await teste('rastreador: cada tela vira um passo (tempos, rolagem, resposta) e o resumo leva pixel, versao e etapa', true, async () => {
+        const { g, erroAoCarregar } = rodarScriptPrincipal(html, false);
+        exigir(!erroAoCarregar, 'o script principal falhou: ' + (erroAoCarregar && erroAoCarregar.message));
+        const corpos = [];
+        g.fetch = (url, opts) => { corpos.push(JSON.parse(opts.body)); return Promise.resolve({ json: async () => ({ ok: true, alfaId: 'a1', gpsSalvo: false }) }); };
+        vm.runInContext("abrirPasso('s-welcome-1'); abrirPasso('q1', { pergunta_id: 7, eixo: 'SN' }); rastro.atual.resposta = 'S'; rastro.atual.ms_ate_responder = 1200; rastro.atual.scroll_max_pct = 40; abrirPasso('q2'); rastro.temperamentoPixel = 'SJ'; rastro.temperamentoNaPergunta = 7; salvarRastro();", g);
+        await new Promise(r => setTimeout(r, 30));
+        const c = corpos.find(b => b.passosFechados && b.passosFechados.length);
+        exigir(c, 'nenhum envio com passos');
+        const q1 = c.passosFechados[1];
+        exigir(c.passosFechados.length === 2 && q1.tela === 'q1' && q1.pergunta_id === 7 && q1.resposta === 'S' && q1.scroll_max_pct === 40 && typeof q1.ms_na_tela === 'number', 'passos mal montados');
+        exigir(c.ultimaEtapa === 'q2' && c.temperamentoPixel === 'SJ' && c.temperamentoNaPergunta === 7 && c.quizVersao === 'v1' && c.concluiuQuiz === false, 'resumo errado');
+    });
+
+    await teste('rastreador: reconhece o navegador (Chrome, Safari, Samsung ou o interno do Instagram/Facebook) e a impressao digital', true, async () => {
+        const { g } = rodarScriptPrincipal(html, false);
+        const casos = [
+            ['Mozilla/5.0 (Linux; Android 13; SM-S908B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36 Instagram 300.0.0.29.110 Android', 'interno_instagram'],
+            ['Mozilla/5.0 (Linux; Android 13; SM-S908B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36', 'chrome'],
+            ['Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1', 'safari'],
+            ['Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 [FBAN/FBIOS;FBAV/430.0.0.0.0]', 'interno_facebook'],
+            ['Mozilla/5.0 (Linux; Android 12; SM-A525M) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/23.0 Chrome/115.0.0.0 Mobile Safari/537.36', 'samsung'],
+            ['Mozilla/5.0 (Linux; Android 12; Pixel 6; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/110.0.0.0 Mobile Safari/537.36', 'webview_outro'],
+            ['Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/120.0.0.0 Mobile/15E148 Safari/604.1', 'chrome'],
+        ];
+        for (const [ua, esperado] of casos) {
+            g.navigator.userAgent = ua;
+            const tipo = vm.runInContext('identificarNavegador().tipo', g);
+            exigir(tipo === esperado, 'navegador deveria ser ' + esperado + ' e foi ' + tipo);
+        }
+        g.navigator.userAgent = casos[0][0];
+        exigir(vm.runInContext('identificarNavegador().nome', g).includes('Instagram'), 'o nome do navegador interno deveria citar o Instagram');
+        const a1 = await vm.runInContext("calcularImpressaoDigital('gpu-x')", g);
+        const a2 = await vm.runInContext("calcularImpressaoDigital('gpu-x')", g);
+        const b1 = await vm.runInContext("calcularImpressaoDigital('gpu-y')", g);
+        exigir(a1 && a1 === a2 && a1 !== b1, 'a impressao digital deveria ser estavel para o mesmo aparelho e mudar para outro');
+    });
+
+    await teste('quiz.html: ganchos do passo a passo (abrir tela, resposta, volta, pixel, fim) e pedido opcional de localizacao', true, () => {
+        ["abrirPasso('q' + (curQ + 1)", 'if (id !== \'s-quiz\') abrirPasso(id)', 'rastro.concluiu = true', 'rastro.temperamentoPixel = temp', 'trocou_de_opcao', 'respostaAnteriorPorIndice[curQ] = respostas[curQ].a', 'id="rep-gps-card"', 'pedirLocalizacao()', "type: 'text/plain;charset=UTF-8'", '...resumoDoRastro()', '_id: BANCO_PERGUNTAS.indexOf(p)']
+            .forEach(t => exigir(html.includes(t), 'faltou no quiz.html: ' + t));
     });
 
     console.log('\n' + (falhas === 0 ? 'RESULTADO: tudo certo para publicar' : 'RESULTADO: ' + falhas + ' teste(s) obrigatório(s) falharam — PUBLICAÇÃO BLOQUEADA') + (avisos ? '  |  ' + avisos + ' aviso(s)' : '') + '\n');

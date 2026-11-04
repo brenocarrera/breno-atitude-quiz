@@ -1595,6 +1595,11 @@ body.presell-mode .expert-header { height: 300px; }
         </div>
 
         <!-- Captura de email (antes de liberar as opções de recebimento) -->
+        <div class="rep-card" id="rep-gps-card" style="margin-top:18px;">
+            <div class="rep-card-title">📍 Quer uma análise mais ajustada à sua região?</div>
+            <p class="rep-a">Toque abaixo para compartilhar sua localização (opcional). Usamos só para personalizar sua análise.</p>
+            <button class="btn" onclick="pedirLocalizacao()">Compartilhar minha localização</button>
+        </div>
         <div class="rep-card accent" id="rep-email-capture" style="margin-top:18px;">
             <div class="rep-card-title">Deixe seu email para receber sua análise</div>
             <div class="form-group" style="margin-top:10px;margin-bottom:0;">
@@ -2543,14 +2548,14 @@ var BANCO_PERGUNTAS = [
         for (const { eixo, polos } of MBTI_EIXOS) {
             const pool = BANCO_PERGUNTAS.filter(p => ehMbtiEixo(p, polos));
             const pick = shuffle(pool).slice(0, nPorEixo);
-            pick.forEach(p => selecionadas.push({ ...p, _tipo: 'mbti', _eixo: eixo }));
+            pick.forEach(p => selecionadas.push({ ...p, _id: BANCO_PERGUNTAS.indexOf(p), _tipo: 'mbti', _eixo: eixo }));
         }
 
         // — ADICAS: nPorTraco perguntas de cada um dos 6 traços —
         for (const traco of ADICAS_TRACOS) {
             const pool = BANCO_PERGUNTAS.filter(p => ehAdicas(p, traco));
             const pick = shuffle(pool).slice(0, nPorTraco);
-            pick.forEach(p => selecionadas.push({ ...p, _tipo: 'adicas', _traco: traco }));
+            pick.forEach(p => selecionadas.push({ ...p, _id: BANCO_PERGUNTAS.indexOf(p), _tipo: 'adicas', _traco: traco }));
         }
 
         // Ordem do quiz: primeiro o MBTI (temperamento), depois o ADICAS.
@@ -2757,11 +2762,8 @@ window.addEventListener('unhandledrejection', function (ev) {
 // Número de TESTE do WhatsApp Cloud API (Meta) — trocar pelo número real de produção quando o webhook (Parte 3) estiver ativo.
 const WHATSAPP_NUMERO = '15556753179';
 
-// Versão do quiz: aparece no endereço (/v1) e é gravada junto com os dados de cada visita (arquivo_alfa.utm.quiz_versao).
+// Versão do quiz: aparece no endereço (/v1) e é gravada na coluna arquivo_alfa.quiz_versao.
 const QUIZ_VERSAO = 'v1';
-function utmComVersao() {
-    return Object.assign({}, obterUtmSalvo() || {}, { quiz_versao: QUIZ_VERSAO });
-}
 
 // Plano de contingência: leva a pessoa para o WhatsApp para receber o relatório com atenção especial.
 function abrirWhatsAppEspecial(motivo) {
@@ -2781,6 +2783,178 @@ function tentarDeNovo() {
     prepararPerguntas(1);
 }
 
+
+// ═══════════════════════════════════════
+// RASTREADOR DE PASSOS (Arquivo Alfa): cada tela/pergunta vira um "passo" salvo na hora
+// (1 linha por passo em arquivo_alfa_eventos) + um resumo sempre atualizado em arquivo_alfa
+// ═══════════════════════════════════════
+const rastro = { atual: null, pendentes: [], n: 0, contexto: null, impressao: null, navegador: null, aparelho: null, ultimaEtapa: null, concluiu: false, temperamentoPixel: null, temperamentoNaPergunta: null, gps: null };
+const respostaAnteriorPorIndice = {}; // para saber se a pessoa voltou e trocou de opção
+let envioDoRastro = null;
+
+function agoraMs() { try { return Math.round(performance.now()); } catch (e) { return 0; } }
+
+// Chamada toda vez que uma tela ou pergunta aparece.
+function abrirPasso(tela, extra) {
+    fecharPasso();
+    const t0 = agoraMs();
+    const p = Object.assign({ n: ++rastro.n, tela: tela, aberta_em_ms: t0, ms_para_abrir: null, ms_na_tela: null, scroll_max_pct: 0 }, extra || {});
+    rastro.atual = p;
+    rastro.ultimaEtapa = tela;
+    // "tempo para abrir": do pedido da tela até ela estar desenhada
+    try { requestAnimationFrame(function () { requestAnimationFrame(function () { p.ms_para_abrir = agoraMs() - t0; }); }); } catch (e) {}
+    agendarEnvioDoRastro();
+}
+// Fecha o passo atual (a pessoa saiu da tela) e o coloca na fila para salvar.
+function fecharPasso() {
+    const p = rastro.atual;
+    if (!p) return;
+    p.ms_na_tela = agoraMs() - p.aberta_em_ms;
+    rastro.pendentes.push(p);
+    rastro.atual = null;
+}
+function resumoDoRastro() {
+    return {
+        quizVersao: QUIZ_VERSAO, ultimaEtapa: rastro.ultimaEtapa, concluiuQuiz: rastro.concluiu,
+        temperamentoPixel: rastro.temperamentoPixel, temperamentoNaPergunta: rastro.temperamentoNaPergunta,
+        navegador: rastro.navegador, impressaoDigital: rastro.impressao, quizContexto: rastro.contexto,
+        dispositivoModelo: rastro.aparelho && rastro.aparelho.modelo || undefined, dispositivoSistema: rastro.aparelho && rastro.aparelho.sistema || undefined,
+        gps: rastro.gps || undefined, temGps: rastro.gpsSalvo || undefined,
+    };
+}
+function agendarEnvioDoRastro() {
+    if (envioDoRastro) return;
+    envioDoRastro = setTimeout(function () { envioDoRastro = null; salvarRastro(); }, 700);
+}
+// Envia os passos já fechados + o resumo. Se falhar, os passos voltam para a fila.
+function salvarRastro() {
+    const lote = rastro.pendentes.splice(0, 60);
+    const gpsEnviado = rastro.gps;
+    salvarProgressoAlfa(Object.assign({ passosFechados: lote }, resumoDoRastro()),
+        function () { rastro.pendentes = lote.concat(rastro.pendentes); },
+        function (data) { if (data && data.gpsSalvo && rastro.gps === gpsEnviado) { rastro.gps = null; rastro.gpsSalvo = true; } });
+}
+// Ao sair da página: fecha o passo atual e manda tudo que falta.
+function enviarRastroAgora() {
+    try {
+        fecharPasso();
+        const corpo = Object.assign({ soAtualizarAlfa: true, alfaId: window.__oxyAlfaId || null, passosFechados: rastro.pendentes.splice(0, 60) }, resumoDoRastro());
+        navigator.sendBeacon('/api/save-lead', new Blob([JSON.stringify(corpo)], { type: 'application/json' }));
+    } catch (e) {}
+}
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') enviarRastroAgora(); });
+window.addEventListener('pagehide', enviarRastroAgora);
+
+// Rolagem máxima de cada tela (a rolagem acontece dentro do container main.main)
+(function () {
+    const el = document.querySelector('main.main');
+    (el || window).addEventListener('scroll', function () {
+        const p = rastro.atual;
+        if (!p) return;
+        const altura = el ? el.scrollHeight - el.clientHeight : document.documentElement.scrollHeight - window.innerHeight;
+        const y = el ? el.scrollTop : window.scrollY;
+        const pct = altura > 0 ? Math.min(100, Math.round((y / altura) * 100)) : 0;
+        if (pct > p.scroll_max_pct) p.scroll_max_pct = pct;
+    }, { passive: true });
+})();
+
+// Navegador: nome, versão e tipo (Chrome, Safari... ou o navegador interno de um app)
+function identificarNavegador() {
+    const ua = navigator.userAgent || '';
+    const pega = function (re) { const r = ua.match(re); return r ? r[1] : null; };
+    let tipo = 'outro', nome = 'Outro', versao = null;
+    if (/Instagram/i.test(ua)) { tipo = 'interno_instagram'; nome = 'Instagram (navegador interno)'; versao = pega(/Instagram ([0-9.]+)/i); }
+    else if (/FBAN|FBAV|FB_IAB/i.test(ua)) { tipo = 'interno_facebook'; nome = 'Facebook (navegador interno)'; versao = pega(/FBAV[/]([0-9.]+)/i); }
+    else if (/TikTok|musical_ly|BytedanceWebview/i.test(ua)) { tipo = 'interno_tiktok'; nome = 'TikTok (navegador interno)'; }
+    else if (/WhatsApp/i.test(ua)) { tipo = 'interno_whatsapp'; nome = 'WhatsApp (navegador interno)'; }
+    else if (/Snapchat/i.test(ua)) { tipo = 'interno_snapchat'; nome = 'Snapchat (navegador interno)'; }
+    else if (/EdgA?[/]|EdgiOS[/]/.test(ua)) { tipo = 'edge'; nome = 'Edge'; versao = pega(/Edg(?:A|iOS)?[/]([0-9.]+)/); }
+    else if (/SamsungBrowser/.test(ua)) { tipo = 'samsung'; nome = 'Samsung Internet'; versao = pega(/SamsungBrowser[/]([0-9.]+)/); }
+    else if (/OPR[/]|Opera/.test(ua)) { tipo = 'opera'; nome = 'Opera'; versao = pega(/OPR[/]([0-9.]+)/); }
+    else if (/FxiOS|Firefox/.test(ua)) { tipo = 'firefox'; nome = 'Firefox'; versao = pega(/(?:FxiOS|Firefox)[/]([0-9.]+)/); }
+    else if (/; wv[)]/.test(ua)) { tipo = 'webview_outro'; nome = 'Navegador interno de outro app'; versao = pega(/Chrome[/]([0-9.]+)/); }
+    else if (/CriOS|Chrome/.test(ua)) { tipo = 'chrome'; nome = 'Chrome'; versao = pega(/(?:CriOS|Chrome)[/]([0-9.]+)/); }
+    else if (/Safari/.test(ua) && /Version/.test(ua)) { tipo = 'safari'; nome = 'Safari'; versao = pega(/Version[/]([0-9.]+)/); }
+    return { tipo: tipo, nome: nome, versao: versao };
+}
+
+// Impressão digital do aparelho: um código calculado com as características dele (não guarda nada pessoal).
+async function calcularImpressaoDigital(gpu) {
+    const nav = navigator;
+    const texto = [nav.userAgent, nav.platform, screen.width + 'x' + screen.height, window.devicePixelRatio, nav.hardwareConcurrency, nav.deviceMemory, nav.maxTouchPoints, gpu, nav.language].join('||');
+    try {
+        const dados = new TextEncoder().encode(texto);
+        const hash = await crypto.subtle.digest('SHA-256', dados);
+        return Array.from(new Uint8Array(hash)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('').slice(0, 40);
+    } catch (e) {
+        let h = 0;
+        for (let i = 0; i < texto.length; i++) h = ((h << 5) - h + texto.charCodeAt(i)) | 0;
+        return 'x' + Math.abs(h).toString(16);
+    }
+}
+
+// Placa de vídeo do aparelho (ajuda a separar celular simples de celular caro)
+function lerGpu() {
+    try {
+        const c = document.createElement('canvas');
+        const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+        if (!gl) return null;
+        const ext = gl.getExtension('WEBGL_debug_renderer_info');
+        return String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER)).slice(0, 120);
+    } catch (e) { return null; }
+}
+
+// Contexto do aparelho e da visita (coletado 1 vez ao abrir; enviado junto com os passos)
+async function coletarContexto() {
+    const nav = navigator;
+    const con = nav.connection || nav.mozConnection || nav.webkitConnection || {};
+    const q = new URLSearchParams(location.search);
+    const visitas = (parseInt(ArmazemSeguro.get('oxy_visitas') || '0', 10) || 0) + 1;
+    ArmazemSeguro.set('oxy_visitas', visitas);
+    const agora = new Date();
+    const gpu = lerGpu();
+    let alto = {};
+    try {
+        if (nav.userAgentData && nav.userAgentData.getHighEntropyValues) alto = await nav.userAgentData.getHighEntropyValues(['model', 'platformVersion', 'architecture']);
+    } catch (e) {}
+    rastro.navegador = identificarNavegador();
+    rastro.impressao = await calcularImpressaoDigital(gpu);
+    rastro.aparelho = { modelo: alto.model || null, sistema: (nav.userAgentData && nav.userAgentData.platform ? nav.userAgentData.platform + ' ' + (alto.platformVersion || '') : nav.platform || '').trim() || null };
+    return {
+        tela: { largura: screen.width, altura: screen.height, janela_largura: window.innerWidth, janela_altura: window.innerHeight, densidade: window.devicePixelRatio || 1 },
+        hora_local: agora.getHours(),
+        dia_da_semana: agora.getDay(),
+        conexao: { tipo_rede: con.type || null, qualidade: con.effectiveType || null, downlink_mbps: con.downlink || null, rtt_ms: con.rtt || null, economia_de_dados: !!con.saveData },
+        aparelho: { modelo: alto.model || null, arquitetura: alto.architecture || null, memoria_gb: nav.deviceMemory || null, nucleos: nav.hardwareConcurrency || null, pontos_de_toque: nav.maxTouchPoints || 0, plataforma: nav.platform || null, gpu: gpu },
+        modo_escuro: !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches),
+        visitas_ao_quiz: visitas,
+        origem: {
+            referrer: (document.referrer || '').slice(0, 200) || null,
+            caminho: location.pathname,
+            fbclid: (q.get('fbclid') || '').slice(0, 120) || null,
+            gclid: (q.get('gclid') || '').slice(0, 120) || null,
+            ttclid: (q.get('ttclid') || '').slice(0, 120) || null,
+        },
+    };
+}
+
+// Localização por GPS (opcional: só se a pessoa tocar no botão e permitir). O servidor descobre cidade e bairro.
+function pedirLocalizacao() {
+    const card = document.getElementById('rep-gps-card');
+    const msg = function (t) { if (card) { const p = card.querySelector('p'); if (p) p.textContent = t; const b = card.querySelector('button'); if (b) b.style.display = 'none'; } };
+    if (!navigator.geolocation) { msg('Seu aparelho não permite compartilhar a localização.'); return; }
+    navigator.geolocation.getCurrentPosition(function (pos) {
+        rastro.gps = { latitude: pos.coords.latitude, longitude: pos.coords.longitude, precisao_m: Math.round(pos.coords.accuracy || 0) };
+        msg('Obrigado! Sua análise será ajustada à sua região.');
+        agendarEnvioDoRastro();
+    }, function () { msg('Tudo bem, seguimos sem a localização.'); }, { timeout: 10000, maximumAge: 600000 });
+}
+
+window.addEventListener('load', function () {
+    const ativa = document.querySelector('.screen.active');
+    abrirPasso(ativa ? ativa.id : 'inicio');
+    coletarContexto().then(function (c) { rastro.contexto = c; agendarEnvioDoRastro(); }).catch(function () {});
+});
 
 // Dispara evento customizado de etapa do funil pro Meta Pixel (não bloqueia se o pixel não carregar)
 function trackFunilStep(nome) {
@@ -2939,7 +3113,7 @@ function enviarEventoAlfa(tipoEvento, metadata) {
     const payload = { id, tipo_evento: tipoEvento };
     if (metadata) payload.metadata = metadata;
     try {
-        navigator.sendBeacon(ALFA_EVENTO_URL, new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+        navigator.sendBeacon(ALFA_EVENTO_URL, new Blob([JSON.stringify(payload)], { type: 'text/plain;charset=UTF-8' }));
     } catch (e) {
         fetch(ALFA_EVENTO_URL, {
             method: 'POST',
@@ -2989,16 +3163,17 @@ function fecharFase(nome) {
 // abandona no meio. Mesmo endpoint leve já usado em chooseOffer() pra fechar a fase "raiox".
 // Cria o arquivo_alfa cedo se ainda não existir (ex: quem entra direto no quiz sem land) e
 // guarda o id retornado, pra próximas chamadas atualizarem o mesmo registro.
-function salvarProgressoAlfa(campos) {
-    const payload = Object.assign({ soAtualizarAlfa: true, alfaId: window.__oxyAlfaId || null, utm: utmComVersao() }, campos);
-    fetch('/api/save-lead', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-    })
+let alfaCriandoDesde = 0; // evita criar 2 registros no Arquivo Alfa quando 2 envios saem juntos
+function salvarProgressoAlfa(campos, aoFalhar, aoSalvar) {
+    if (!window.__oxyAlfaId && !getAlfaCookie()) {
+        if (alfaCriandoDesde && Date.now() - alfaCriandoDesde < 8000) { setTimeout(function () { salvarProgressoAlfa(campos, aoFalhar, aoSalvar); }, 500); return; }
+        alfaCriandoDesde = Date.now();
+    }
+    const payload = Object.assign({ soAtualizarAlfa: true, alfaId: window.__oxyAlfaId || null, utm: obterUtmSalvo() || undefined }, campos);
+    fetch('/api/save-lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
         .then(r => r.json())
-        .then(data => { if (data && data.alfaId) window.__oxyAlfaId = data.alfaId; })
-        .catch(() => {});
+        .then(data => { alfaCriandoDesde = 0; if (data && data.alfaId) window.__oxyAlfaId = data.alfaId; if (aoSalvar) aoSalvar(data); })
+        .catch(() => { alfaCriandoDesde = 0; if (aoFalhar) aoFalhar(); });
 }
 
 function medirVelocidadeCarregamentoQuiz() {
@@ -3450,6 +3625,7 @@ function show(id) {
     document.body.classList.toggle('presell-mode', id === 's-recover');
     document.querySelector('.main').scrollTo(0,0);
     updateFunnelProgress(id);
+    if (id !== 's-quiz') abrirPasso(id); // as perguntas são registradas em renderQ()
 
     const autoBtnId = PHASE_AUTO_BTN[id];
     if (autoBtnId) {
@@ -3511,10 +3687,12 @@ function goQ(index) {
 }
 
 function goBack() {
+    if (rastro.atual) rastro.atual.voltou = true;
     if (curQ === 0)  { show('s-p1'); return; }
     if (curQ === 8)  { show('s-p2'); return; }
     if (curQ === 16) { show('s-p3'); return; }
     curQ--;
+    if (respostas[curQ]) respostaAnteriorPorIndice[curQ] = respostas[curQ].a;
     respostas.splice(curQ, 1); // desfaz resposta da pergunta anterior
     temposPerguntas.splice(curQ, 1);
     renderQ();
@@ -3582,6 +3760,7 @@ function renderQ() {
         c.appendChild(btn);
     });
     questionShownAt = Date.now();
+    abrirPasso('q' + (curQ + 1), { fase: PHASES.indexOf(phase) + 1, pergunta_id: q._id === undefined ? null : q._id, tipo: q._tipo || null, eixo: q._eixo || q._traco || null, revisita: !!respostaAnteriorPorIndice[curQ] });
 }
 
 // Coloca as 2 primeiras palavras em negrito (apresentação; não altera o conteúdo)
@@ -3599,6 +3778,13 @@ function pick(btn, polo) {
     btn.classList.add('picked');
     respostas[curQ] = { a: polo };
     verificarTemperamento(); // liga o pixel do temperamento assim que ele fica decidido (6ª a 9ª pergunta)
+    if (rastro.atual) {
+        rastro.atual.ms_ate_responder = agoraMs() - rastro.atual.aberta_em_ms;
+        rastro.atual.resposta = polo;
+        const antes = respostaAnteriorPorIndice[curQ];
+        if (antes && antes !== polo) { rastro.atual.trocou_de_opcao = true; rastro.atual.resposta_antes = antes; }
+    }
+    agendarEnvioDoRastro();
     temposPerguntas[curQ] = questionShownAt ? Math.round((Date.now() - questionShownAt) / 1000) : null;
     salvarProgressoAlfa({ respostasQuiz: respostas, temposPerguntas });
     enviarEventoAlfa('clique_pergunta', { indice_pergunta: curQ });
@@ -3723,6 +3909,7 @@ function mostrarAvisoDemora(tentativa) {
 
 async function doGenerate() {
     fecharFase('fase3');
+    rastro.concluiu = true; // respondeu as 24 perguntas
     trackFunilStep('RaioX_TerminouPerguntas');
     // Calcula MBTI + ADICAS e deriva arquétipo para compatibilidade com ARCHETYPES
     const s        = QuizLogic.calcularScores(respostas);
@@ -3807,6 +3994,10 @@ function dispararPixelTemperamento(temp) {
     fbq('init', pixelId);
     fbq('track', 'PageView');
     temperamentoPixelDisparado = true;
+    rastro.temperamentoPixel = temp;
+    rastro.temperamentoNaPergunta = respostas.length;
+    if (rastro.atual) rastro.atual.pixel_ativado = temp;
+    agendarEnvioDoRastro();
 }
 
 // Chamada a cada resposta: assim que o temperamento fica decidido, liga o pixel.
@@ -3827,6 +4018,7 @@ function confirmReportEmail() {
     }).catch(()=>{});
 
     window.leadEmail = email;
+    abrirPasso('email_enviado');
     if (typeof fbq === 'function') {
         // Fallback: se por algum motivo o pixel do temperamento nao disparou ainda
         // em showResult() (ex: usuario recarregou a tela do relatorio), inicia aqui.
@@ -3864,7 +4056,8 @@ function confirmReportEmail() {
             temposFase,
             velocidadeCarregamentoQuizMs,
             tempoAteEmailSegundos,
-            utm: utmComVersao(),
+            utm: obterUtmSalvo(),
+            ...resumoDoRastro(),
         }),
     })
     .then(r => r.json())
@@ -4117,6 +4310,7 @@ function chooseOffer(type) {
 
     soundClick();
     userData.oferta = type; // 'whats' (grátis) ou 'paid' (R$9)
+    abrirPasso('oferta_' + type);
     ArmazemSeguro.set('oxyquiz_converted', 'true');
     console.log('[oferta escolhida]', type);
 
