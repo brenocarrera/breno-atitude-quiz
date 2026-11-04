@@ -137,6 +137,7 @@ module.exports = async function handler(req, res) {
                 tempos_fase: req.body.temposFase || undefined,
                 tempos_perguntas: req.body.temposPerguntas || undefined,
                 respostas_quiz: req.body.respostasQuiz || undefined,
+                utm: req.body.utm || undefined,
                 scroll_maximo_freereport_percentual: (typeof req.body.scrollMaximoFreereportPercentual === 'number')
                     ? req.body.scrollMaximoFreereportPercentual
                     : undefined,

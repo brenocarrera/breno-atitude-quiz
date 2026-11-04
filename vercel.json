@@ -28,6 +28,10 @@
       "destination": "/quiz.html"
     },
     {
+      "source": "/v1",
+      "destination": "/quiz.html"
+    },
+    {
       "source": "/mensagens",
       "destination": "/mensagens.html"
     },

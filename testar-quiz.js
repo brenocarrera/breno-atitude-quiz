@@ -346,6 +346,14 @@ const SEM_TELEGRAM = { TELEGRAM_BOT_TOKEN: null, TELEGRAM_GROUP_CHAT_ID: null, T
         exigir(Array.isArray(v.crons) && v.crons.some(c => c.path === '/api/verificar-no-ar'), 'vercel.json não agenda a checagem diária (crons)');
     });
 
+    await teste('versao do quiz: /v1 abre o quiz e a versao v1 e gravada junto com os dados', true, () => {
+        exigir(html.includes("const QUIZ_VERSAO = 'v1'"), 'faltou a versao v1 no quiz.html');
+        exigir(html.includes('utm: utmComVersao()'), 'a versao nao esta sendo enviada com os dados');
+        if (!existe('vercel.json')) return 'sem vercel.json nesta pasta (rota nao conferida)';
+        const v = JSON.parse(ler('vercel.json'));
+        exigir(v.rewrites.some(r => r.source === '/v1' && r.destination === '/quiz.html'), 'vercel.json nao abre o quiz em /v1');
+    });
+
     console.log('\n' + (falhas === 0 ? 'RESULTADO: tudo certo para publicar' : 'RESULTADO: ' + falhas + ' teste(s) obrigatório(s) falharam — PUBLICAÇÃO BLOQUEADA') + (avisos ? '  |  ' + avisos + ' aviso(s)' : '') + '\n');
     process.exit(falhas === 0 ? 0 : 1);
 })();

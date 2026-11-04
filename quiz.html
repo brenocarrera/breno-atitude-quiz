@@ -2757,6 +2757,12 @@ window.addEventListener('unhandledrejection', function (ev) {
 // Número de TESTE do WhatsApp Cloud API (Meta) — trocar pelo número real de produção quando o webhook (Parte 3) estiver ativo.
 const WHATSAPP_NUMERO = '15556753179';
 
+// Versão do quiz: aparece no endereço (/v1) e é gravada junto com os dados de cada visita (arquivo_alfa.utm.quiz_versao).
+const QUIZ_VERSAO = 'v1';
+function utmComVersao() {
+    return Object.assign({}, obterUtmSalvo() || {}, { quiz_versao: QUIZ_VERSAO });
+}
+
 // Plano de contingência: leva a pessoa para o WhatsApp para receber o relatório com atenção especial.
 function abrirWhatsAppEspecial(motivo) {
     const textos = {
@@ -2984,7 +2990,7 @@ function fecharFase(nome) {
 // Cria o arquivo_alfa cedo se ainda não existir (ex: quem entra direto no quiz sem land) e
 // guarda o id retornado, pra próximas chamadas atualizarem o mesmo registro.
 function salvarProgressoAlfa(campos) {
-    const payload = Object.assign({ soAtualizarAlfa: true, alfaId: window.__oxyAlfaId || null }, campos);
+    const payload = Object.assign({ soAtualizarAlfa: true, alfaId: window.__oxyAlfaId || null, utm: utmComVersao() }, campos);
     fetch('/api/save-lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -3858,7 +3864,7 @@ function confirmReportEmail() {
             temposFase,
             velocidadeCarregamentoQuizMs,
             tempoAteEmailSegundos,
-            utm: obterUtmSalvo(),
+            utm: utmComVersao(),
         }),
     })
     .then(r => r.json())
