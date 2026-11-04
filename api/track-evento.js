@@ -1,3 +1,5 @@
+const { avisarErroMikeAlfa } = require('./_lib/alerta-telegram');
+
 const TIPOS_VALIDOS = ['page_view', 'email_fornecido', 'freereport_gerado'];
 
 module.exports = async function handler(req, res) {
@@ -25,6 +27,7 @@ module.exports = async function handler(req, res) {
         });
     } catch (err) {
         console.error('[track-evento] Supabase error:', err);
+        avisarErroMikeAlfa(`Falha ao registrar evento "${tipo}"`, String(err));
         // Nunca bloqueia quem chamou
     }
 
