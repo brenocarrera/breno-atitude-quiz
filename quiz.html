@@ -3079,6 +3079,19 @@ function ordenarFases(qs) {
     const f = [0, 1, 2].map(function (i) { return qs.slice(i * 8, i * 8 + 8); });
     return [].concat(f[FASES_ORDEM[0]], f[FASES_ORDEM[1]], f[FASES_ORDEM[2]]);
 }
+// Texto com a ordem das PERGUNTAS vista pelo visitante, por bloco, usando o _id da pergunta no banco.
+// Ex.: 'dados:|f1:12,40,3,...|f2:...|f3:...'  ('dados:' vem sem ids porque os campos de dados sao sempre os mesmos).
+// Fica pronto assim que as perguntas sao sorteadas (vazio antes disso).
+window.__ordemPerguntas = '';
+function textoOrdemPerguntas() {
+    let k = 0;
+    return ORDEM_FASES.map(function (b) {
+        if (b === 'dados') return 'dados:';
+        const ids = QS.slice(k * 8, k * 8 + 8).map(function (q) { return q._id === undefined ? '?' : q._id; });
+        k++;
+        return b + ':' + ids.join(',');
+    }).join('|');
+}
 // <<ORDEM-FIM>>
 
 
@@ -3750,6 +3763,7 @@ function prepararPerguntas(tentativa, aoTerminar) {
         const qs = QuizLogic.sortearPerguntas(3, 2);
         if (!qs || qs.length !== 24) throw new Error('sorteio devolveu ' + (qs ? qs.length : 0) + ' perguntas');
         QS = ordenarFases(qs);
+        window.__ordemPerguntas = textoOrdemPerguntas();
         respostas = [];
         registrarEvento('quiz_iniciou');
         (aoTerminar || proximoBloco)();

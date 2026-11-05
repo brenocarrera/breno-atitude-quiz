@@ -218,7 +218,7 @@ const SEM_TELEGRAM = { TELEGRAM_BOT_TOKEN: null, TELEGRAM_GROUP_CHAT_ID: null, T
                 QuizLogic: { sortearPerguntas() { rastro.tentativasDeSorteio++; return sorteio(rastro.tentativasDeSorteio); } },
                 show: id => rastro.telas.push(id), registrarEvento: t => rastro.eventos.push(t), mensagemDoErro: e => String(e && e.message),
                 mostrarFalha: () => rastro.falhas++, setTimeout: fn => { fn(); return 0; }, Error, respostas: [], QS: [],
-                ordenarFases: q => q, proximoBloco: () => rastro.telas.push('s-p1'), // a ordem dos blocos tem teste proprio (abaixo)
+                ordenarFases: q => q, window: {}, textoOrdemPerguntas: () => '', proximoBloco: () => rastro.telas.push('s-p1'), // a ordem dos blocos tem teste proprio (abaixo)
             };
             vm.createContext(g);
             vm.runInContext(bloco, g);
@@ -274,6 +274,11 @@ const SEM_TELEGRAM = { TELEGRAM_BOT_TOKEN: null, TELEGRAM_GROUP_CHAT_ID: null, T
         exigir(a.window.__ordemVariante === b.window.__ordemVariante && ['A', 'B'].includes(a.window.__ordemVariante), 'a variante (A ou B) deveria ficar igual para o mesmo visitante');
         let v = new Set(); for (let i = 0; i < 60; i++) v.add(montar('', null, duas).window.__ordemFases);
         exigir(v.size === 2, 'o sorteio deveria usar as duas ordens');
+        // ordem das perguntas (ids) na ordem vista pelo visitante
+        g = montar('?ordem=f2-dados-f1-f3', null, undefined);
+        g.QS = Array.from({ length: 24 }, (_, i) => ({ _id: i * 10 }));
+        const txtP = vm.runInContext('textoOrdemPerguntas()', g);
+        exigir(txtP.startsWith('f2:') && txtP.split('|').length === 4 && txtP.split('|')[1] === 'dados:' && txtP.split('|')[0].split(':')[1].split(',').length === 8, 'a ordem das perguntas (ids) saiu errada: ' + txtP);
         // ordem invalida e ignorada
         exigir(montar('?ordem=f1-f1-f2-f3', null, undefined).window.__ordemFases === 'dados>f1>f2>f3', 'ordem invalida deveria ser ignorada');
         // o relatorio so e gerado pelo fim da ordem, nunca direto da ultima pergunta
