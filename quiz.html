@@ -2959,6 +2959,7 @@ window.addEventListener('load', function () {
             c.ordem_fases = window.__ordemFases || null;
             const idx = ORDENS_TESTE.findIndex(function (o) { return o.join('>') === window.__ordemFases; });
             c.ordem_variante = idx >= 0 ? String.fromCharCode(65 + idx) : 'X'; // A, B, C... ; X = ordem forçada por link
+            c.ordem_perguntas = window.__ordemPerguntas || null;
         } catch (e) {}
         rastro.contexto = c; agendarEnvioDoRastro();
     }).catch(function () {});
@@ -3764,6 +3765,7 @@ function prepararPerguntas(tentativa, aoTerminar) {
         if (!qs || qs.length !== 24) throw new Error('sorteio devolveu ' + (qs ? qs.length : 0) + ' perguntas');
         QS = ordenarFases(qs);
         window.__ordemPerguntas = textoOrdemPerguntas();
+        try { if (rastro.contexto) { rastro.contexto.ordem_perguntas = window.__ordemPerguntas; agendarEnvioDoRastro(); } } catch (e) {}
         respostas = [];
         registrarEvento('quiz_iniciou');
         (aoTerminar || proximoBloco)();
