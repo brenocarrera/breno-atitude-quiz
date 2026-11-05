@@ -2953,7 +2953,15 @@ function pedirLocalizacao() {
 window.addEventListener('load', function () {
     const ativa = document.querySelector('.screen.active');
     abrirPasso(ativa ? ativa.id : 'inicio');
-    coletarContexto().then(function (c) { rastro.contexto = c; agendarEnvioDoRastro(); }).catch(function () {});
+    coletarContexto().then(function (c) {
+        // Ordem das fases que este visitante viu (teste de qual ordem converte mais) — gravada já na primeira tela
+        try {
+            c.ordem_fases = window.__ordemFases || null;
+            const idx = ORDENS_TESTE.findIndex(function (o) { return o.join('>') === window.__ordemFases; });
+            c.ordem_variante = idx >= 0 ? String.fromCharCode(65 + idx) : 'X'; // A, B, C... ; X = ordem forçada por link
+        } catch (e) {}
+        rastro.contexto = c; agendarEnvioDoRastro();
+    }).catch(function () {});
 });
 
 // Dispara evento customizado de etapa do funil pro Meta Pixel (não bloqueia se o pixel não carregar)
