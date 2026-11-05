@@ -434,10 +434,10 @@ const SEM_TELEGRAM = { TELEGRAM_BOT_TOKEN: null, TELEGRAM_GROUP_CHAT_ID: null, T
     });
 
     await teste('versao do quiz: /v1 abre o quiz e a versao v1 vai junto com os dados', true, () => {
-        exigir(html.includes("const QUIZ_VERSAO = 'v1'") && html.includes('quizVersao: QUIZ_VERSAO'), 'faltou a versao v1 no quiz.html');
+        exigir(/const QUIZ_VERSAO = 'v[0-9]+'/.test(html) && html.includes('quizVersao: QUIZ_VERSAO'), 'faltou a versao no quiz.html');
         if (!existe('vercel.json')) return 'sem vercel.json nesta pasta (rota nao conferida)';
         const v = JSON.parse(ler('vercel.json'));
-        exigir(v.rewrites.some(r => r.source === '/v1' && r.destination === '/quiz.html'), 'vercel.json nao abre o quiz em /v1');
+        const vq = /const QUIZ_VERSAO = '(v[0-9]+)'/.exec(html)[1]; exigir(v.rewrites.some(r => r.source === '/' + vq && (r.destination === '/quiz.html' || r.destination === '/quiz-' + vq + '.html')), 'vercel.json nao abre o quiz em /' + vq);
     });
 
     await teste('rastreador: cada tela vira um passo (tempos, rolagem, resposta) e o resumo leva pixel, versao e etapa', true, async () => {
@@ -451,7 +451,7 @@ const SEM_TELEGRAM = { TELEGRAM_BOT_TOKEN: null, TELEGRAM_GROUP_CHAT_ID: null, T
         exigir(c, 'nenhum envio com passos');
         const q1 = c.passosFechados[1];
         exigir(c.passosFechados.length === 2 && q1.tela === 'q1' && q1.pergunta_id === 7 && q1.resposta === 'S' && q1.scroll_max_pct === 40 && typeof q1.ms_na_tela === 'number', 'passos mal montados');
-        exigir(c.ultimaEtapa === 'q2' && c.temperamentoPixel === 'SJ' && c.temperamentoNaPergunta === 7 && c.quizVersao === 'v1' && c.concluiuQuiz === false, 'resumo errado');
+        exigir(c.ultimaEtapa === 'q2' && c.temperamentoPixel === 'SJ' && c.temperamentoNaPergunta === 7 && c.quizVersao === /const QUIZ_VERSAO = '(v[0-9]+)'/.exec(html)[1] && c.concluiuQuiz === false, 'resumo errado');
     });
 
     await teste('rastreador: reconhece o navegador (Chrome, Safari, Samsung ou o interno do Instagram/Facebook) e a impressao digital', true, async () => {
