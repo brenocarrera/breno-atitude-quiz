@@ -3003,6 +3003,75 @@ const PHASES = [
     { label:'FASE 3 DE 3', name:'Seu arquétipo real',     start:16, end:23 },
 ];
 
+// <<ORDEM-INICIO>>
+// ORDEM DOS BLOCOS DO QUIZ (configuracao feita no Quiz Builder).
+// 'dados' = telas de dados pessoais; f1, f2, f3 = as 3 fases de 8 perguntas.
+// Cada visitante recebe UMA ordem e ela fica guardada no navegador (para comparar ordens ao mesmo tempo).
+// Para testar outra ordem sem sorteio: abra o quiz com ?ordem=dados-f2-f1-f3
+const ORDEM_PADRAO = ['dados', 'f1', 'f2', 'f3'];
+const ORDENS_TESTE = (window.QB_ORDENS && window.QB_ORDENS.length) ? window.QB_ORDENS : [ORDEM_PADRAO];
+function ordemValida(o) {
+    return Array.isArray(o) && o.length === 4 && ['dados', 'f1', 'f2', 'f3'].every(function (x) { return o.indexOf(x) >= 0; });
+}
+function escolherOrdem() {
+    let ordem = null;
+    try {
+        const url = new URLSearchParams(location.search).get('ordem');
+        if (url) { const o = url.split(/[>,-]/); if (ordemValida(o)) ordem = o; }
+    } catch (e) {}
+    if (!ordem) {
+        try {
+            const salva = (localStorage.getItem('oxy_ordem') || '').split('>');
+            if (ordemValida(salva) && ORDENS_TESTE.some(function (o) { return o.join('>') === salva.join('>'); })) ordem = salva;
+        } catch (e) {}
+    }
+    if (!ordem) {
+        const lista = ORDENS_TESTE.filter(ordemValida);
+        ordem = (lista.length ? lista[Math.floor(Math.random() * lista.length)] : ORDEM_PADRAO).slice();
+    }
+    try { localStorage.setItem('oxy_ordem', ordem.join('>')); } catch (e) {}
+    return ordem;
+}
+const ORDEM_FASES = escolherOrdem();
+window.__ordemFases = ORDEM_FASES.join('>'); // ex.: 'dados>f1>f2>f3' (o Arquivo Alfa grava isso)
+// posicao da fase na ordem -> numero original da fase (0, 1 ou 2)
+const FASES_ORDEM = ORDEM_FASES.filter(function (x) { return x !== 'dados'; }).map(function (x) { return +x.slice(1) - 1; });
+let blocoIdx = 0; // em qual bloco da ordem a pessoa esta
+function irParaBloco(i) {
+    blocoIdx = i;
+    if (i >= ORDEM_FASES.length) { doGenerate(); return; }
+    const b = ORDEM_FASES[i];
+    if (b === 'dados') { show('s-welcome-1'); return; }
+    show('s-p' + (FASES_ORDEM.indexOf(+b.slice(1) - 1) + 1));
+}
+function proximoBloco() { irParaBloco(blocoIdx + 1); }
+// Primeira tela: se os dados nao vem primeiro, sorteia as perguntas ja e abre a abertura da primeira fase
+function iniciarFluxo() {
+    if (ORDEM_FASES[0] === 'dados') { irParaBloco(0); return; }
+    prepararPerguntas(1, function () { irParaBloco(0); });
+}
+// Cada fase leva junto o titulo da abertura e o nome (a ordem das perguntas e feita no sorteio)
+(function ajustarFases() {
+    if (FASES_ORDEM.join() === '0,1,2') return;
+    const nomes = PHASES.map(function (p) { return p.name; });
+    PHASES.forEach(function (p, i) { p.name = nomes[FASES_ORDEM[i]]; });
+    const tel = ['s-p1', 's-p2', 's-p3'].map(function (id) {
+        const e = document.getElementById(id);
+        return e ? { t: e.querySelector('.phase-title'), s: e.querySelector('.phase-sub') } : null;
+    });
+    const txt = tel.map(function (x) { return x ? [x.t ? x.t.innerHTML : null, x.s ? x.s.innerHTML : null] : null; });
+    tel.forEach(function (x, i) {
+        const h = txt[FASES_ORDEM[i]];
+        if (x && h) { if (x.t && h[0] != null) x.t.innerHTML = h[0]; if (x.s && h[1] != null) x.s.innerHTML = h[1]; }
+    });
+})();
+function ordenarFases(qs) {
+    const f = [0, 1, 2].map(function (i) { return qs.slice(i * 8, i * 8 + 8); });
+    return [].concat(f[FASES_ORDEM[0]], f[FASES_ORDEM[1]], f[FASES_ORDEM[2]]);
+}
+// <<ORDEM-FIM>>
+
+
 // Preenchido dinamicamente em startQuiz() via QuizLogic.sortearPerguntas()
 let QS = [];
 
@@ -3346,7 +3415,10 @@ window.onload = () => {
     // ?preview_recover=1 força a visualização da tela (só para demonstração, sem precisar mexer no localStorage)
     if (p.get('preview_recover') === '1' || (ArmazemSeguro.get('oxyquiz_result_seen') === 'true' && !ArmazemSeguro.get('oxyquiz_converted'))) {
         show('s-recover');
+    } else if (ORDEM_FASES[0] !== 'dados') {
+        iniciarFluxo(); // dados nao vem primeiro: abre direto a primeira fase da ordem
     }
+    if (ORDEM_FASES[0] !== 'dados') { const vb = document.querySelector('#s-p1 .back-btn'); if (vb) vb.style.display = 'none'; }
 };
 
 function submitRecoverEmail() {
@@ -3363,7 +3435,7 @@ function submitRecoverEmail() {
     }).catch(() => {});
 
     ArmazemSeguro.set('oxyquiz_converted', 'true');
-    show('s-welcome-1');
+    iniciarFluxo();
 }
 
 // Apps selecionados (múltipla escolha em caixa única)
@@ -3656,24 +3728,24 @@ function startQuiz() {
         sessionId:  ArmazemSeguro.get('oxy_session_id'),
     };
     trackFunilStep('RaioX_ComecouPerguntas');
-    prepararPerguntas(1);
+    if (QS.length === 24) proximoBloco(); else prepararPerguntas(1);
 }
 
 // <<INICIO-INICIO>>
 // Sorteia as 24 perguntas (MBTI primeiro, depois ADICAS). Se falhar, tenta de novo (até 3 vezes);
 // se mesmo assim não der, mostra a tela de falha com a opção do WhatsApp.
 // NÃO existe mais plano B com perguntas antigas (ele dava o resultado ESTJ para todo mundo).
-function prepararPerguntas(tentativa) {
+function prepararPerguntas(tentativa, aoTerminar) {
     try {
         const qs = QuizLogic.sortearPerguntas(3, 2);
         if (!qs || qs.length !== 24) throw new Error('sorteio devolveu ' + (qs ? qs.length : 0) + ' perguntas');
-        QS = qs;
+        QS = ordenarFases(qs);
         respostas = [];
-        show('s-p1');
         registrarEvento('quiz_iniciou');
+        (aoTerminar || proximoBloco)();
     } catch (e) {
         registrarEvento('quiz_erro', { etapa: 'inicio', tentativa: tentativa, erro: mensagemDoErro(e) });
-        if (tentativa < 3) setTimeout(function () { prepararPerguntas(tentativa + 1); }, 700);
+        if (tentativa < 3) setTimeout(function () { prepararPerguntas(tentativa + 1, aoTerminar); }, 700);
         else mostrarFalha();
     }
 }
@@ -3799,13 +3871,13 @@ function pick(btn, polo) {
 }
 
 function nextQ() {
-    if (curQ >= QS.length - 1) {  doGenerate(); return; }
+    if (curQ >= QS.length - 1) { proximoBloco(); return; } // fim das perguntas: proximo bloco da ordem (ou o relatorio)
     curQ++;
     const phase = getPhase(curQ);
     if (curQ === phase.start && curQ > 0) {
         soundPhase(); // completou uma fase
-        if (curQ === 8)  { fecharFase('fase1'); resetPhaseBtn('btn-p2'); show('s-p2'); }
-        if (curQ === 16) { fecharFase('fase2'); resetPhaseBtn('btn-p3'); show('s-p3'); }
+        const pi = PHASES.indexOf(phase); // 1 ou 2: fecha a fase que acabou e abre o proximo bloco da ordem
+        fecharFase('fase' + pi); resetPhaseBtn('btn-p' + (pi + 1)); proximoBloco();
     } else {
         soundAdvance(); // avançar de tela
         renderQ();

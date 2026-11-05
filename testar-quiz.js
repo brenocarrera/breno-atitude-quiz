@@ -218,6 +218,7 @@ const SEM_TELEGRAM = { TELEGRAM_BOT_TOKEN: null, TELEGRAM_GROUP_CHAT_ID: null, T
                 QuizLogic: { sortearPerguntas() { rastro.tentativasDeSorteio++; return sorteio(rastro.tentativasDeSorteio); } },
                 show: id => rastro.telas.push(id), registrarEvento: t => rastro.eventos.push(t), mensagemDoErro: e => String(e && e.message),
                 mostrarFalha: () => rastro.falhas++, setTimeout: fn => { fn(); return 0; }, Error, respostas: [], QS: [],
+                ordenarFases: q => q, proximoBloco: () => rastro.telas.push('s-p1'), // a ordem dos blocos tem teste proprio (abaixo)
             };
             vm.createContext(g);
             vm.runInContext(bloco, g);
@@ -233,6 +234,48 @@ const SEM_TELEGRAM = { TELEGRAM_BOT_TOKEN: null, TELEGRAM_GROUP_CHAT_ID: null, T
         exigir(c.falhas === 1, 'um sorteio com número errado de perguntas deveria ser tratado como falha');
         exigir(html.includes('id="s-falha"') && html.includes("abrirWhatsAppEspecial('inicio')") && html.includes('tentarDeNovo()'), 'a tela de falha (com WhatsApp e Tentar de novo) não está no quiz.html');
         exigir(html.includes('wa.me/') && html.includes('WHATSAPP_NUMERO'), 'a ligação com o WhatsApp não está no quiz.html');
+    });
+
+    await teste('ordem dos blocos (Quiz Builder): configuravel, sorteio por visitante, fase leva as perguntas junto e o relatorio so abre depois do ultimo bloco', true, () => {
+        const bloco = pegarBloco(html, '// <<ORDEM-INICIO>>', '// <<ORDEM-FIM>>');
+        exigir(bloco.includes('window.__ordemFases') && bloco.includes('window.QB_ORDENS') && bloco.includes("'oxy_ordem'"), 'faltou a ordem configuravel (__ordemFases / QB_ORDENS / guardar no navegador)');
+        function montar(search, salvo, ordens) {
+            const guardado = salvo ? { oxy_ordem: salvo } : {};
+            const telas = [];
+            const g = {
+                window: { QB_ORDENS: ordens }, location: { search }, URLSearchParams, Math, Array, JSON,
+                localStorage: { getItem: k => guardado[k] || null, setItem: (k, v) => { guardado[k] = v; } },
+                PHASES: [{ name: 'A' }, { name: 'B' }, { name: 'C' }],
+                document: { getElementById: () => null },
+                show: id => telas.push(id), doGenerate: () => telas.push('GERAR'), prepararPerguntas: (t, cb) => cb && cb(),
+            };
+            vm.createContext(g);
+            vm.runInContext(bloco, g);
+            g.__telas = telas; g.__guardado = guardado;
+            return g;
+        }
+        // padrao: sem configuracao, a ordem e a de sempre
+        let g = montar('', null, undefined);
+        exigir(g.window.__ordemFases === 'dados>f1>f2>f3', 'sem configuracao a ordem deveria ser dados>f1>f2>f3, veio ' + g.window.__ordemFases);
+        // link forca uma ordem e o fluxo respeita: f2, dados, f1, f3 -> relatorio so no fim
+        g = montar('?ordem=f2-dados-f1-f3', null, undefined);
+        exigir(g.window.__ordemFases === 'f2>dados>f1>f3', 'a ordem pelo link nao foi aceita');
+        vm.runInContext('irParaBloco(0); proximoBloco(); proximoBloco(); proximoBloco(); proximoBloco();', g);
+        exigir(g.__telas.join() === 's-p1,s-welcome-1,s-p2,s-p3,GERAR', 'o fluxo f2>dados>f1>f3 deveria abrir s-p1,s-welcome-1,s-p2,s-p3 e so depois gerar o relatorio, veio ' + g.__telas.join());
+        // a fase leva as perguntas junto (24 numeradas 0..23 -> f2 primeiro)
+        const qs = Array.from({ length: 24 }, (_, i) => i);
+        exigir(vm.runInContext('ordenarFases(' + JSON.stringify(qs) + ')', g).slice(0, 3).join() === '8,9,10', 'a fase 2 deveria vir primeiro com as perguntas 8,9,10...');
+        // sorteio 50/50 fica guardado: o mesmo visitante recebe sempre a mesma
+        const duas = [['dados', 'f1', 'f2', 'f3'], ['f1', 'f2', 'f3', 'dados']];
+        const a = montar('', null, duas);
+        const b = montar('', a.__guardado.oxy_ordem, duas);
+        exigir(a.window.__ordemFases === b.window.__ordemFases, 'o visitante deveria receber sempre a mesma ordem');
+        let v = new Set(); for (let i = 0; i < 60; i++) v.add(montar('', null, duas).window.__ordemFases);
+        exigir(v.size === 2, 'o sorteio deveria usar as duas ordens');
+        // ordem invalida e ignorada
+        exigir(montar('?ordem=f1-f1-f2-f3', null, undefined).window.__ordemFases === 'dados>f1>f2>f3', 'ordem invalida deveria ser ignorada');
+        // o relatorio so e gerado pelo fim da ordem, nunca direto da ultima pergunta
+        exigir(/function nextQ\(\) \{\s*if \(curQ >= QS\.length - 1\) \{ proximoBloco\(\);/.test(html), 'a ultima pergunta deveria chamar proximoBloco(), nao gerar o relatorio direto');
     });
 
     await teste('IA: limite de espera por tentativa, 3 tentativas e depois segue sem inventar bio', true, async () => {
