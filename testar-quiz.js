@@ -257,6 +257,7 @@ const SEM_TELEGRAM = { TELEGRAM_BOT_TOKEN: null, TELEGRAM_GROUP_CHAT_ID: null, T
         // padrao: sem configuracao, a ordem e a de sempre
         let g = montar('', null, undefined);
         exigir(g.window.__ordemFases === 'dados>f1>f2>f3', 'sem configuracao a ordem deveria ser dados>f1>f2>f3, veio ' + g.window.__ordemFases);
+        exigir(g.window.__ordemVariante === 'A', 'sem configuracao a variante deveria ser A');
         // link forca uma ordem e o fluxo respeita: f2, dados, f1, f3 -> relatorio so no fim
         g = montar('?ordem=f2-dados-f1-f3', null, undefined);
         exigir(g.window.__ordemFases === 'f2>dados>f1>f3', 'a ordem pelo link nao foi aceita');
@@ -270,6 +271,7 @@ const SEM_TELEGRAM = { TELEGRAM_BOT_TOKEN: null, TELEGRAM_GROUP_CHAT_ID: null, T
         const a = montar('', null, duas);
         const b = montar('', a.__guardado.oxy_ordem, duas);
         exigir(a.window.__ordemFases === b.window.__ordemFases, 'o visitante deveria receber sempre a mesma ordem');
+        exigir(a.window.__ordemVariante === b.window.__ordemVariante && ['A', 'B'].includes(a.window.__ordemVariante), 'a variante (A ou B) deveria ficar igual para o mesmo visitante');
         let v = new Set(); for (let i = 0; i < 60; i++) v.add(montar('', null, duas).window.__ordemFases);
         exigir(v.size === 2, 'o sorteio deveria usar as duas ordens');
         // ordem invalida e ignorada

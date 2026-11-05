@@ -3034,6 +3034,8 @@ function escolherOrdem() {
 }
 const ORDEM_FASES = escolherOrdem();
 window.__ordemFases = ORDEM_FASES.join('>'); // ex.: 'dados>f1>f2>f3' (o Arquivo Alfa grava isso)
+// variante: 'A' = 1a ordem da lista, 'B' = 2a (sorteio 50/50); 'X' = ordem forcada pelo link (?ordem=) fora da lista
+window.__ordemVariante = (function () { const i = ORDENS_TESTE.map(function (o) { return o.join('>'); }).indexOf(window.__ordemFases); return i === 0 ? 'A' : (i === 1 ? 'B' : 'X'); })();
 // posicao da fase na ordem -> numero original da fase (0, 1 ou 2)
 const FASES_ORDEM = ORDEM_FASES.filter(function (x) { return x !== 'dados'; }).map(function (x) { return +x.slice(1) - 1; });
 let blocoIdx = 0; // em qual bloco da ordem a pessoa esta
