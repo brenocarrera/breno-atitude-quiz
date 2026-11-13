@@ -2961,6 +2961,12 @@ window.addEventListener('load', function () {
             c.ordem_variante = idx >= 0 ? String.fromCharCode(65 + idx) : 'X'; // A, B, C... ; X = ordem forçada por link
             c.ordem_perguntas = window.__ordemPerguntas || null;
         } catch (e) {}
+        // Liga a land ao quiz: a land manda ?arquivo_alfa=<codigo da land>&land=<versao/nome da land>
+        try {
+            const ql = new URLSearchParams(location.search);
+            c.land_alfa_id = (ql.get('arquivo_alfa') || '').slice(0, 120) || null;
+            c.land_versao = (ql.get('land') || '').slice(0, 120) || null;
+        } catch (e) {}
         rastro.contexto = c; agendarEnvioDoRastro();
     }).catch(function () {});
 });
