@@ -45,8 +45,11 @@ module.exports = async function handler(req, res) {
             body: JSON.stringify(linha),
         });
         if (!r.ok) {
-            console.error('[land-quiz-conexao] banco recusou', r.status);
-            return res.status(502).json({ error: 'banco recusou' });
+            // devolve o motivo exato do banco (so para o Quizz Builder local) e deixa no log do servidor
+            let motivo = '';
+            try { motivo = (await r.text()).slice(0, 300); } catch (e) { /* sem corpo */ }
+            console.error('[land-quiz-conexao] banco recusou', r.status, motivo);
+            return res.status(502).json({ error: 'banco recusou', status: r.status, detalhe: motivo });
         }
     } catch (err) {
         console.error('[land-quiz-conexao] erro', err);
