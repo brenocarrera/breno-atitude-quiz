@@ -29,7 +29,15 @@
     },
     {
       "source": "/v1",
-      "destination": "/quiz.html"
+      "destination": "/quiz-v1.html"
+    },
+    {
+      "source": "/v2",
+      "destination": "/quiz-v2.html"
+    },
+    {
+      "source": "/v2-teste-ordem-b",
+      "destination": "/quiz-v2.html"
     },
     {
       "source": "/mensagens",
