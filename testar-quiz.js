@@ -346,6 +346,33 @@ const SEM_TELEGRAM = { TELEGRAM_BOT_TOKEN: null, TELEGRAM_GROUP_CHAT_ID: null, T
         });
     });
 
+    await teste('API land-quiz-conexao: so aceita o Quizz Builder local, grava conectou/desconectou com a chave de servico e rejeita o resto', true, async () => {
+        const handler = require(path.join(RAIZ, 'api', 'land-quiz-conexao.js'));
+        const chamadas = [];
+        const env = { SUPABASE_URL: 'https://banco.teste', SUPABASE_ANON_KEY: 'anon-teste', SUPABASE_SERVICE_ROLE_KEY: 'servico-teste' };
+        const ok = { origin: 'http://127.0.0.1:8769' };
+        await comAmbienteFalso(env, async (url, opts) => { chamadas.push({ url: String(url), h: opts.headers, corpo: JSON.parse(opts.body) }); return respOk(); }, async () => {
+            let res = resFalso();
+            await handler({ method: 'POST', headers: ok, body: { tipo_evento: 'land_quiz_conectou', land_versao: 'land3.html', quiz_versao: 'v2', land_alfa_id: 'alfa-1', metadata: { a: 1 } } }, res);
+            exigir(res.code === 200 && chamadas.length === 1, 'conectou valido deveria gravar');
+            exigir(chamadas[0].url.endsWith('/rest/v1/land_quiz_conexoes') && chamadas[0].h.apikey === 'servico-teste', 'deveria gravar na tabela land_quiz_conexoes com a chave de servico');
+            exigir(chamadas[0].corpo.tipo_evento === 'land_quiz_conectou' && chamadas[0].corpo.land_versao === 'land3.html' && chamadas[0].corpo.quiz_versao === 'v2', 'campos gravados errados');
+            exigir(res.cabecalhos['Access-Control-Allow-Origin'] === 'http://127.0.0.1:8769', 'deveria liberar so o Quizz Builder local');
+            res = resFalso(); await handler({ method: 'POST', headers: ok, body: { tipo_evento: 'land_quiz_desconectou' } }, res);
+            exigir(res.code === 200 && chamadas.length === 2, 'desconectou deveria gravar');
+            res = resFalso(); await handler({ method: 'POST', headers: ok, body: { tipo_evento: 'outro' } }, res);
+            exigir(res.code === 400 && chamadas.length === 2, 'tipo invalido deveria dar 400 sem gravar');
+            res = resFalso(); await handler({ method: 'POST', headers: { origin: 'https://site-qualquer.com' }, body: { tipo_evento: 'land_quiz_conectou' } }, res);
+            exigir(res.code === 403 && chamadas.length === 2 && !res.cabecalhos['Access-Control-Allow-Origin'], 'origem de fora deveria ser barrada (403) sem gravar');
+            res = resFalso(); await handler({ method: 'GET', headers: ok }, res);
+            exigir(res.code === 405, 'GET deveria dar 405');
+        });
+        await comAmbienteFalso({ SUPABASE_URL: 'https://banco.teste', SUPABASE_SERVICE_ROLE_KEY: null }, async () => respOk(), async () => {
+            const res = resFalso(); await handler({ method: 'POST', headers: ok, body: { tipo_evento: 'land_quiz_conectou' } }, res);
+            exigir(res.code === 500, 'sem chave de servico deveria avisar erro 500, nao fingir que gravou');
+        });
+    });
+
     await teste('API de eventos: erro, bio_falhou e lead_nao_salvo avisam no Telegram (quiz_iniciou não)', true, async () => {
         const handler = require(path.join(RAIZ, 'api', 'track-evento.js'));
         const env = { SUPABASE_URL: 'https://banco.teste', SUPABASE_ANON_KEY: 'anon-teste', SUPABASE_SERVICE_ROLE_KEY: null, TELEGRAM_BOT_TOKEN: 'token-de-teste', TELEGRAM_GROUP_CHAT_ID: '-100123', TELEGRAM_ALERT_THREAD_ID: null };
